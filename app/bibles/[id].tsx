@@ -59,10 +59,10 @@ export default function BibleDetailScreen() {
           </CardHeader>
           <CardContent className="gap-3">
             {/* Book and Chapter Selector */}
-            <View className="flex-row gap-3">
-              <View className="flex-1">
-                <Text className="mb-2 text-sm font-medium">Book</Text>
+            <View className="gap-3 w-full">
+              <View className="w-full">
                 <Select
+                  className="w-full"
                   value={{ value: selectedBook.id.toString(), label: selectedBook.title }}
                   onValueChange={(option) => {
                     const book = bible.books.find(b => b.id === Number(option?.value));
@@ -72,7 +72,7 @@ export default function BibleDetailScreen() {
                     }
                   }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select book" />
                   </SelectTrigger>
                   <SelectContent>
@@ -90,35 +90,34 @@ export default function BibleDetailScreen() {
                   </SelectContent>
                 </Select>
               </View>
+            </View>
 
-              <View className="w-24">
-                <Text className="mb-2 text-sm font-medium">Chapter</Text>
-                <Select
-                  value={{ value: selectedChapter.toString(), label: selectedChapter.toString() }}
-                  onValueChange={(option) => {
-                    if (option?.value) {
-                      setSelectedChapter(Number(option.value));
-                    }
-                  }}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Ch" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
-                        <SelectItem 
-                          key={ch} 
-                          value={ch.toString()}
-                          label={ch.toString()}
-                        >
-                          {ch}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </View>
+            <View className="w-full">
+              <Select
+                value={{ value: selectedChapter.toString(), label: selectedChapter.toString() }}
+                onValueChange={(option) => {
+                  if (option?.value) {
+                    setSelectedChapter(Number(option.value));
+                  }
+                }}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Chapter" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
+                      <SelectItem 
+                        key={ch} 
+                        value={ch.toString()}
+                        label={ch.toString()}
+                      >
+                        {ch}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </View>
 
             {/* Navigation Buttons */}
@@ -142,18 +141,6 @@ export default function BibleDetailScreen() {
               >
                 <Text className="mr-1">Next</Text>
                 <ChevronRight size={16} />
-              </Button>
-            </View>
-
-            {/* Action Buttons */}
-            <View className="flex-row gap-2">
-              <Button variant="outline" size="sm" className="flex-1">
-                <Share2 size={16} />
-                <Text className="ml-1">Share</Text>
-              </Button>
-              <Button variant="outline" size="sm" className="flex-1">
-                <PenTool size={16} />
-                <Text className="ml-1">Notes</Text>
               </Button>
             </View>
           </CardContent>

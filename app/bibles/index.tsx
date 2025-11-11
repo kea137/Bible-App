@@ -92,24 +92,19 @@ export default function BiblesScreen() {
               />
             </View>
           </CardContent>
-        </Card>
-
-        {/* Bible List */}
-        <View className="gap-3">
+          {/* Bible List */}
+        <View className="gap-2 mx-2">
           {filteredBibles.length > 0 ? (
             filteredBibles.map((bible) => (
               <Link key={bible.id} href={`/bibles/${bible.id}`} asChild>
                 <TouchableOpacity activeOpacity={0.7}>
                   <Card className="overflow-hidden">
                     <View className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 active:opacity-100" />
-                    <CardContent className="gap-2 py-4">
+                    <CardContent className="gap-2 py-1">
                       <View className="flex-row items-start justify-between">
                         <View className="flex-1 gap-1">
                           <Text className="text-lg font-semibold">
                             {bible.name}
-                          </Text>
-                          <Text className="text-sm text-muted-foreground">
-                            {bible.description}
                           </Text>
                         </View>
                         <View className="rounded-full bg-primary/10 px-3 py-1">
@@ -120,13 +115,7 @@ export default function BiblesScreen() {
                       </View>
                       <View className="flex-row gap-4">
                         <Text className="text-xs text-muted-foreground">
-                          {bible.language}
-                        </Text>
-                        <Text className="text-xs text-muted-foreground">
-                          {bible.books_count} books
-                        </Text>
-                        <Text className="text-xs text-muted-foreground">
-                          v{bible.version}
+                          {bible.language} . v{bible.version}
                         </Text>
                       </View>
                     </CardContent>
@@ -142,6 +131,7 @@ export default function BiblesScreen() {
             </Card>
           )}
         </View>
+        </Card>
       </View>
     </ScrollView>
   );

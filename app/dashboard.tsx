@@ -133,7 +133,7 @@ export default function DashboardScreen() {
             </CardDescription>
           </CardHeader>
           <CardContent className="gap-3">
-            <Link href="/bibles/1" asChild>
+            <Link href="/bibles" asChild>
               <Button
                 variant='outline'
                 className='w-full justify-start'
