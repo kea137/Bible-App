@@ -3,7 +3,7 @@ import { Text, TextClassContext } from '@showcase/components/ui/text';
 import { cn } from '@showcase/lib/utils';
 import type { LucideIcon } from 'lucide-react-native';
 import * as React from 'react';
-import { View, type ViewProps } from 'react-native';
+import { View, type ViewProps, Platform } from 'react-native';
 
 function Alert({
   className,
@@ -11,13 +11,20 @@ function Alert({
   children,
   icon,
   iconClassName,
-  ...props
+  ...restProps
 }: ViewProps &
   React.RefAttributes<View> & {
     icon: LucideIcon;
     variant?: 'default' | 'destructive';
     iconClassName?: string;
   }) {
+  // Filter out web-only props on native
+  const props = Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  );
+  
   return (
     <TextClassContext.Provider
       value={cn(
@@ -26,7 +33,7 @@ function Alert({
         className
       )}>
       <View
-        role="alert"
+        accessibilityRole="alert"
         className={cn(
           'bg-card border-border relative w-full rounded-lg border px-4 pb-2 pt-3.5',
           className
@@ -46,8 +53,15 @@ function Alert({
 
 function AlertTitle({
   className,
-  ...props
+  ...restProps
 }: React.ComponentProps<typeof Text> & React.RefAttributes<Text>) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
   return (
     <Text
       className={cn('mb-1 ml-0.5 min-h-4 pl-6 font-medium leading-none tracking-tight', className)}
@@ -58,8 +72,15 @@ function AlertTitle({
 
 function AlertDescription({
   className,
-  ...props
+  ...restProps
 }: React.ComponentProps<typeof Text> & React.RefAttributes<Text>) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
   const textClass = React.useContext(TextClassContext);
   return (
     <Text

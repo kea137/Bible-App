@@ -8,15 +8,15 @@ export function ToggleGroupPreview() {
 
   return (
     <ToggleGroup type="multiple" value={value} onValueChange={setValue}>
-      <ToggleGroupItem value="bold" aria-label="Toggle bold">
+      <ToggleGroupItem value="bold" accessibilityLabel="Toggle bold">
         <Bold className="size-4" />
         <Text>Bold</Text>
       </ToggleGroupItem>
-      <ToggleGroupItem value="italic" aria-label="Toggle italic">
+      <ToggleGroupItem value="italic" accessibilityLabel="Toggle italic">
         <Italic className="size-4" />
         <Text>Italic</Text>
       </ToggleGroupItem>
-      <ToggleGroupItem value="underline" aria-label="Toggle underline">
+      <ToggleGroupItem value="underline" accessibilityLabel="Toggle underline">
         <Underline className="size-4" />
         <Text>Underline</Text>
       </ToggleGroupItem>

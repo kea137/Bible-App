@@ -1,8 +1,15 @@
 import { Text, TextClassContext } from '@showcase/components/ui/text';
 import { cn } from '@showcase/lib/utils';
-import { View, type ViewProps } from 'react-native';
+import { View, type ViewProps, Platform } from 'react-native';
 
-function Card({ className, ...props }: ViewProps & React.RefAttributes<View>) {
+function Card({ className, ...restProps }: ViewProps & React.RefAttributes<View>) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
   return (
     <TextClassContext.Provider value="text-card-foreground">
       <View
@@ -16,18 +23,35 @@ function Card({ className, ...props }: ViewProps & React.RefAttributes<View>) {
   );
 }
 
-function CardHeader({ className, ...props }: ViewProps & React.RefAttributes<View>) {
+function CardHeader({ className, ...restProps }: ViewProps & React.RefAttributes<View>) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
   return <View className={cn('flex flex-col gap-1.5 px-6', className)} {...props} />;
 }
 
 function CardTitle({
   className,
-  ...props
+  ...restProps
 }: React.ComponentProps<typeof Text> & React.RefAttributes<Text>) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
+  const accessibilityProps = Platform.OS === 'web' 
+    ? { 'aria-level': 3 } 
+    : { accessibilityRole: 'header' as const };
+    
   return (
     <Text
-      role="heading"
-      aria-level={3}
+      {...accessibilityProps}
       className={cn('font-semibold leading-none', className)}
       {...props}
     />
@@ -36,16 +60,37 @@ function CardTitle({
 
 function CardDescription({
   className,
-  ...props
+  ...restProps
 }: React.ComponentProps<typeof Text> & React.RefAttributes<Text>) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
   return <Text className={cn('text-muted-foreground text-sm', className)} {...props} />;
 }
 
-function CardContent({ className, ...props }: ViewProps & React.RefAttributes<View>) {
+function CardContent({ className, ...restProps }: ViewProps & React.RefAttributes<View>) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
   return <View className={cn('px-6', className)} {...props} />;
 }
 
-function CardFooter({ className, ...props }: ViewProps & React.RefAttributes<View>) {
+function CardFooter({ className, ...restProps }: ViewProps & React.RefAttributes<View>) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
   return <View className={cn('flex flex-row items-center px-6', className)} {...props} />;
 }
 

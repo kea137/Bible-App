@@ -92,12 +92,19 @@ type ButtonProps = React.ComponentProps<typeof Pressable> &
   React.RefAttributes<typeof Pressable> &
   VariantProps<typeof buttonVariants>;
 
-function Button({ className, variant, size, ...props }: ButtonProps) {
+function Button({ className, variant, size, ...restProps }: ButtonProps) {
+  // Filter out web-only props on native
+  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
+    Object.entries(restProps).filter(([key]) => 
+      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
+    )
+  )) as typeof restProps;
+  
   return (
     <TextClassContext.Provider value={buttonTextVariants({ variant, size })}>
       <Pressable
         className={cn(props.disabled && 'opacity-50', buttonVariants({ variant, size }), className)}
-        role="button"
+        accessibilityRole="button"
         {...props}
       />
     </TextClassContext.Provider>

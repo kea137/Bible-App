@@ -9,7 +9,6 @@ export function TextareaPreview() {
       <Label nativeID="textarea-label">Your message</Label>
       <Textarea
         placeholder="Type your message here."
-        aria-labelledby="textarea-label"
       />
     </View>
   );
