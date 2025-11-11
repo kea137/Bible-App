@@ -10,13 +10,14 @@ import {
   SelectValue,
 } from '@showcase/components/ui/select';
 import { useLocalSearchParams } from 'expo-router';
-import { BookOpen, ChevronLeft, ChevronRight, Highlighter, Share2, PenTool } from 'lucide-react-native';
+import { BookOpen, CheckCircle } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 
 export default function BibleDetailScreen() {
   const { id } = useLocalSearchParams();
-  
+  const [completed, setCompleted] = useState(false);
+
   // Mock data
   const bible = {
     id: Number(id),
@@ -121,60 +122,44 @@ export default function BibleDetailScreen() {
             </View>
 
             {/* Navigation Buttons */}
-            <View className="flex-row gap-2">
+            <View className="flex-col gap-2">
               <Button 
-                variant="outline" 
-                size="sm"
-                disabled={!canGoPrevious}
-                onPress={() => setSelectedChapter(prev => Math.max(1, prev - 1))}
-                className="flex-1"
+                variant={completed ? "default" : "outline"}
+                onPress={() => setCompleted(!completed)}
               >
-                <ChevronLeft size={16} />
-                <Text className="ml-1">Previous</Text>
+                <CheckCircle size={16} />
+                <Text className="ml-2">
+                  {completed ? 'Completed' : 'Mark as Complete'}
+                </Text>
               </Button>
-              <Button 
-                variant="outline" 
-                size="sm"
-                disabled={!canGoNext}
-                onPress={() => setSelectedChapter(prev => Math.min(selectedBook.chapters_count, prev + 1))}
-                className="flex-1"
-              >
-                <Text className="mr-1">Next</Text>
-                <ChevronRight size={16} />
-              </Button>
+              
+              {/* Verses */}
+              <View className="mt-4">
+                <CardContent className="gap-4 py-4">
+                  <Text className="text-base font-bold">
+                  {selectedBook.title} {selectedChapter}
+                  </Text>
+                  {verses.map((verse) => (
+                    <TouchableOpacity key={verse.id} activeOpacity={0.7}>
+                      <View className="flex-row gap-3">
+                        <View className="w-8">
+                          <Text className="text-sm font-semibold text-primary">
+                            {verse.verse_number}
+                          </Text>
+                        </View>
+                        <View className="flex-1">
+                          <Text className="text-base leading-7">{verse.text}</Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  ))}
+                </CardContent>
+              </View>
             </View>
           </CardContent>
         </Card>
 
-        {/* Chapter Title */}
-        <View className="gap-1">
-          <Text className="text-2xl font-bold">
-            {selectedBook.title} {selectedChapter}
-          </Text>
-          <Text className="text-sm text-muted-foreground">
-            {bible.abbreviation}
-          </Text>
-        </View>
-
-        {/* Verses */}
-        <Card>
-          <CardContent className="gap-4 py-4">
-            {verses.map((verse) => (
-              <TouchableOpacity key={verse.id} activeOpacity={0.7}>
-                <View className="flex-row gap-3">
-                  <View className="w-8">
-                    <Text className="text-sm font-semibold text-primary">
-                      {verse.verse_number}
-                    </Text>
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-base leading-7">{verse.text}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </CardContent>
-        </Card>
+        
       </View>
     </ScrollView>
   );
