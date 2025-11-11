@@ -22,14 +22,18 @@ export function MobileFooter() {
                      pathname === '/welcome' ||
                      pathname === '/';
 
+  console.log('MobileFooter render - pathname:', pathname, 'hideFooter:', hideFooter);
+
   if (hideFooter) {
     return null;
   }
 
   return (
     <View 
-      className="border-t border-border bg-card"
       style={{ 
+        borderTopWidth: 1,
+        borderTopColor: colorScheme === 'dark' ? '#333' : '#e5e5e5',
+        backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#ffffff',
         paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
         paddingTop: 8,
       }}
