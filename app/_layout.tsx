@@ -62,7 +62,7 @@ export default function RootLayout() {
               name="index"
               options={{
                 headerLargeTitle: true,
-                headerTitle: 'Showcase',
+                headerTitle: 'Bible App',
                 headerLargeTitleShadowVisible: false,
                 headerTransparent: true,
               }}

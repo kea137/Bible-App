@@ -7,40 +7,14 @@ import { useScrollToTop } from '@react-navigation/native';
 import { FlashList } from '@shopify/flash-list';
 import { COMPONENTS } from '@showcase/lib/constants';
 import { Link } from 'expo-router';
-import { 
-  ChevronRight, 
-  BookOpen, 
-  Library, 
-  Share2, 
-  PenTool, 
-  Calendar, 
-  SplitSquareHorizontal,
-  LogIn,
-  UserPlus,
-  Home,
-  LayoutDashboard
-} from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import { cssInterop, useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { Platform, View } from 'react-native';
 
 cssInterop(FlashList, { className: 'style', contentContainerClassName: 'contentContainerStyle' });
 
-const BIBLE_PAGES = [
-  { name: 'Welcome', slug: 'welcome', icon: Home },
-  { name: 'Login', slug: 'auth/login', icon: LogIn },
-  { name: 'Register', slug: 'auth/register', icon: UserPlus },
-  { name: 'Dashboard', slug: 'dashboard', icon: LayoutDashboard },
-  { name: 'Bibles', slug: 'bibles', icon: BookOpen },
-  { name: 'Lessons', slug: 'lessons', icon: Library },
-  { name: 'Share', slug: 'share', icon: Share2 },
-  { name: 'Verse Study', slug: 'verse-study', icon: PenTool },
-  { name: 'Reading Plan', slug: 'reading-plan', icon: Calendar },
-  { name: 'Parallel Bibles', slug: 'parallel-bibles', icon: SplitSquareHorizontal },
-  { name: 'UI Components', slug: 'showcase', icon: ChevronRight },
-];
-
-export default function HomeScreen() {
+export default function ShowcaseScreen() {
   const { colorScheme } = useColorScheme();
   const [search, setSearch] = React.useState('');
   const [isAtTop, setIsAtTop] = React.useState(true);
@@ -49,8 +23,8 @@ export default function HomeScreen() {
   useScrollToTop(flashListRef);
 
   const data = !search
-    ? BIBLE_PAGES
-    : BIBLE_PAGES.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
+    ? COMPONENTS
+    : COMPONENTS.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <View
@@ -79,7 +53,7 @@ export default function HomeScreen() {
           native: (
             <View className="pb-4">
               <Input
-                placeholder="Search pages"
+                placeholder="Components"
                 clearButtonMode="always"
                 onChangeText={setSearch}
                 autoCorrect={false}
@@ -88,7 +62,7 @@ export default function HomeScreen() {
           ),
         })}
         renderItem={({ item, index }) => (
-          <Link href={`/${item.slug}`} asChild>
+          <Link href={`/components/${item.slug}`} asChild>
             <Link.Trigger>
               <Button
                 variant="outline"
@@ -99,10 +73,7 @@ export default function HomeScreen() {
                   index === 0 && 'rounded-t-lg',
                   index === data.length - 1 && 'rounded-b-lg border-b'
                 )}>
-                <View className="flex-row items-center gap-3">
-                  <Icon as={item.icon} className="text-primary size-5 stroke-[1.5px]" />
-                  <Text className="text-base font-normal">{item.name}</Text>
-                </View>
+                <Text className="text-base font-normal">{item.name}</Text>
 
                 <Icon as={ChevronRight} className="text-muted-foreground size-4 stroke-[1.5px]" />
               </Button>
