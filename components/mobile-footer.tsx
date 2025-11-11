@@ -1,15 +1,16 @@
 import { Link, usePathname } from 'expo-router';
-import { BookOpen, NotebookPen, Highlighter, LayoutDashboard } from 'lucide-react-native';
+import { BookOpen, PencilRuler, Target, BookCopy, LayoutGrid } from 'lucide-react-native';
 import { View, Platform, Pressable } from 'react-native';
 import { Text } from '@showcase/components/ui/text';
 import { useColorScheme } from 'nativewind';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const FOOTER_ITEMS = [
-  { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
+  { name: 'Dashboard', path: '/dashboard', icon: LayoutGrid },
   { name: 'Bibles', path: '/bibles', icon: BookOpen },
-  { name: 'Notes', path: '/notes', icon: NotebookPen },
-  { name: 'Highlights', path: '/highlights', icon: Highlighter },
+  { name: 'Parallel', path: '/parallel-bibles', icon: BookCopy},
+  { name: 'Lessons', path: '/lessons', icon: PencilRuler},
+  { name: 'Plan', path: '/reading-plan', icon: Target},
 ];
 
 export function MobileFooter() {
@@ -33,7 +34,7 @@ export function MobileFooter() {
       style={{ 
         borderTopWidth: 1,
         borderTopColor: colorScheme === 'dark' ? '#333' : '#e5e5e5',
-        backgroundColor: colorScheme === 'dark' ? '#1a1a1a' : '#ffffff',
+        backgroundColor: colorScheme === 'dark' ? 'primary' : 'secondary',
         paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
         paddingTop: 8,
       }}

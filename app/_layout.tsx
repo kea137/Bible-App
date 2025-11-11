@@ -77,7 +77,7 @@ export default function RootLayout() {
                 />
               </Stack>
             </View>
-            {Platform.OS !== 'web' && <MobileFooter />}
+            {<MobileFooter />}
             <PortalHost />
           </KeyboardProvider>
         </GestureHandlerRootView>
