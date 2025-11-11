@@ -54,10 +54,12 @@ export default function NotesScreen() {
                 Personal reflections and study notes
               </Text>
             </View>
-            <Button size="sm" className="gap-2">
+            <Link href="/notes/modal" asChild>
+              <Button size="sm" className="gap-2">
               <Plus size={16} className="text-primary-foreground" />
               <Text>New</Text>
-            </Button>
+              </Button>
+            </Link>
           </View>
         </View>
 
