@@ -62,7 +62,7 @@ export default function LoginScreen() {
               <Checkbox 
                 checked={remember}
                 onCheckedChange={setRemember}
-                accessibilityLabelledBy="remember-label"
+                aria-labelledby="remember-label"
               />
               <Label nativeID="remember-label">Remember me</Label>
             </View>

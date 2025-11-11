@@ -62,7 +62,7 @@ function SelectTrigger({
       )}
       {...props}>
       <>{children}</>
-  <Icon as={ChevronDown} className="text-muted-foreground size-4" />
+      <Icon as={ChevronDown} aria-hidden={true} className="text-muted-foreground size-4" />
     </SelectPrimitive.Trigger>
   );
 }
@@ -85,20 +85,19 @@ function SelectContent({
       <FullWindowOverlay>
         <SelectPrimitive.Overlay style={Platform.select({ native: StyleSheet.absoluteFill })}>
           <TextClassContext.Provider value="text-popover-foreground">
-            <View className="z-50">
-              <NativeOnlyAnimatedView entering={FadeIn} exiting={FadeOut}>
-                <SelectPrimitive.Content
-                  className={cn(
-                    'bg-popover border-border relative z-50 min-w-[8rem] rounded-md border shadow-md shadow-black/5',
-                    Platform.select({
-                      web: cn(
-                        'animate-in fade-in-0 zoom-in-95 origin-(--radix-select-content-transform-origin) max-h-52 overflow-y-auto overflow-x-hidden',
-                        props.side === 'bottom' && 'slide-in-from-top-2',
-                        props.side === 'top' && 'slide-in-from-bottom-2'
-                      ),
-                      native: 'p-1',
-                    }),
-                    position === 'popper' &&
+            <NativeOnlyAnimatedView className="z-50" entering={FadeIn} exiting={FadeOut}>
+              <SelectPrimitive.Content
+                className={cn(
+                  'bg-popover border-border relative z-50 min-w-[8rem] rounded-md border shadow-md shadow-black/5',
+                  Platform.select({
+                    web: cn(
+                      'animate-in fade-in-0 zoom-in-95 origin-(--radix-select-content-transform-origin) max-h-52 overflow-y-auto overflow-x-hidden',
+                      props.side === 'bottom' && 'slide-in-from-top-2',
+                      props.side === 'top' && 'slide-in-from-bottom-2'
+                    ),
+                    native: 'p-1',
+                  }),
+                  position === 'popper' &&
                     Platform.select({
                       web: cn(
                         props.side === 'bottom' && 'translate-y-1',
@@ -126,7 +125,6 @@ function SelectContent({
                 <SelectScrollDownButton />
               </SelectPrimitive.Content>
             </NativeOnlyAnimatedView>
-            </View>
           </TextClassContext.Provider>
         </SelectPrimitive.Overlay>
       </FullWindowOverlay>

@@ -1,5 +1,5 @@
 const { getDefaultConfig } = require('expo/metro-config');
-const { withNativeWind } = require('./nativewind.config');
+const { withNativeWind } = require('nativewind/metro');
 const path = require('path');
 
 // Find the project and workspace directories
@@ -23,8 +23,4 @@ config.resolver = {
   sourceExts: [...resolver.sourceExts, 'mjs', 'cjs'],
 };
 
-module.exports = withNativeWind(config, { 
-  input: './global.css', 
-  inlineRem: 16,
-  output: './node_modules/.cache/nativewind',
-});
+module.exports = withNativeWind(config, { input: './global.css', inlineRem: 16 });

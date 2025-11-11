@@ -46,7 +46,7 @@ function AccordionItem({
       asChild
       {...props}>
       <Animated.View
-        style={{ overflow: 'hidden' }}
+        className="native:overflow-hidden"
         layout={Platform.select({ native: LinearTransition.duration(200) })}>
         {children}
       </Animated.View>
@@ -128,13 +128,11 @@ function AccordionContent({
           })
         )}
         {...props}>
-        <View className={className}>
-          <Animated.View
-            exiting={Platform.select({ native: FadeOutUp.duration(200) })}
-            style={{ paddingBottom: 16 }}>
-            {children}
-          </Animated.View>
-        </View>
+        <Animated.View
+          exiting={Platform.select({ native: FadeOutUp.duration(200) })}
+          className={cn('pb-4', className)}>
+          {children}
+        </Animated.View>
       </AccordionPrimitive.Content>
     </TextClassContext.Provider>
   );

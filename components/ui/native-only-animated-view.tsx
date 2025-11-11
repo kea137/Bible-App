@@ -16,9 +16,7 @@ function NativeOnlyAnimatedView(
   if (Platform.OS === 'web') {
     return <>{props.children as React.ReactNode}</>;
   } else {
-    // Filter out web-only props that Animated.View doesn't accept
-    const { className, ...animatedProps } = props as any;
-    return <Animated.View {...animatedProps} />;
+    return <Animated.View {...props} />;
   }
 }
 

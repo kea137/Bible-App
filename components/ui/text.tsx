@@ -46,37 +46,21 @@ type TextVariantProps = VariantProps<typeof textVariants>;
 
 type TextVariant = NonNullable<TextVariantProps['variant']>;
 
-const ROLE: Partial<Record<TextVariant, Role>> = Platform.select({
-  web: {
-    h1: 'heading',
-    h2: 'heading',
-    h3: 'heading',
-    h4: 'heading',
-    blockquote: 'blockquote' as Role,
-    code: 'code' as Role,
-  },
-  default: {},
-}) as Partial<Record<TextVariant, Role>>;
+const ROLE: Partial<Record<TextVariant, Role>> = {
+  h1: 'heading',
+  h2: 'heading',
+  h3: 'heading',
+  h4: 'heading',
+  blockquote: Platform.select({ web: 'blockquote' as Role }),
+  code: Platform.select({ web: 'code' as Role }),
+};
 
-const ACCESSIBILITY_ROLE: Partial<Record<TextVariant, 'header'>> = Platform.select({
-  web: {},
-  default: {
-    h1: 'header',
-    h2: 'header',
-    h3: 'header',
-    h4: 'header',
-  },
-}) as Partial<Record<TextVariant, 'header'>>;
-
-const ARIA_LEVEL: Partial<Record<TextVariant, string>> = Platform.select({
-  web: {
-    h1: '1',
-    h2: '2',
-    h3: '3',
-    h4: '4',
-  },
-  default: {},
-}) as Partial<Record<TextVariant, string>>;
+const ARIA_LEVEL: Partial<Record<TextVariant, string>> = {
+  h1: '1',
+  h2: '2',
+  h3: '3',
+  h4: '4',
+};
 
 const TextClassContext = React.createContext<string | undefined>(undefined);
 
@@ -84,7 +68,7 @@ function Text({
   className,
   asChild = false,
   variant = 'default',
-  ...restProps
+  ...props
 }: React.ComponentProps<typeof RNText> &
   TextVariantProps &
   React.RefAttributes<RNText> & {
@@ -92,25 +76,12 @@ function Text({
   }) {
   const textClass = React.useContext(TextClassContext);
   const Component = asChild ? Slot.Text : RNText;
-  
-  // Filter out web-only props on native
-  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
-    Object.entries(restProps).filter(([key]) => 
-      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
-    )
-  )) as typeof restProps;
-  
-  const role = variant ? ROLE[variant] : undefined;
-  const accessibilityRole = variant ? ACCESSIBILITY_ROLE[variant] : undefined;
-  const ariaLevel = variant ? ARIA_LEVEL[variant] : undefined;
-  
   return (
     <Component
       className={cn(textVariants({ variant }), textClass, className)}
+      role={variant ? ROLE[variant] : undefined}
+      aria-level={variant ? ARIA_LEVEL[variant] : undefined}
       {...props}
-      {...(role && { role })}
-      {...(accessibilityRole && { accessibilityRole })}
-      {...(ariaLevel && { 'aria-level': ariaLevel })}
     />
   );
 }

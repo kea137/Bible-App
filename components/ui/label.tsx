@@ -9,15 +9,8 @@ function Label({
   onPressIn,
   onPressOut,
   disabled,
-  ...restProps
+  ...props
 }: LabelPrimitive.TextProps & React.RefAttributes<LabelPrimitive.TextRef>) {
-  // Filter out web-only props on native
-  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
-    Object.entries(restProps).filter(([key]) => 
-      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
-    )
-  )) as typeof restProps;
-  
   return (
     <LabelPrimitive.Root
       className={cn(

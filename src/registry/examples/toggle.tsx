@@ -7,7 +7,7 @@ export function TogglePreview() {
   const [pressed, setPressed] = React.useState(false);
 
   return (
-    <Toggle pressed={pressed} onPressedChange={setPressed} accessibilityLabel="Toggle bold">
+    <Toggle pressed={pressed} onPressedChange={setPressed} aria-label="Toggle bold">
       <Bold className="size-4" />
       <Text>Bold</Text>
     </Toggle>

@@ -9,15 +9,15 @@ export function RadioGroupPreview() {
   return (
     <RadioGroup value={value} onValueChange={setValue} className="gap-3">
       <View className="flex-row items-center gap-2">
-        <RadioGroupItem accessibilityLabelledBy="default-label" value="default" />
+        <RadioGroupItem aria-labelledby="default-label" value="default" />
         <Label nativeID="default-label">Default</Label>
       </View>
       <View className="flex-row items-center gap-2">
-        <RadioGroupItem accessibilityLabelledBy="comfortable-label" value="comfortable" />
+        <RadioGroupItem aria-labelledby="comfortable-label" value="comfortable" />
         <Label nativeID="comfortable-label">Comfortable</Label>
       </View>
       <View className="flex-row items-center gap-2">
-        <RadioGroupItem accessibilityLabelledBy="compact-label" value="compact" />
+        <RadioGroupItem aria-labelledby="compact-label" value="compact" />
         <Label nativeID="compact-label">Compact</Label>
       </View>
     </RadioGroup>

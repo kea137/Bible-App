@@ -1,7 +1,6 @@
 import { cn } from '@showcase/lib/utils';
 import type { LucideIcon, LucideProps } from 'lucide-react-native';
 import { cssInterop } from 'nativewind';
-import { Platform } from 'react-native';
 
 type IconProps = LucideProps & {
   as: LucideIcon;
@@ -41,14 +40,7 @@ cssInterop(IconImpl, {
  * @param {number} size - Icon size (defaults to 14).
  * @param {...LucideProps} ...props - Additional Lucide icon props passed to the "as" icon.
  */
-function Icon({ as: IconComponent, className, size = 14, ...restProps }: IconProps) {
-  // Filter out web-only props on native
-  const props = (Platform.OS === 'web' ? restProps : Object.fromEntries(
-    Object.entries(restProps).filter(([key]) => 
-      !['aria-hidden', 'aria-label', 'aria-labelledby', 'aria-level', 'role'].includes(key)
-    )
-  )) as typeof restProps;
-  
+function Icon({ as: IconComponent, className, size = 14, ...props }: IconProps) {
   return (
     <IconImpl
       as={IconComponent}

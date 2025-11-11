@@ -11,7 +11,7 @@ export function LabelPreview() {
       <Checkbox
         checked={checked}
         onCheckedChange={setChecked}
-        accessibilityLabelledBy="label-preview"
+        aria-labelledby="label-preview"
       />
       <Label nativeID="label-preview">Accept terms and conditions</Label>
     </View>

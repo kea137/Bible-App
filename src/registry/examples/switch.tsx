@@ -11,7 +11,7 @@ export function SwitchPreview() {
       <Switch
         checked={checked}
         onCheckedChange={setChecked}
-        accessibilityLabelledBy="airplane-mode"
+        aria-labelledby="airplane-mode"
       />
       <Label nativeID="airplane-mode">Airplane Mode</Label>
     </View>

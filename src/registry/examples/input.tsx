@@ -9,6 +9,7 @@ export function InputPreview() {
       <Label nativeID="input-label">Email</Label>
       <Input
         placeholder="Email"
+        aria-labelledby="input-label"
         keyboardType="email-address"
         autoCapitalize="none"
       />
