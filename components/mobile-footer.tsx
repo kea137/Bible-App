@@ -29,9 +29,12 @@ export function MobileFooter() {
   return (
     <View 
       className="border-t border-border bg-card"
-      style={{ paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8 }}
+      style={{ 
+        paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
+        paddingTop: 8,
+      }}
     >
-      <View className="flex-row items-center justify-around px-2 py-2">
+      <View className="flex-row items-center justify-around px-2">
         {FOOTER_ITEMS.map((item) => {
           const IconComponent = item.icon;
           const isActive = pathname === item.path || 

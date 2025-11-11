@@ -43,44 +43,46 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={NAV_THEME[colorScheme]}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      <GestureHandlerRootView
-        style={{ flex: 1, backgroundColor: NAV_THEME[colorScheme].colors.background }}>
-        <KeyboardProvider>
-          <View style={{ flex: 1 }}>
-            <Stack
-              screenOptions={{
-                headerBackTitle: 'Back',
-                headerTitleStyle: {
-                  fontFamily: 'Geist-Medium',
-                  fontWeight: '500',
-                },
-                headerTitle(props) {
-                  return (
-                    <Text style={{ fontFamily: 'Geist-Medium', fontWeight: '500', fontSize: 20, color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
-                      {toOptions(props.children.split('/').pop())}
-                    </Text>
-                  );
-                },
-                headerRight: () => <HeaderRightView />,
-              }}>
-              <Stack.Screen
-                name="index"
-                options={{
-                  headerLargeTitle: true,
-                  headerTitle: 'Bible App',
-                  headerLargeTitleShadowVisible: false,
-                  headerTransparent: true,
-                }}
-              />
-            </Stack>
-            {Platform.OS !== 'web' && <MobileFooter />}
-          </View>
-          <PortalHost />
-        </KeyboardProvider>
-      </GestureHandlerRootView>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={NAV_THEME[colorScheme]}>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <GestureHandlerRootView
+          style={{ flex: 1, backgroundColor: NAV_THEME[colorScheme].colors.background }}>
+          <KeyboardProvider>
+            <View style={{ flex: 1 }}>
+              <Stack
+                screenOptions={{
+                  headerBackTitle: 'Back',
+                  headerTitleStyle: {
+                    fontFamily: 'Geist-Medium',
+                    fontWeight: '500',
+                  },
+                  headerTitle(props) {
+                    return (
+                      <Text style={{ fontFamily: 'Geist-Medium', fontWeight: '500', fontSize: 20, color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
+                        {toOptions(props.children.split('/').pop())}
+                      </Text>
+                    );
+                  },
+                  headerRight: () => <HeaderRightView />,
+                }}>
+                <Stack.Screen
+                  name="index"
+                  options={{
+                    headerLargeTitle: true,
+                    headerTitle: 'Bible App',
+                    headerLargeTitleShadowVisible: false,
+                    headerTransparent: true,
+                  }}
+                />
+              </Stack>
+              {Platform.OS !== 'web' && <MobileFooter />}
+            </View>
+            <PortalHost />
+          </KeyboardProvider>
+        </GestureHandlerRootView>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 
