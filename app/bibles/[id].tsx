@@ -1,6 +1,6 @@
-import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Text } from '@showcase/components/ui/text';
+import { Button } from '@showcase/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import {
   Select,
   SelectContent,
@@ -8,7 +8,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
+} from '@showcase/components/ui/select';
 import { useLocalSearchParams } from 'expo-router';
 import { BookOpen, ChevronLeft, ChevronRight, Highlighter, Share2, PenTool } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity } from 'react-native';

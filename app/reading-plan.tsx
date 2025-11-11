@@ -1,7 +1,7 @@
-import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Text } from '@showcase/components/ui/text';
+import { Button } from '@showcase/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
+import { Progress } from '@showcase/components/ui/progress';
 import { Calendar, CheckCircle, BookOpen, TrendingUp } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { useState } from 'react';

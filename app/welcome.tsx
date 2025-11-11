@@ -1,5 +1,5 @@
-import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
+import { Text } from '@showcase/components/ui/text';
+import { Button } from '@showcase/components/ui/button';
 import { Link } from 'expo-router';
 import { 
   BookOpen, 

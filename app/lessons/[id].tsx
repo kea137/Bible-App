@@ -1,6 +1,6 @@
-import { Text } from '@/components/ui/text';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Text } from '@showcase/components/ui/text';
+import { Button } from '@showcase/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { useLocalSearchParams } from 'expo-router';
 import { BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
 import { View, ScrollView } from 'react-native';
