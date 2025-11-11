@@ -1,12 +1,11 @@
 import { Link, usePathname } from 'expo-router';
-import { Home, BookOpen, NotebookPen, Highlighter, LayoutDashboard } from 'lucide-react-native';
+import { BookOpen, NotebookPen, Highlighter, LayoutDashboard } from 'lucide-react-native';
 import { View, Platform, Pressable } from 'react-native';
 import { Text } from '@showcase/components/ui/text';
 import { useColorScheme } from 'nativewind';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const FOOTER_ITEMS = [
-  { name: 'Home', path: '/', icon: Home },
   { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   { name: 'Bibles', path: '/bibles', icon: BookOpen },
   { name: 'Notes', path: '/notes', icon: NotebookPen },
@@ -18,10 +17,10 @@ export function MobileFooter() {
   const { colorScheme } = useColorScheme();
   const insets = useSafeAreaInsets();
 
-  // Don't show footer on certain pages
+  // Don't show footer on authentication pages, welcome, or index
   const hideFooter = pathname.includes('/auth/') || 
-                     pathname === '/welcome' || 
-                     pathname.includes('/showcase');
+                     pathname === '/welcome' ||
+                     pathname === '/';
 
   if (hideFooter) {
     return null;

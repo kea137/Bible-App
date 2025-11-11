@@ -51,9 +51,13 @@ export default function RootLayout() {
             <Stack
               screenOptions={{
                 headerBackTitle: 'Back',
+                headerTitleStyle: {
+                  fontFamily: 'Geist-Medium',
+                  fontWeight: '500',
+                },
                 headerTitle(props) {
                   return (
-                    <Text className="ios:font-medium android:mt-1.5 text-xl text-foreground">
+                    <Text style={{ fontFamily: 'Geist-Medium', fontWeight: '500', fontSize: 20, color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
                       {toOptions(props.children.split('/').pop())}
                     </Text>
                   );
