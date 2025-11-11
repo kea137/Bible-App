@@ -28,7 +28,7 @@ import { Platform, View } from 'react-native';
 
 cssInterop(FlashList, { className: 'style', contentContainerClassName: 'contentContainerStyle' });
 
-const BIBLE_PAGES = [
+const PAGES = [
   { name: 'Welcome', slug: 'welcome', icon: Home },
   { name: 'Login', slug: 'auth/login', icon: LogIn },
   { name: 'Register', slug: 'auth/register', icon: UserPlus },
@@ -52,13 +52,13 @@ export default function HomeScreen() {
   useScrollToTop(flashListRef);
 
   const data = !search
-    ? BIBLE_PAGES
-    : BIBLE_PAGES.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
+    ? PAGES
+    : PAGES.filter((item) => item.name.toLowerCase().includes(search.toLowerCase()));
 
   return (
     <View
       className={cn(
-        'web:p-4 mx-auto w-full max-w-lg flex-1',
+        'web:p-4 mx-auto w-full my-20 max-w-lg flex-1',
         Platform.select({ android: cn('border-border/0 border-t', !isAtTop && 'border-border') })
       )}>
       <FlashList

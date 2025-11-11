@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import { Text, View, Platform } from 'react-native';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
@@ -42,40 +43,42 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={NAV_THEME[colorScheme]}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-      <GestureHandlerRootView
-        style={{ flex: 1, backgroundColor: NAV_THEME[colorScheme].colors.background }}>
-        <KeyboardProvider>
-          <View style={{ flex: 1 }}>
-            <Stack
-              screenOptions={{
-                headerBackTitle: 'Back',
-                headerTitle(props) {
-                  return (
-                    <Text className="ios:font-medium android:mt-1.5 text-xl text-foreground">
-                      {toOptions(props.children.split('/').pop())}
-                    </Text>
-                  );
-                },
-                headerRight: () => <HeaderRightView />,
-              }}>
-              <Stack.Screen
-                name="index"
-                options={{
-                  headerLargeTitle: true,
-                  headerTitle: 'Bible App',
-                  headerLargeTitleShadowVisible: false,
-                  headerTransparent: true,
-                }}
-              />
-            </Stack>
-            {Platform.OS !== 'web' && <MobileFooter />}
-          </View>
-          <PortalHost />
-        </KeyboardProvider>
-      </GestureHandlerRootView>
-    </ThemeProvider>
+    <SafeAreaProvider>
+      <ThemeProvider value={NAV_THEME[colorScheme]}>
+        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        <GestureHandlerRootView
+          style={{ flex: 1, backgroundColor: NAV_THEME[colorScheme].colors.background }}>
+          <KeyboardProvider>
+            <SafeAreaView style={{ flex: 1 }} edges={['top', 'bottom', 'left', 'right']}>
+              <Stack
+                screenOptions={{
+                  headerBackTitle: 'Back',
+                  headerTitle(props) {
+                    return (
+                      <Text className="ios:font-medium android:mt-1.5 text-xl text-foreground">
+                        {toOptions(props.children.split('/').pop())}
+                      </Text>
+                    );
+                  },
+                  headerRight: () => <HeaderRightView />,
+                }}>
+                <Stack.Screen
+                  name="index"
+                  options={{
+                    headerLargeTitle: true,
+                    headerTitle: 'Bible App',
+                    headerLargeTitleShadowVisible: false,
+                    headerTransparent: true,
+                  }}
+                />
+              </Stack>
+              {Platform.OS !== 'web' && <MobileFooter />}
+            </SafeAreaView>
+            <PortalHost />
+          </KeyboardProvider>
+        </GestureHandlerRootView>
+      </ThemeProvider>
+    </SafeAreaProvider>
   );
 }
 
