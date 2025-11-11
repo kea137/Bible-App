@@ -88,6 +88,29 @@ export default function VerseStudyScreen() {
           </CardContent>
         </Card>
 
+        {/* Cross References */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex-row items-center gap-2">
+              <Link2 size={20} className="text-primary" />
+              <Text>Other Translations</Text>
+            </CardTitle>
+            <CardDescription>Same verse in different versions</CardDescription>
+          </CardHeader>
+          <CardContent className="gap-3">
+            {crossReferences.map((ref, index) => (
+              <View key={index} className="gap-1 rounded-lg border border-border p-3">
+                <Text className="text-sm font-semibold text-primary">
+                  {ref.reference}
+                </Text>
+                <Text className="text-sm text-muted-foreground">
+                  {ref.text}
+                </Text>
+              </View>
+            ))}
+          </CardContent>
+        </Card>
+
         {/* Commentary */}
         <Card>
           <CardHeader>
@@ -95,42 +118,6 @@ export default function VerseStudyScreen() {
           </CardHeader>
           <CardContent>
             <Text className="text-base leading-7">{commentary.content}</Text>
-          </CardContent>
-        </Card>
-
-        {/* Personal Notes */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex-row items-center gap-2">
-              <Highlighter size={20} className="text-primary" />
-              <Text>Personal Notes</Text>
-            </CardTitle>
-            <CardDescription>Add your thoughts and insights</CardDescription>
-          </CardHeader>
-          <CardContent className="gap-4">
-            <View className="gap-2">
-              <Text className="text-sm font-medium">Notes</Text>
-              <Textarea
-                placeholder="Write your thoughts about this verse..."
-                value={notes}
-                onChangeText={setNotes}
-                className="min-h-32"
-              />
-            </View>
-
-            <View className="gap-2">
-              <Text className="text-sm font-medium">Tags</Text>
-              <Input
-                placeholder="Add tags (comma separated)"
-                value={tags}
-                onChangeText={setTags}
-              />
-            </View>
-
-            <Button>
-              <Save size={16} />
-              <Text className="ml-2">Save Notes</Text>
-            </Button>
           </CardContent>
         </Card>
       </View>

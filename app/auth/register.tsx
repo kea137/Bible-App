@@ -2,7 +2,7 @@ import { Text } from '@showcase/components/ui/text';
 import { Button } from '@showcase/components/ui/button';
 import { Input } from '@showcase/components/ui/input';
 import { Label } from '@showcase/components/ui/label';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { View, ScrollView } from 'react-native';
 import { useState } from 'react';
 
@@ -11,6 +11,7 @@ export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const router = useRouter();
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -81,8 +82,8 @@ export default function RegisterScreen() {
             <Button 
               className="mt-2 w-full"
               onPress={() => {
-                // Mock registration - no logic for now
-                console.log('Register pressed');
+                // Mock registration - no logic for now, just navigate to dashboard
+                router.push('/dashboard');
               }}
             >
               <Text>Create account</Text>

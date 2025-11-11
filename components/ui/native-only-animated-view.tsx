@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Platform, View } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 /**
@@ -15,9 +15,20 @@ function NativeOnlyAnimatedView(
 ) {
   if (Platform.OS === 'web') {
     return <>{props.children as React.ReactNode}</>;
-  } else {
-    return <Animated.View {...props} />;
   }
+
+  const { children, className, ...rest } = props as any;
+  // Filter out web-only props to avoid passing them to native Animated.View
+  const { role, ...cleaned } = rest;
+  const cleanedWithoutAria = Object.fromEntries(
+    Object.entries(cleaned).filter(([key]) => !key.startsWith('aria-') && !key.startsWith('data-'))
+  ) as React.ComponentProps<typeof Animated.View>;
+
+  return (
+    <View className={className as string | undefined}>
+      <Animated.View {...cleanedWithoutAria}>{children as React.ReactNode}</Animated.View>
+    </View>
+  );
 }
 
 export { NativeOnlyAnimatedView };

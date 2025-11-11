@@ -10,7 +10,9 @@ import {
   PenTool, 
   Quote, 
   Search, 
-  TrendingUp 
+  TrendingUp,
+  NotebookPen,
+  Calendar
 } from 'lucide-react-native';
 import { View, ScrollView } from 'react-native';
 import { useState } from 'react';
@@ -138,8 +140,28 @@ export default function DashboardScreen() {
             <Link href="/reading-plan" asChild className="flex-1">
               <Card className="flex-1">
                 <CardContent className="items-center justify-center gap-2 py-6">
-                  <Highlighter size={32} className="text-primary" />
+                  <Calendar size={32} className="text-primary" />
                   <Text className="text-center text-sm font-medium">Reading Plan</Text>
+                </CardContent>
+              </Card>
+            </Link>
+          </View>
+
+          <View className="flex-row gap-3">
+            <Link href="/notes" asChild className="flex-1">
+              <Card className="flex-1">
+                <CardContent className="items-center justify-center gap-2 py-6">
+                  <NotebookPen size={32} className="text-primary" />
+                  <Text className="text-center text-sm font-medium">My Notes</Text>
+                </CardContent>
+              </Card>
+            </Link>
+            
+            <Link href="/highlights" asChild className="flex-1">
+              <Card className="flex-1">
+                <CardContent className="items-center justify-center gap-2 py-6">
+                  <Highlighter size={32} className="text-primary" />
+                  <Text className="text-center text-sm font-medium">Highlights</Text>
                 </CardContent>
               </Card>
             </Link>
