@@ -7,12 +7,9 @@ import {
   BookOpen, 
   Highlighter, 
   Library, 
-  PenTool, 
   Quote, 
   Search, 
   TrendingUp,
-  NotebookPen,
-  Calendar
 } from 'lucide-react-native';
 import { View, ScrollView } from 'react-native';
 import { useState } from 'react';
@@ -61,22 +58,6 @@ export default function DashboardScreen() {
           />
         </View>
 
-        {/* Verse of the Day */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex-row items-center gap-2">
-              <Quote size={20} className="text-primary" />
-              <Text>Verse of the Day</Text>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="gap-3">
-            <Text className="text-base leading-6">{verseOfTheDay.text}</Text>
-            <Text className="text-sm font-semibold text-primary">
-              {verseOfTheDay.reference} ({verseOfTheDay.bible})
-            </Text>
-          </CardContent>
-        </Card>
-
         {/* Reading Stats */}
         <Card>
           <CardHeader>
@@ -103,70 +84,21 @@ export default function DashboardScreen() {
           </CardContent>
         </Card>
 
-        {/* Quick Actions */}
-        <View className="gap-3">
-          <Text className="text-lg font-semibold">Quick Actions</Text>
-          
-          <View className="flex-row gap-3">
-            <Link href="/bibles" asChild className="flex-1">
-              <Card className="flex-1">
-                <CardContent className="items-center justify-center gap-2 py-6">
-                  <BookOpen size={32} className="text-primary" />
-                  <Text className="text-center text-sm font-medium">Explore Bibles</Text>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/lessons" asChild className="flex-1">
-              <Card className="flex-1">
-                <CardContent className="items-center justify-center gap-2 py-6">
-                  <Library size={32} className="text-primary" />
-                  <Text className="text-center text-sm font-medium">Lessons</Text>
-                </CardContent>
-              </Card>
-            </Link>
-          </View>
-
-          <View className="flex-row gap-3">
-            <Link href="/verse-study" asChild className="flex-1">
-              <Card className="flex-1">
-                <CardContent className="items-center justify-center gap-2 py-6">
-                  <PenTool size={32} className="text-primary" />
-                  <Text className="text-center text-sm font-medium">Verse Study</Text>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/reading-plan" asChild className="flex-1">
-              <Card className="flex-1">
-                <CardContent className="items-center justify-center gap-2 py-6">
-                  <Calendar size={32} className="text-primary" />
-                  <Text className="text-center text-sm font-medium">Reading Plan</Text>
-                </CardContent>
-              </Card>
-            </Link>
-          </View>
-
-          <View className="flex-row gap-3">
-            <Link href="/notes" asChild className="flex-1">
-              <Card className="flex-1">
-                <CardContent className="items-center justify-center gap-2 py-6">
-                  <NotebookPen size={32} className="text-primary" />
-                  <Text className="text-center text-sm font-medium">My Notes</Text>
-                </CardContent>
-              </Card>
-            </Link>
-            
-            <Link href="/highlights" asChild className="flex-1">
-              <Card className="flex-1">
-                <CardContent className="items-center justify-center gap-2 py-6">
-                  <Highlighter size={32} className="text-primary" />
-                  <Text className="text-center text-sm font-medium">Highlights</Text>
-                </CardContent>
-              </Card>
-            </Link>
-          </View>
-        </View>
+        {/* Verse of the Day */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex-row items-center gap-2">
+              <Quote size={20} className="text-primary" />
+              <Text>Verse of the Day</Text>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="gap-3">
+            <Text className="text-base leading-6">{verseOfTheDay.text}</Text>
+            <Text className="text-sm font-semibold text-primary">
+              {verseOfTheDay.reference} ({verseOfTheDay.bible})
+            </Text>
+          </CardContent>
+        </Card>
 
         {/* Continue Reading */}
         {lastReading && (
@@ -177,12 +109,13 @@ export default function DashboardScreen() {
                 Pick up where you left off
               </CardDescription>
             </CardHeader>
-            <CardContent className="gap-3">
-              <Text className="text-base">
-                <Text className="font-semibold">{lastReading.bible_name}</Text>
-                {' - '}
+            <CardContent>
+              <CardTitle>
+                {lastReading.bible_name}
+              </CardTitle>
+              <CardDescription className="mb-4">
                 {lastReading.book_title} Chapter {lastReading.chapter_number}
-              </Text>
+              </CardDescription>
               <Link href="/bibles/1" asChild>
                 <Button>
                   <Text>Continue Reading</Text>
@@ -191,6 +124,113 @@ export default function DashboardScreen() {
             </CardContent>
           </Card>
         )}
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>
+              Start your study Session
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="gap-3">
+            <Link href="/bibles/1" asChild>
+              <Button
+                variant='outline'
+                className='w-full justify-start'
+              >
+                <BookOpen className="mr-2 h-4 w-4 text-primary" />
+                <Text>Browse Bibles</Text>
+              </Button>
+            </Link>
+            <Link href="/bibles/1" asChild>
+              <Button
+                variant='outline'
+                className='w-full justify-start'
+              >
+                <Library className="mr-2 h-4 w-4 text-primary" />
+                <Text>Compare Translations</Text>
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card
+                className="border-primary/20 bg-gradient-to-r from-primary/5 to-primary/10"
+            >
+            <CardContent className="pt-2">
+              
+                        <CardTitle className="mb-1 text-sm font-semibold sm:text-base">
+                          Make Reading a Habit
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm">
+                          Set aside time each day to read and reflect on the Word
+                        </CardDescription>
+                    <BookOpen
+                        className="h-6 w-6 mt-2 text-primary/40 sm:h-8 sm:w-8"
+                    />
+            
+            </CardContent>
+        </Card>
+
+        {/* Highlighted Verses */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex-row items-center gap-2">
+              <Highlighter size={20} className="text-primary" />
+              <Text>Your Highlighted Verses</Text>
+            </CardTitle>
+            <CardDescription>
+              Recent verses you've marked
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="gap-3">
+            <View
+              className="rounded-r border-l-4 py-2 pl-3"
+              style={{ borderLeftColor: '#fbbf24', backgroundColor: 'rgba(251, 191, 36, 0.08)' }}
+            >
+              <Text className="mb-2 text-sm">
+              Trust in the LORD with all your heart and lean not on your own understanding.
+              </Text>
+              <Text className="text-xs font-medium text-muted-foreground">
+              Proverbs 3:5
+              </Text>
+              <Text className="mt-1 text-xs italic text-muted-foreground">
+              Note: Remember to rely on God's wisdom, not my own
+              </Text>
+            </View>
+            
+            <View
+              className="rounded-r border-l-4 py-2 pl-3"
+              style={{ borderLeftColor: '#3b82f6', backgroundColor: 'rgba(59, 130, 246, 0.08)' }}
+            >
+              <Text className="mb-2 text-sm">
+              I can do all things through Christ who strengthens me.
+              </Text>
+              <Text className="text-xs font-medium text-muted-foreground">
+              Philippians 4:13
+              </Text>
+            </View>
+            
+            <View
+              className="rounded-r border-l-4 py-2 pl-3"
+              style={{ borderLeftColor: '#34d399', backgroundColor: 'rgba(52, 211, 153, 0.1)' }}
+            >
+              <Text className="mb-2 text-sm">
+              The LORD is my shepherd, I lack nothing.
+              </Text>
+              <Text className="text-xs font-medium text-muted-foreground">
+              Psalms 23:1
+              </Text>
+            </View>
+            
+            <Link href="/highlights" asChild>
+              <Button variant="outline" className="mt-4 w-full">
+          <Text>View All Highlights</Text>
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
       </View>
     </ScrollView>
   );
