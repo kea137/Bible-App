@@ -3,6 +3,7 @@ import '../global.css';
 import { ThemeProvider } from '@react-navigation/native';
 import { PortalHost } from '@rn-primitives/portal';
 import { HeaderRightView } from '@showcase/components/header-right-view';
+import { MobileFooter } from '@showcase/components/mobile-footer';
 import { useGeistFont } from '@showcase/hooks/use-geist-font';
 import { NAV_THEME } from '@showcase/lib/theme';
 import { Stack } from 'expo-router';
@@ -10,7 +11,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import { Text } from 'react-native';
+import { Text, View, Platform } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
@@ -46,28 +47,31 @@ export default function RootLayout() {
       <GestureHandlerRootView
         style={{ flex: 1, backgroundColor: NAV_THEME[colorScheme].colors.background }}>
         <KeyboardProvider>
-          <Stack
-            screenOptions={{
-              headerBackTitle: 'Back',
-              headerTitle(props) {
-                return (
-                  <Text className="ios:font-medium android:mt-1.5 text-xl">
-                    {toOptions(props.children.split('/').pop())}
-                  </Text>
-                );
-              },
-              headerRight: () => <HeaderRightView />,
-            }}>
-            <Stack.Screen
-              name="index"
-              options={{
-                headerLargeTitle: true,
-                headerTitle: 'Bible App',
-                headerLargeTitleShadowVisible: false,
-                headerTransparent: true,
-              }}
-            />
-          </Stack>
+          <View style={{ flex: 1 }}>
+            <Stack
+              screenOptions={{
+                headerBackTitle: 'Back',
+                headerTitle(props) {
+                  return (
+                    <Text className="ios:font-medium android:mt-1.5 text-xl text-foreground">
+                      {toOptions(props.children.split('/').pop())}
+                    </Text>
+                  );
+                },
+                headerRight: () => <HeaderRightView />,
+              }}>
+              <Stack.Screen
+                name="index"
+                options={{
+                  headerLargeTitle: true,
+                  headerTitle: 'Bible App',
+                  headerLargeTitleShadowVisible: false,
+                  headerTransparent: true,
+                }}
+              />
+            </Stack>
+            {Platform.OS !== 'web' && <MobileFooter />}
+          </View>
           <PortalHost />
         </KeyboardProvider>
       </GestureHandlerRootView>

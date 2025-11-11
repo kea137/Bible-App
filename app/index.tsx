@@ -18,7 +18,9 @@ import {
   LogIn,
   UserPlus,
   Home,
-  LayoutDashboard
+  LayoutDashboard,
+  NotebookPen,
+  Highlighter
 } from 'lucide-react-native';
 import { cssInterop, useColorScheme } from 'nativewind';
 import * as React from 'react';
@@ -33,6 +35,8 @@ const BIBLE_PAGES = [
   { name: 'Dashboard', slug: 'dashboard', icon: LayoutDashboard },
   { name: 'Bibles', slug: 'bibles', icon: BookOpen },
   { name: 'Lessons', slug: 'lessons', icon: Library },
+  { name: 'Notes', slug: 'notes', icon: NotebookPen },
+  { name: 'Highlights', slug: 'highlights', icon: Highlighter },
   { name: 'Share', slug: 'share', icon: Share2 },
   { name: 'Verse Study', slug: 'verse-study', icon: PenTool },
   { name: 'Reading Plan', slug: 'reading-plan', icon: Calendar },
