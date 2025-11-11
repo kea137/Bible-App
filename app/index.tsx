@@ -41,7 +41,6 @@ const BIBLE_PAGES = [
   { name: 'Verse Study', slug: 'verse-study', icon: PenTool },
   { name: 'Reading Plan', slug: 'reading-plan', icon: Calendar },
   { name: 'Parallel Bibles', slug: 'parallel-bibles', icon: SplitSquareHorizontal },
-  { name: 'UI Components', slug: 'showcase', icon: ChevronRight },
 ];
 
 export default function HomeScreen() {

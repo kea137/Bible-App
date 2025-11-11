@@ -3,7 +3,7 @@ import { Button } from '@showcase/components/ui/button';
 import { Input } from '@showcase/components/ui/input';
 import { Label } from '@showcase/components/ui/label';
 import { Checkbox } from '@showcase/components/ui/checkbox';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { View, ScrollView } from 'react-native';
 import { useState } from 'react';
 
@@ -11,6 +11,7 @@ export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
+  const router = useRouter();
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -71,8 +72,8 @@ export default function LoginScreen() {
             <Button 
               className="mt-4 w-full"
               onPress={() => {
-                // Mock login - no logic for now
-                console.log('Login pressed');
+                // Mock login - no logic for now, just navigate to dashboard
+                router.push('/dashboard');
               }}
             >
               <Text>Log in</Text>

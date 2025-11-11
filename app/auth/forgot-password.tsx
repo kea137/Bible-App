@@ -2,12 +2,13 @@ import { Text } from '@showcase/components/ui/text';
 import { Button } from '@showcase/components/ui/button';
 import { Input } from '@showcase/components/ui/input';
 import { Label } from '@showcase/components/ui/label';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { View, ScrollView } from 'react-native';
 import { useState } from 'react';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
+  const router = useRouter();
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -40,8 +41,8 @@ export default function ForgotPasswordScreen() {
             <Button 
               className="w-full"
               onPress={() => {
-                // Mock password reset - no logic for now
-                console.log('Reset password pressed');
+                // Mock password reset - no logic for now, navigate back to login
+                router.push('/auth/login');
               }}
             >
               <Text>Send Reset Link</Text>

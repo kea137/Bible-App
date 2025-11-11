@@ -1,6 +1,6 @@
 import { Link, usePathname } from 'expo-router';
 import { Home, BookOpen, NotebookPen, Highlighter, LayoutDashboard } from 'lucide-react-native';
-import { View, Platform } from 'react-native';
+import { View, Platform, Pressable } from 'react-native';
 import { Text } from '@showcase/components/ui/text';
 import { useColorScheme } from 'nativewind';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -40,7 +40,7 @@ export function MobileFooter() {
           
           return (
             <Link key={item.path} href={item.path} asChild>
-              <View className="items-center justify-center p-2 flex-1">
+              <Pressable className="items-center justify-center p-2 flex-1">
                 <View className="items-center gap-1">
                   <IconComponent
                     size={24}
@@ -59,7 +59,7 @@ export function MobileFooter() {
                     {item.name}
                   </Text>
                 </View>
-              </View>
+              </Pressable>
             </Link>
           );
         })}
