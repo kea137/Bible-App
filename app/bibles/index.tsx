@@ -6,7 +6,7 @@ import { Link } from 'expo-router';
 import { BookOpen, Search } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { getBibles, Bible } from '@/src/lib/services/bibles.service';
+import { getBibles, Bible } from '@/lib/services/bibles.service';
 
 export default function BiblesScreen() {
   const [searchQuery, setSearchQuery] = useState('');

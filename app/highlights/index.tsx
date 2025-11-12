@@ -6,7 +6,7 @@ import {
 } from 'lucide-react-native';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { getHighlightedVerses, VerseHighlight } from '@/src/lib/services/highlights.service';
+import { getHighlightedVerses, VerseHighlight } from '@/lib/services/highlights.service';
 
 export default function HighlightsScreen() {
   const [highlights, setHighlights] = useState<VerseHighlight[]>([]);

@@ -6,7 +6,7 @@ import { Link } from 'expo-router';
 import { Library, LibraryBig, Search } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { getLessons, Lesson } from '@/src/lib/services/lessons.service';
+import { getLessons, Lesson } from '@/lib/services/lessons.service';
 
 export default function LessonsScreen() {
   const [searchQuery, setSearchQuery] = useState('');

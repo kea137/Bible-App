@@ -41,7 +41,7 @@ import {
   AlertDialogTrigger,
 } from '@showcase/components/ui/alert-dialog';
 import { Textarea } from '@showcase/components/ui/textarea';
-import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/src/lib/services/bibles.service';
+import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/lib/services/bibles.service';
 
 export function NotesAlertDialog() {
     const [notes, setNotes] = React.useState('');

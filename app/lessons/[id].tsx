@@ -3,9 +3,9 @@ import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { useLocalSearchParams } from 'expo-router';
 import { BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
-import { View, ScrollView, ActivityIndicator } from 'react-native';
+import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { getLessonDetail, LessonDetail, markLessonProgress } from '@/src/lib/services/lessons.service';
+import { getLessonDetail, LessonDetail, markLessonProgress } from '@/lib/services/lessons.service';
 
 export default function LessonDetailScreen() {
   const { id } = useLocalSearchParams();

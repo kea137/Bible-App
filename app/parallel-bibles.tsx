@@ -13,7 +13,7 @@ import { SplitSquareHorizontal, BookOpen, CheckCircle } from 'lucide-react-nativ
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import { getBibles, getChapterData, Bible, ChapterData } from '@/src/lib/services/bibles.service';
+import { getBibles, getChapterData, Bible, ChapterData } from '@/lib/services/bibles.service';
 
 export default function ParallelBiblesScreen() {
   const { id } = useLocalSearchParams();

@@ -5,7 +5,7 @@ import { Progress } from '@showcase/components/ui/progress';
 import { Calendar, CheckCircle, BookOpen, TrendingUp } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { getReadingPlan, markReadingProgress, ReadingPlanWithProgress } from '@/src/lib/services/reading-plan.service';
+import { getReadingPlan, markReadingProgress, ReadingPlanWithProgress } from '@/lib/services/reading-plan.service';
 
 export default function ReadingPlanScreen() {
   const [planData, setPlanData] = useState<ReadingPlanWithProgress | null>(null);

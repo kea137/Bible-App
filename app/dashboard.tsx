@@ -13,7 +13,7 @@ import {
 } from 'lucide-react-native';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { getDashboardData, DashboardData } from '@/src/lib/services/dashboard.service';
+import { getDashboardData, DashboardData } from '@/lib/services/dashboard.service';
 
 export default function DashboardScreen() {
   const [searchQuery, setSearchQuery] = useState('');

@@ -19,7 +19,7 @@ import {
 } from '@showcase/components/ui/alert-dialog';
 import * as React from 'react';
 import { Textarea } from '@showcase/components/ui/textarea';
-import { getNotes, Note } from '@/src/lib/services/notes.service';
+import { getNotes, Note } from '@/lib/services/notes.service';
 
 export function NotesAlertDialog() {
     const [notes, setNotes] = React.useState('');
