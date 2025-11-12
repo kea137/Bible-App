@@ -61,6 +61,7 @@
     "@rn-primitives/tooltip": "^1.2.0",
     "@shopify/flash-list": "2.0.2",
     "@tanstack/react-table": "^8.11.7",
+    "axios": "^1.13.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "expo": "^54.0.12",
