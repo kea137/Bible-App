@@ -12,10 +12,10 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
-import { View, ScrollView, TouchableOpacity, GestureResponderEvent } from 'react-native';
-import { useState, useRef, useEffect } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
-import { GestureHandlerRootView, Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { useState, useEffect } from 'react';
+import { Link } from 'expo-router';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@showcase/components/ui/avatar';
 import * as React from 'react';
@@ -28,9 +28,75 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@showcase/components/ui/dropdown-menu';
+import { Input } from '@showcase/components/ui/input';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@showcase/components/ui/alert-dialog';
+import { Textarea } from '@showcase/components/ui/textarea';
+
+export function NotesAlertDialog() {
+    const [notes, setNotes] = React.useState('');
+    const [tags, setTags] = React.useState('');
+    
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="ghost" className="p-0 m-0 min-h-0 h-auto">
+          <Text>Put Notes on this Verse</Text>
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader className="items-center justify-center">
+          <AlertDialogTitle className="text-center">Add Note to Verse</AlertDialogTitle>
+          <AlertDialogDescription className="text-center mb-4">
+            Philippians 4:13
+          </AlertDialogDescription>
+          <AlertDialogDescription>
+            <View className="rounded-lg border bg-muted/50 p-3 items-center">
+          <Text className="text-sm italic text-center">"I can do all things through Christ who strengthens me."</Text>
+            </View>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <View className="gap-2">
+            <Text className="text-sm font-medium">Title (Optional)</Text>
+            <Input
+                placeholder="Enter a title for your note"
+                value={tags}
+                onChangeText={setTags}
+            />
+        </View>
+
+        <View className="gap-2">
+            <Text className="text-sm font-medium">Notes</Text>
+            <Textarea
+                placeholder="Write your thoughts, insights and reflections..."
+                value={notes}
+                onChangeText={setNotes}
+                className="min-h-32"
+            />
+        </View>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            <Text>Cancel</Text>
+          </AlertDialogCancel>
+          <AlertDialogAction>
+            <Text>Save Note</Text>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
 
 export function VerseDropdownMenu({text}:{text: string}) {
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild={true}>
@@ -72,10 +138,12 @@ export function VerseDropdownMenu({text}:{text: string}) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
+            <Link key={'/study'} href={'/study'}>
             <Text>Study this Verse</Text>
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
-            <Text>Put Note on this Verse</Text>
+            <NotesAlertDialog />
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuLabel>
@@ -84,7 +152,10 @@ export function VerseDropdownMenu({text}:{text: string}) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Text className="flex flex-row"> <Share2 className="text-primary mr-4" size={16} /> Share this Verse</Text>
+            <Link key={'/share'} href={'/share'}>
+            <Text className="flex flex-row"> <Share2 className="text-primary mr-4" size={16} /> Share this Verse
+            </Text>
+            </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
       </DropdownMenuContent>

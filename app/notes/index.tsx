@@ -20,10 +20,10 @@ import {
 import * as React from 'react';
 import { Textarea } from '@showcase/components/ui/textarea';
 
-export function AlertDialogPreview() {
+export function NotesAlertDialog() {
     const [notes, setNotes] = React.useState('');
     const [tags, setTags] = React.useState('');
-    
+
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
@@ -118,7 +118,7 @@ export default function NotesScreen() {
                 Personal reflections and study notes
               </Text>
             </View>
-            <AlertDialogPreview />
+            <NotesAlertDialog />
           </View>
         </View>
 

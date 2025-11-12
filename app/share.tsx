@@ -55,21 +55,67 @@ export default function ShareScreen() {
             </CardTitle>
             <CardDescription>Create a beautiful verse image to share</CardDescription>
           </CardHeader>
+          <Card className="overflow-hidden bg-gradient-to-br mx-4 my-4 from-purple-600 to-blue-600">
+            <CardContent className="items-center justify-center gap-4 py-12">
+              <View className="gap-3 px-4">
+                <Text className="text-center text-xl font-semibold leading-8 text-white">
+                  "{verse.text}"
+                </Text>
+                <Text className="text-center text-base font-medium text-white/90">
+                  {verse.reference} ({verse.bible})
+                </Text>
+              </View>
+            </CardContent>
+          </Card>
+
+          <Card className="rounded-lg border p-4 mx-4 my-4">
+              <View className=" flex flex-row items-center gap-2">
+                  <ImageIcon className="text-primary" size={24}/>
+                  <Text className="font-semibold">
+                      Background Type
+                  </Text>
+              </View>
+              <View className=" flex flex-row gap-2">
+                  <Button
+                    className="flex-1"
+                  >
+                      <Palette className="mr-2 h-4 w-4" />
+                      Gradient
+                  </Button>
+                  <Button
+                    variant='outline'
+                    className="flex-1 text-primary"
+                  >
+                      <ImageIcon className="mr-2 h-4 w-4" />
+                      Image
+                  </Button>
+              </View>
+              <Text
+                  className="text-xs text-muted-foreground"
+              >
+                  Using serene nature images from Pexels
+              </Text>
+              <Text
+                  className="text-xs text-yellow-600 dark:text-yellow-400"
+              >
+                  No Images for now. Please check back later.
+              </Text>
+          </Card>
+
+          <Text
+              className="text-sm ml-4 text-muted-foreground"
+          >
+              Current Style:
+              <Text className=" font-semibold">Divine Purple</Text>
+          </Text>
+          
+          <Button variant="outline" className="mx-4 mb-4 mt-2 justify-center">
+            <Text className="ml-2">Change Background/Image</Text>
+          </Button>
+
         </Card>
 
-        {/* Preview Card */}
-        <Card className="overflow-hidden bg-gradient-to-br from-purple-600 to-blue-600">
-          <CardContent className="items-center justify-center gap-4 py-12">
-            <View className="gap-3 px-4">
-              <Text className="text-center text-xl font-semibold leading-8 text-white">
-                "{verse.text}"
-              </Text>
-              <Text className="text-center text-base font-medium text-white/90">
-                {verse.reference} ({verse.bible})
-              </Text>
-            </View>
-          </CardContent>
-        </Card>
+        
 
         {/* Customization Options */}
         <Card>
