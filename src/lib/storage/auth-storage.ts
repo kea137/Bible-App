@@ -5,11 +5,13 @@
  */
 
 import { MMKV } from 'react-native-mmkv';
+import { Platform } from 'react-native';
 
-// Initialize MMKV storage
+// Initialize MMKV storage with platform-specific encryption
 const storage = new MMKV({
   id: 'auth-storage',
-  encryptionKey: 'bible-app-auth-key', // In production, use a more secure key
+  // Only use encryption on native platforms; web doesn't support it
+  ...(Platform.OS !== 'web' && { encryptionKey: 'bible-app-auth-key' }), // In production, use a more secure key
 });
 
 // Storage keys

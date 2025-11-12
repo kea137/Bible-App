@@ -103,6 +103,7 @@ class ApiClient {
    * Make a POST request (with CSRF token)
    */
   async post<T = any>(url: string, data?: any, config?: any): Promise<T> {
+    alert(JSON.stringify(data));
     await this.fetchCsrfToken();
     const response = await this.client.post<T>(url, data, config);
     return response.data;

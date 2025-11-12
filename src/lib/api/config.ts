@@ -6,7 +6,7 @@
  */
 
 // Default API URL - should be overridden by environment variable in production
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000/api';
 
 // API endpoints
 export const API_ENDPOINTS = {

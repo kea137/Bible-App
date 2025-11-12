@@ -62,11 +62,11 @@ function SelectTrigger({
       )}
       {...props}>
       <>{children}</>
-      {/* Hide decorative chevron from web accessibility tree; omit on native to avoid unsupported prop */}
+      {/* Hide decorative chevron from web accessibility tree; use inert to prevent focus */}
       <Icon
         as={ChevronDown}
-        {...Platform.select({ web: { 'aria-hidden': true } })}
-        className="text-muted-foreground size-4"
+        {...Platform.select({ web: { inert: 'true' } })}
+        className="text-muted-foreground size-4 pointer-events-none"
       />
     </SelectPrimitive.Trigger>
   );
