@@ -1,0 +1,67 @@
+/**
+ * API Configuration
+ * 
+ * Configure the base URL for the Laravel backend API.
+ * In production, this should be set via environment variables.
+ */
+
+// Default API URL - should be overridden by environment variable in production
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000';
+
+// API endpoints
+export const API_ENDPOINTS = {
+  // CSRF token endpoint (required for Laravel Sanctum)
+  csrf: '/sanctum/csrf-cookie',
+  
+  // Authentication endpoints (mobile-specific)
+  login: '/api/mobile/auth/login',
+  register: '/api/mobile/auth/register',
+  logout: '/api/mobile/auth/logout',
+  forgotPassword: '/api/mobile/auth/forgot-password',
+  resetPassword: '/api/mobile/auth/reset-password',
+  
+  // User endpoints
+  user: '/api/mobile/auth/user',
+  
+  // Mobile app endpoints
+  home: '/api/mobile/home',
+  dashboard: '/api/mobile/dashboard',
+  onboarding: '/api/mobile/onboarding',
+  share: '/api/mobile/share',
+  sitemap: '/api/mobile/sitemap',
+  
+  // User preferences
+  updateLocale: '/api/mobile/update-locale',
+  updateTheme: '/api/mobile/update-theme',
+  updateTranslations: '/api/mobile/update-translations',
+  
+  // Bibles
+  bibles: '/api/mobile/bibles',
+  biblesParallel: '/api/mobile/bibles/parallel',
+  apiBibles: '/api/mobile/api-bibles',
+  
+  // Highlights
+  verseHighlights: '/api/mobile/verse-highlights',
+  highlightedVerses: '/api/mobile/highlighted-verses',
+  
+  // Notes
+  notes: '/api/mobile/notes',
+  
+  // Reading plan
+  readingPlan: '/api/mobile/reading-plan',
+  readingProgress: '/api/mobile/reading-progress',
+  
+  // Lessons
+  lessons: '/api/mobile/lessons',
+  lessonProgress: '/api/mobile/lesson-progress',
+} as const;
+
+// API configuration
+export const API_CONFIG = {
+  timeout: 30000, // 30 seconds
+  withCredentials: true, // Required for CSRF cookies
+  headers: {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+  },
+} as const;
