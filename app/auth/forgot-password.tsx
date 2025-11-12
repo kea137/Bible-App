@@ -3,12 +3,75 @@ import { Button } from '@showcase/components/ui/button';
 import { Input } from '@showcase/components/ui/input';
 import { Label } from '@showcase/components/ui/label';
 import { Link, useRouter } from 'expo-router';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { forgotPasswordSchema, ForgotPasswordFormData } from '@/lib/validation/auth.validation';
+import Toast from 'react-native-toast-message';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { forgotPassword } = useAuth();
+
+  const handleForgotPassword = async () => {
+    try {
+      // Reset errors
+      setErrors({});
+      
+      // Validate form data
+      const formData: ForgotPasswordFormData = {
+        email,
+      };
+      
+      const validated = forgotPasswordSchema.parse(formData);
+      
+      // Submit forgot password request
+      setIsSubmitting(true);
+      const response = await forgotPassword({
+        email: validated.email,
+      });
+      
+      // Show success message
+      Toast.show({
+        type: 'success',
+        text1: 'Email sent',
+        text2: response.message || 'Password reset link has been sent to your email',
+      });
+      
+      // Navigate back to login
+      router.push('/auth/login');
+    } catch (error: any) {
+      if (error.errors) {
+        // Zod validation errors
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err: any) => {
+          if (err.path) {
+            fieldErrors[err.path[0]] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+      } else if (error.errors && typeof error.errors === 'object') {
+        // API validation errors
+        const fieldErrors: Record<string, string> = {};
+        Object.keys(error.errors).forEach((key) => {
+          fieldErrors[key] = error.errors[key][0];
+        });
+        setErrors(fieldErrors);
+      } else {
+        // General error
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: error.message || 'Failed to send reset link',
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -34,18 +97,24 @@ export default function ForgotPasswordScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
+                editable={!isSubmitting}
               />
+              {errors.email && (
+                <Text className="text-sm text-destructive">{errors.email}</Text>
+              )}
             </View>
 
             {/* Submit Button */}
             <Button 
               className="w-full"
-              onPress={() => {
-                // Mock password reset - no logic for now, navigate back to login
-                router.push('/auth/login');
-              }}
+              onPress={handleForgotPassword}
+              disabled={isSubmitting}
             >
-              <Text>Send Reset Link</Text>
+              {isSubmitting ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text>Send Reset Link</Text>
+              )}
             </Button>
           </View>
 
