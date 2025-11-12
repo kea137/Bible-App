@@ -78,6 +78,13 @@ export default function RootLayout() {
                       headerTransparent: true,
                     }}
                   />
+                  <Stack.Screen
+                    name="dashboard"
+                    options={{
+                      headerTitle: 'Dashboard',
+                      headerBackVisible: false,
+                    }}
+                  />
                 </Stack>
               </View>
               {<MobileFooter />}

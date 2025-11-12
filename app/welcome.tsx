@@ -13,6 +13,7 @@ import {
 } from 'lucide-react-native';
 import { View, ScrollView, Image } from 'react-native';
 import { useColorScheme } from 'nativewind';
+import { useAuth } from '@/lib/contexts/AuthContext';
 
 const features = [
   {
@@ -51,6 +52,9 @@ const features = [
 
 export default function WelcomeScreen() {
   const { colorScheme } = useColorScheme();
+  const { user, isAuthenticated } = useAuth();
+
+  console.log(user, isAuthenticated);
 
   return (
     <ScrollView className="flex-1 bg-[#FDFDFC] dark:bg-[#0a0a0a]">

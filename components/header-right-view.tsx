@@ -2,7 +2,6 @@ import { Button } from '@showcase/components/ui/button';
 import { Text } from '@showcase/components/ui/text';
 import { AvatarButton } from '@showcase/components/avatar-button';
 import { SettingsDialog } from '@showcase/components/settings-dialog';
-import { useAuth } from '@/lib/contexts/AuthContext';
 import * as Updates from 'expo-updates';
 import * as React from 'react';
 import { ActivityIndicator, View } from 'react-native';

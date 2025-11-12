@@ -19,6 +19,7 @@ export function AvatarButton({ onPress }: AvatarButtonProps) {
 
   // Get user initials from name
   const getUserInitials = (name: string) => {
+    if (!name) return 'G';
     const names = name.trim().split(' ');
     if (names.length >= 2) {
       return `${names[0][0]}${names[names.length - 1][0]}`.toUpperCase();
@@ -32,12 +33,12 @@ export function AvatarButton({ onPress }: AvatarButtonProps) {
       variant="ghost"
       size="icon"
       className="web:mr-5 size-9 rounded-full p-0">
-      <Avatar className="size-8">
+      <Avatar className="size-8" alt="User avatar">
         {/* If user has an avatar image, it would go here */}
         {/* <AvatarImage source={{ uri: user?.avatar }} /> */}
         <AvatarFallback>
           <Text className="text-foreground text-xs font-medium">
-            {isAuthenticated && user ? getUserInitials(user.name) : 'U'}
+            {isAuthenticated && user ? getUserInitials(user.name) : 'G'}
           </Text>
         </AvatarFallback>
       </Avatar>

@@ -77,19 +77,25 @@ const parseApiError = (error: unknown): ApiError => {
  */
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
-    const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.login, credentials);
+    const response = await apiClient.post<any>(API_ENDPOINTS.login, credentials);
+    
+    // Extract user and token from nested data structure
+    const user = response.data?.user || response.user;
+    const token = response.data?.token || response.token;
     
     // Store token if provided (for token-based auth)
-    if (response.token) {
-      setAuthToken(response.token);
+    if (token) {
+      setAuthToken(token);
+    } else {
     }
     
     // Store user data
-    if (response.user) {
-      setUserData(response.user);
+    if (user) {
+      setUserData(user);
+    } else {
     }
     
-    return response;
+    return { user, token };
   } catch (error) {
     throw parseApiError(error);
   }
@@ -100,19 +106,23 @@ export const login = async (credentials: LoginCredentials): Promise<AuthResponse
  */
 export const register = async (credentials: RegisterCredentials): Promise<AuthResponse> => {
   try {
-    const response = await apiClient.post<AuthResponse>(API_ENDPOINTS.register, credentials);
+    const response = await apiClient.post<any>(API_ENDPOINTS.register, credentials);
+    
+    // Extract user and token from nested data structure
+    const user = response.data?.user || response.user;
+    const token = response.data?.token || response.token;
     
     // Store token if provided
-    if (response.token) {
-      setAuthToken(response.token);
+    if (token) {
+      setAuthToken(token);
     }
     
     // Store user data
-    if (response.user) {
-      setUserData(response.user);
+    if (user) {
+      setUserData(user);
     }
     
-    return response;
+    return { user, token };
   } catch (error) {
     throw parseApiError(error);
   }
@@ -125,7 +135,6 @@ export const logout = async (): Promise<void> => {
   try {
     await apiClient.post(API_ENDPOINTS.logout);
   } catch (error) {
-    console.error('Logout error:', error);
     // Continue with local logout even if API call fails
   } finally {
     // Clear all auth data
