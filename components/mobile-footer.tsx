@@ -8,9 +8,9 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const FOOTER_ITEMS = [
   { name: 'Dashboard', path: '/dashboard', icon: LayoutGrid },
   { name: 'Bibles', path: '/bibles', icon: BookOpen },
-  { name: 'Parallel', path: '/parallel-bibles', icon: BookCopy},
-  { name: 'Lessons', path: '/lessons', icon: PencilRuler},
-  { name: 'Plan', path: '/reading-plan', icon: Target},
+  { name: 'Parallel', path: '/parallel-bibles', icon: BookCopy },
+  { name: 'Lessons', path: '/lessons', icon: PencilRuler },
+  { name: 'Notes', path: '/notes', icon: Target },
 ];
 
 export function MobileFooter() {

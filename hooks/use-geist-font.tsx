@@ -11,15 +11,16 @@ import { Geist_900Black } from '@expo-google-fonts/geist/900Black';
 
 function useGeistFont() {
   return useFonts({
-    Geist_100Thin,
-    Geist_200ExtraLight,
-    Geist_300Light,
-    Geist_400Regular,
-    Geist_500Medium,
-    Geist_600SemiBold,
-    Geist_700Bold,
-    Geist_800ExtraBold,
-    Geist_900Black,
+    // Register with hyphenated names to match usage throughout the app
+    'Geist-Thin': Geist_100Thin,
+    'Geist-ExtraLight': Geist_200ExtraLight,
+    'Geist-Light': Geist_300Light,
+    'Geist': Geist_400Regular,
+    'Geist-Medium': Geist_500Medium,
+    'Geist-SemiBold': Geist_600SemiBold,
+    'Geist-Bold': Geist_700Bold,
+    'Geist-ExtraBold': Geist_800ExtraBold,
+    'Geist-Black': Geist_900Black,
   });
 }
 

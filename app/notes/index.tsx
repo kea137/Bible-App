@@ -6,6 +6,70 @@ import { Link } from 'expo-router';
 import { NotebookPen, Search, Plus } from 'lucide-react-native';
 import { View, ScrollView } from 'react-native';
 import { useState } from 'react';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@showcase/components/ui/alert-dialog';
+import * as React from 'react';
+import { Textarea } from '@showcase/components/ui/textarea';
+
+export function AlertDialogPreview() {
+    const [notes, setNotes] = React.useState('');
+    const [tags, setTags] = React.useState('');
+    
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button variant="outline">
+          <Text>Show Alert Dialog</Text>
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+          <AlertDialogDescription>
+            This action cannot be undone. This will permanently delete your account and remove your
+            data from our servers.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <View className="gap-2">
+            <Text className="text-sm font-medium">Title (Optional)</Text>
+            <Input
+                placeholder="Add tags (comma separated)"
+                value={tags}
+                onChangeText={setTags}
+            />
+        </View>
+
+        <View className="gap-2">
+            <Text className="text-sm font-medium">Notes</Text>
+            <Textarea
+                placeholder="Write your thoughts about this verse..."
+                value={notes}
+                onChangeText={setNotes}
+                className="min-h-32"
+            />
+        </View>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            <Text>Cancel</Text>
+          </AlertDialogCancel>
+          <AlertDialogAction>
+            <Text>Continue</Text>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
 
 export default function NotesScreen() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -54,12 +118,7 @@ export default function NotesScreen() {
                 Personal reflections and study notes
               </Text>
             </View>
-            <Link href="/notes/modal" asChild>
-              <Button size="sm" className="gap-2">
-              <Plus size={16} className="text-primary-foreground" />
-              <Text>New</Text>
-              </Button>
-            </Link>
+            <AlertDialogPreview />
           </View>
         </View>
 
@@ -139,3 +198,4 @@ export default function NotesScreen() {
     </ScrollView>
   );
 }
+
