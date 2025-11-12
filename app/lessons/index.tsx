@@ -3,7 +3,7 @@ import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Input } from '@showcase/components/ui/input';
 import { Link } from 'expo-router';
-import { Library, Search } from 'lucide-react-native';
+import { Library, LibraryBig, Search } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity } from 'react-native';
 import { useState } from 'react';
 
@@ -76,46 +76,46 @@ export default function LessonsScreen() {
               />
             </View>
           </CardContent>
+          {/* Lessons List */}
+          <View className="gap-3 p-4 pt-0">
+            {filteredLessons.length > 0 ? (
+              filteredLessons.map((lesson) => (
+                <Link key={lesson.id} href={`/lessons/${lesson.id}`} asChild>
+                  <TouchableOpacity activeOpacity={0.7}>
+                    <Card className="overflow-hidden">
+                      <View className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 active:opacity-100" />
+                      <CardContent className="gap-3 py-1">
+                        <View className="flex-col items-start">
+                          <View className="h-8 w-8 items-center justify-center">
+                            <LibraryBig size={28} className="text-primary" />
+                          </View>
+                          <View className="flex-1 gap-1">
+                            <Text className="text-lg font-semibold leading-tight">
+                              {lesson.title}
+                            </Text>
+                            <Text className="text-sm text-muted-foreground">
+                              {lesson.description}
+                            </Text>
+                            <Text className="mt-1 text-xs text-muted-foreground rounded-full px-2 py-1" style={{ backgroundColor: '#333', alignSelf: 'flex-start' }}>
+                              {lesson.language}
+                            </Text>
+                            
+                          </View>
+                        </View>
+                      </CardContent>
+                    </Card>
+                  </TouchableOpacity>
+                </Link>
+              ))
+            ) : (
+              <Card>
+                <CardContent className="items-center justify-center py-12">
+                  <Text className="text-muted-foreground">No lessons found</Text>
+                </CardContent>
+              </Card>
+            )}
+          </View>
         </Card>
-
-        {/* Lessons List */}
-        <View className="gap-3">
-          {filteredLessons.length > 0 ? (
-            filteredLessons.map((lesson) => (
-              <Link key={lesson.id} href={`/lessons/${lesson.id}`} asChild>
-                <TouchableOpacity activeOpacity={0.7}>
-                  <Card className="overflow-hidden">
-                    <View className="absolute inset-0 bg-gradient-to-br from-primary/5 to-primary/10 opacity-0 active:opacity-100" />
-                    <CardContent className="gap-3 py-4">
-                      <View className="flex-row items-start gap-3">
-                        <View className="h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                          <Library size={24} className="text-primary" />
-                        </View>
-                        <View className="flex-1 gap-1">
-                          <Text className="text-lg font-semibold leading-tight">
-                            {lesson.title}
-                          </Text>
-                          <Text className="text-sm text-muted-foreground">
-                            {lesson.description}
-                          </Text>
-                          <Text className="mt-1 text-xs text-muted-foreground">
-                            {lesson.language}
-                          </Text>
-                        </View>
-                      </View>
-                    </CardContent>
-                  </Card>
-                </TouchableOpacity>
-              </Link>
-            ))
-          ) : (
-            <Card>
-              <CardContent className="items-center justify-center py-12">
-                <Text className="text-muted-foreground">No lessons found</Text>
-              </CardContent>
-            </Card>
-          )}
-        </View>
       </View>
     </ScrollView>
   );
