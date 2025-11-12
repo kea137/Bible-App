@@ -113,6 +113,88 @@ export default function ShareScreen() {
             <Text className="ml-2">Change Background/Image</Text>
           </Button>
 
+          <Card>
+          <CardHeader>
+            <CardTitle className="flex-row items-center gap-2">
+              <Palette size={20} className="text-primary" />
+              <Text>Customize</Text>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="gap-4">
+            {/* Font Selection */}
+            <View className="gap-2">
+              <View className="flex-row items-center gap-2">
+                <Type size={16} className="text-muted-foreground" />
+                <Text className="text-sm font-medium">Font</Text>
+              </View>
+              <Select
+                value={{ value: selectedFont, label: fonts.find(f => f.value === selectedFont)?.label || '' }}
+                onValueChange={(option) => option && setSelectedFont(option.value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select font" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {fonts.map((font) => (
+                      <SelectItem key={font.value} value={font.value} label={font.label}>
+                        {font.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </View>
+
+            {/* Font Size Selection */}
+            <View className="gap-2">
+              <Text className="text-sm font-medium">Font Size</Text>
+              <Select
+                value={{ value: fontSize, label: fontSizes.find(f => f.value === fontSize)?.label || '' }}
+                onValueChange={(option) => option && setFontSize(option.value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select size" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {fontSizes.map((size) => (
+                      <SelectItem key={size.value} value={size.value} label={size.label}>
+                        {size.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </View>
+
+            {/* Background Selection */}
+            <View className="gap-2">
+              <View className="flex-row items-center gap-2">
+                <ImageIcon size={16} className="text-muted-foreground" />
+                <Text className="text-sm font-medium">Background</Text>
+              </View>
+              <Select
+                value={{ value: selectedBackground, label: backgrounds.find(b => b.value === selectedBackground)?.label || '' }}
+                onValueChange={(option) => option && setSelectedBackground(option.value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select background" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    {backgrounds.map((bg) => (
+                      <SelectItem key={bg.value} value={bg.value} label={bg.label}>
+                        {bg.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </View>
+          </CardContent>
+        </Card>
+
         </Card>
 
         
