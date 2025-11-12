@@ -4,14 +4,81 @@ import { Input } from '@showcase/components/ui/input';
 import { Label } from '@showcase/components/ui/label';
 import { Checkbox } from '@showcase/components/ui/checkbox';
 import { Link, useRouter } from 'expo-router';
-import { View, ScrollView } from 'react-native';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState } from 'react';
+import { useAuth } from '@/lib/contexts/AuthContext';
+import { loginSchema, LoginFormData } from '@/lib/validation/auth.validation';
+import Toast from 'react-native-toast-message';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
+  const { login } = useAuth();
+
+  const handleLogin = async () => {
+    try {
+      // Reset errors
+      setErrors({});
+      
+      // Validate form data
+      const formData: LoginFormData = {
+        email,
+        password,
+        remember,
+      };
+      
+      const validated = loginSchema.parse(formData);
+      
+      // Submit login
+      setIsSubmitting(true);
+      await login({
+        email: validated.email,
+        password: validated.password,
+        remember: validated.remember,
+      });
+      
+      // Show success message
+      Toast.show({
+        type: 'success',
+        text1: 'Login successful',
+        text2: 'Welcome back!',
+      });
+      
+      // Navigate to dashboard
+      router.replace('/dashboard');
+    } catch (error: any) {
+      if (error.errors) {
+        // Zod validation errors
+        const fieldErrors: Record<string, string> = {};
+        error.errors.forEach((err: any) => {
+          if (err.path) {
+            fieldErrors[err.path[0]] = err.message;
+          }
+        });
+        setErrors(fieldErrors);
+      } else if (error.errors && typeof error.errors === 'object') {
+        // API validation errors
+        const fieldErrors: Record<string, string> = {};
+        Object.keys(error.errors).forEach((key) => {
+          fieldErrors[key] = error.errors[key][0];
+        });
+        setErrors(fieldErrors);
+      } else {
+        // General error
+        Toast.show({
+          type: 'error',
+          text1: 'Login failed',
+          text2: error.message || 'Invalid email or password',
+        });
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -37,7 +104,11 @@ export default function LoginScreen() {
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoComplete="email"
+                editable={!isSubmitting}
               />
+              {errors.email && (
+                <Text className="text-sm text-destructive">{errors.email}</Text>
+              )}
             </View>
 
             {/* Password Field */}
@@ -55,7 +126,11 @@ export default function LoginScreen() {
                 secureTextEntry
                 autoCapitalize="none"
                 autoComplete="password"
+                editable={!isSubmitting}
               />
+              {errors.password && (
+                <Text className="text-sm text-destructive">{errors.password}</Text>
+              )}
             </View>
 
             {/* Remember Me */}
@@ -64,6 +139,7 @@ export default function LoginScreen() {
                 checked={remember}
                 onCheckedChange={setRemember}
                 aria-labelledby="remember-label"
+                disabled={isSubmitting}
               />
               <Label nativeID="remember-label">Remember me</Label>
             </View>
@@ -71,12 +147,14 @@ export default function LoginScreen() {
             {/* Submit Button */}
             <Button 
               className="mt-4 w-full"
-              onPress={() => {
-                // Mock login - no logic for now, just navigate to dashboard
-                router.push('/dashboard');
-              }}
+              onPress={handleLogin}
+              disabled={isSubmitting}
             >
-              <Text>Log in</Text>
+              {isSubmitting ? (
+                <ActivityIndicator color="white" />
+              ) : (
+                <Text>Log in</Text>
+              )}
             </Button>
           </View>
 

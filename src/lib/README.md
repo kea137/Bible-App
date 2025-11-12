@@ -61,6 +61,9 @@ EXPO_PUBLIC_API_URL=http://your-laravel-backend-url
 
 **Note**: The base URL should NOT include the `/api` suffix as it's already included in the endpoint paths.
 
+EXPO_PUBLIC_API_URL=http://your-laravel-backend-url
+```
+
 ### 2. Laravel Backend Requirements
 
 Your Laravel backend should have the following endpoints configured with Sanctum:

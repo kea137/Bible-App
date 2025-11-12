@@ -15,6 +15,8 @@ import { Text, View, Platform } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { AuthProvider } from '@/lib/contexts/AuthContext';
+import Toast from 'react-native-toast-message';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,44 +46,47 @@ export default function RootLayout() {
 
   return (
     <SafeAreaProvider>
-      <ThemeProvider value={NAV_THEME[colorScheme]}>
-        <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-        <GestureHandlerRootView
-          style={{ flex: 1, backgroundColor: NAV_THEME[colorScheme].colors.background }}>
-          <KeyboardProvider>
-            <View style={{ flex: 1 }}>
-              <Stack
-                screenOptions={{
-                  headerBackTitle: 'Back',
-                  headerTitleStyle: {
-                    fontFamily: 'Geist-Medium',
-                    fontWeight: '500',
-                  },
-                  headerTitle(props) {
-                    return (
-                      <Text style={{ fontFamily: 'Geist-Medium', fontWeight: '500', fontSize: 20, color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
-                        {toOptions(props.children.split('/').pop())}
-                      </Text>
-                    );
-                  },
-                  headerRight: () => <HeaderRightView />,
-                }}>
-                <Stack.Screen
-                  name="index"
-                  options={{
-                    headerLargeTitle: true,
-                    headerTitle: 'Bible App',
-                    headerLargeTitleShadowVisible: false,
-                    headerTransparent: true,
-                  }}
-                />
-              </Stack>
-            </View>
-            {<MobileFooter />}
-            <PortalHost />
-          </KeyboardProvider>
-        </GestureHandlerRootView>
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider value={NAV_THEME[colorScheme]}>
+          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+          <GestureHandlerRootView
+            style={{ flex: 1, backgroundColor: NAV_THEME[colorScheme].colors.background }}>
+            <KeyboardProvider>
+              <View style={{ flex: 1 }}>
+                <Stack
+                  screenOptions={{
+                    headerBackTitle: 'Back',
+                    headerTitleStyle: {
+                      fontFamily: 'Geist-Medium',
+                      fontWeight: '500',
+                    },
+                    headerTitle(props) {
+                      return (
+                        <Text style={{ fontFamily: 'Geist-Medium', fontWeight: '500', fontSize: 20, color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
+                          {toOptions(props.children.split('/').pop())}
+                        </Text>
+                      );
+                    },
+                    headerRight: () => <HeaderRightView />,
+                  }}>
+                  <Stack.Screen
+                    name="index"
+                    options={{
+                      headerLargeTitle: true,
+                      headerTitle: 'Bible App',
+                      headerLargeTitleShadowVisible: false,
+                      headerTransparent: true,
+                    }}
+                  />
+                </Stack>
+              </View>
+              {<MobileFooter />}
+              <PortalHost />
+            </KeyboardProvider>
+          </GestureHandlerRootView>
+          <Toast />
+        </ThemeProvider>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }
