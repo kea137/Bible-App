@@ -12,7 +12,7 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
-import { View, ScrollView, TouchableOpacity } from 'react-native';
+import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
@@ -41,6 +41,7 @@ import {
   AlertDialogTrigger,
 } from '@showcase/components/ui/alert-dialog';
 import { Textarea } from '@showcase/components/ui/textarea';
+import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/src/lib/services/bibles.service';
 
 export function NotesAlertDialog() {
     const [notes, setNotes] = React.useState('');
@@ -196,41 +197,103 @@ export default function BibleDetailScreen() {
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const [completed, setCompleted] = useState(false);
+  const [bibleData, setBibleData] = useState<BibleDetail | null>(null);
+  const [chapterData, setChapterData] = useState<ChapterData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [loadingChapter, setLoadingChapter] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  // Mock data
-  const bible = {
-    id: Number(id),
-    name: 'New International Version',
-    abbreviation: 'NIV',
-    description: 'A modern, easy-to-read translation',
-    books: [
-      { id: 1, title: 'Genesis', book_number: 1, chapters_count: 50 },
-      { id: 2, title: 'Exodus', book_number: 2, chapters_count: 40 },
-      { id: 3, title: 'Psalms', book_number: 19, chapters_count: 150 },
-      { id: 4, title: 'Matthew', book_number: 40, chapters_count: 28 },
-      { id: 5, title: 'John', book_number: 43, chapters_count: 21 },
-    ],
-  };
+  const [selectedBook, setSelectedBook] = useState<any>(null);
+  const [selectedChapter, setSelectedChapter] = useState(1);
+
+  // Fetch Bible detail on mount
+  useEffect(() => {
+    const fetchBibleDetail = async () => {
+      try {
+        setLoading(true);
+        const data = await getBibleDetail(Number(id));
+        setBibleData(data);
+        if (data.books && data.books.length > 0) {
+          setSelectedBook(data.books[0]);
+        }
+        setError(null);
+      } catch (err: any) {
+        console.error('Failed to fetch bible detail:', err);
+        setError(err.message || 'Failed to load bible');
+        // Use mock data as fallback
+        const mockBible: BibleDetail = {
+          bible: {
+            id: Number(id),
+            name: 'New International Version',
+            abbreviation: 'NIV',
+            description: 'A modern, easy-to-read translation',
+            language: 'English',
+            version: '2011',
+          },
+          books: [
+            { id: 1, bible_id: Number(id), title: 'Genesis', book_number: 1, chapters_count: 50 },
+            { id: 2, bible_id: Number(id), title: 'Exodus', book_number: 2, chapters_count: 40 },
+            { id: 3, bible_id: Number(id), title: 'Psalms', book_number: 19, chapters_count: 150 },
+            { id: 4, bible_id: Number(id), title: 'Matthew', book_number: 40, chapters_count: 28 },
+            { id: 5, bible_id: Number(id), title: 'John', book_number: 43, chapters_count: 21 },
+          ],
+        };
+        setBibleData(mockBible);
+        setSelectedBook(mockBible.books[0]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (id) {
+      fetchBibleDetail();
+    }
+  }, [id]);
+
+  // Fetch chapter data when book or chapter changes
+  useEffect(() => {
+    const fetchChapterData = async () => {
+      if (!selectedBook || !bibleData) return;
+
+      try {
+        setLoadingChapter(true);
+        const data = await getChapterData(Number(id), selectedBook.id, selectedChapter);
+        setChapterData(data);
+      } catch (err: any) {
+        console.error('Failed to fetch chapter data:', err);
+        // Use mock verses as fallback
+        const mockChapter: ChapterData = {
+          bible: bibleData.bible,
+          book: selectedBook,
+          chapter_number: selectedChapter,
+          verses: Array.from({ length: 31 }, (_, i) => ({
+            id: i + 1,
+            book_id: selectedBook.id,
+            chapter_number: selectedChapter,
+            verse_number: i + 1,
+            text: `This is verse ${i + 1} from ${selectedBook.title} chapter ${selectedChapter}. The content would be the actual verse text from the Bible.`,
+          })),
+        };
+        setChapterData(mockChapter);
+      } finally {
+        setLoadingChapter(false);
+      }
+    };
+
+    fetchChapterData();
+  }, [selectedBook, selectedChapter, id, bibleData]);
 
   // Update header title with Bible version
   useEffect(() => {
-    navigation.setOptions({
-      headerTitle: bible.abbreviation,
-    });
-  }, [navigation, bible.abbreviation]);
-
-  const [selectedBook, setSelectedBook] = useState(bible.books[0]);
-  const [selectedChapter, setSelectedChapter] = useState(1);
-
-  // Mock verses
-  const verses = Array.from({ length: 31 }, (_, i) => ({
-    id: i + 1,
-    verse_number: i + 1,
-    text: `This is verse ${i + 1} from ${selectedBook.title} chapter ${selectedChapter}. The content would be the actual verse text from the Bible.`,
-  }));
+    if (bibleData) {
+      navigation.setOptions({
+        headerTitle: bibleData.bible.abbreviation,
+      });
+    }
+  }, [navigation, bibleData]);
 
   const canGoPrevious = selectedChapter > 1;
-  const canGoNext = selectedChapter < selectedBook.chapters_count;
+  const canGoNext = selectedBook && selectedChapter < selectedBook.chapters_count;
 
   // Swipe gesture handler
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -259,18 +322,49 @@ export default function BibleDetailScreen() {
 
   const composedGesture = Gesture.Exclusive(swipeGesture, swipeLeftGesture);
 
+  if (loading) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background">
+        <ActivityIndicator size="large" />
+        <Text className="mt-4 text-muted-foreground">Loading bible...</Text>
+      </View>
+    );
+  }
+
+  if (!bibleData) {
+    return (
+      <View className="flex-1 items-center justify-center bg-background p-4">
+        <Text className="text-destructive text-center">Failed to load bible</Text>
+      </View>
+    );
+  }
+
   return (
     <GestureDetector gesture={composedGesture}>
       <ScrollView className="flex-1 bg-background">
         <View className="flex-1 gap-4 p-4">
+          {/* Error State */}
+          {error && (
+            <Card className="border-destructive">
+              <CardContent className="py-4">
+                <Text className="text-destructive text-center">
+                  {error}
+                </Text>
+                <Text className="text-muted-foreground text-center text-sm mt-2">
+                  Showing cached data
+                </Text>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Header Card */}
         <Card>
           <CardHeader>
             <CardTitle className="flex-row items-center gap-2">
               <BookOpen size={20} className="text-primary" />
-              <Text>{bible.name}</Text>
+              <Text>{bibleData.bible.name}</Text>
             </CardTitle>
-            <CardDescription>{bible.description}</CardDescription>
+            <CardDescription>{bibleData.bible.description}</CardDescription>
           </CardHeader>
           <CardContent className="gap-3">
             {/* Book and Chapter Selector */}
@@ -278,9 +372,9 @@ export default function BibleDetailScreen() {
               <View className="w-full">
                 <Select
                   className="w-full"
-                  value={{ value: selectedBook.id.toString(), label: selectedBook.title }}
+                  value={{ value: selectedBook?.id.toString() || '', label: selectedBook?.title || '' }}
                   onValueChange={(option) => {
-                    const book = bible.books.find(b => b.id === Number(option?.value));
+                    const book = bibleData.books.find(b => b.id === Number(option?.value));
                     if (book) {
                       setSelectedBook(book);
                       setSelectedChapter(1);
@@ -292,7 +386,7 @@ export default function BibleDetailScreen() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {bible.books.map((book) => (
+                      {bibleData.books.map((book) => (
                         <SelectItem 
                           key={book.id} 
                           value={book.id.toString()}
@@ -321,7 +415,7 @@ export default function BibleDetailScreen() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
+                    {selectedBook && Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
                       <SelectItem 
                         key={ch} 
                         value={ch.toString()}
@@ -350,10 +444,22 @@ export default function BibleDetailScreen() {
               {/* Verses */}
               <View className="mt-2">
                 <CardContent className="gap-2 mx-auto">
-                  <Text className="text-base font-bold text-center">
-                  {selectedBook.title} {selectedChapter}
-                  </Text>
-                  {verses.map((verse) => (
+                  {selectedBook && (
+                    <Text className="text-base font-bold text-center">
+                      {selectedBook.title} {selectedChapter}
+                    </Text>
+                  )}
+                  
+                  {/* Loading Chapter State */}
+                  {loadingChapter && (
+                    <View className="flex-1 items-center justify-center py-8">
+                      <ActivityIndicator />
+                      <Text className="mt-2 text-muted-foreground text-sm">Loading chapter...</Text>
+                    </View>
+                  )}
+                  
+                  {/* Verses */}
+                  {!loadingChapter && chapterData && chapterData.verses.map((verse) => (
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
                       <View className="flex-row items-start gap-1">
                         <Text className="font-semibold text-base" numberOfLines={1}>
