@@ -9,6 +9,69 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { loginSchema, LoginFormData } from '@/lib/validation/auth.validation';
 import Toast from 'react-native-toast-message';
+import {
+  AlertDialog,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@showcase/components/ui/alert-dialog';
+import * as React from 'react';
+import { PortalHost } from '@rn-primitives/portal';
+
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
+
+export const unstable_settings = {
+  // Ensure that reloading on `/modal` keeps a back button present.
+  initialRouteName: 'index',
+};
+
+export function Alert({ message, open, onOpenChange }: { message: string; open: boolean; onOpenChange: (open: boolean) => void }) {
+
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent portalHost="root">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-destructive">Error</AlertDialogTitle>
+          <AlertDialogDescription>
+            {message}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            <Text>Cancel</Text>
+          </AlertDialogCancel>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function AlertSuccess({ message, open, onOpenChange }: { message: string; open: boolean; onOpenChange: (open: boolean) => void }) {
+
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent portalHost="root">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-destructive">Error</AlertDialogTitle>
+          <AlertDialogDescription>
+            {message}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            <Text>Cancel</Text>
+          </AlertDialogCancel>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -16,43 +79,28 @@ export default function LoginScreen() {
   const [remember, setRemember] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [checker, setChecker] = useState(false);
+  const [checkerSuccess, setCheckerSuccess] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
   const router = useRouter();
   const { login } = useAuth();
 
   const handleLogin = async () => {
     try {
-      // Reset errors
       setErrors({});
-      
-      // Validate form data
-      const formData: LoginFormData = {
-        email,
-        password,
-        remember,
-      };
-      
+      const formData: LoginFormData = { email, password, remember };
       const validated = loginSchema.parse(formData);
-      
-      // Submit login
       setIsSubmitting(true);
       await login({
         email: validated.email,
         password: validated.password,
         remember: validated.remember,
       });
-      
-      // Show success message
-      Toast.show({
-        type: 'success',
-        text1: 'Login successful',
-        text2: 'Welcome back!',
-      });
-      
-      // Navigate to dashboard
+      setAlertMessage('Login successful!');
+      setCheckerSuccess(true);
       router.replace('/dashboard');
     } catch (error: any) {
-      if (error.errors) {
-        // Zod validation errors
+      if (error.errors && Array.isArray(error.errors)) {
         const fieldErrors: Record<string, string> = {};
         error.errors.forEach((err: any) => {
           if (err.path) {
@@ -60,20 +108,19 @@ export default function LoginScreen() {
           }
         });
         setErrors(fieldErrors);
+        setAlertMessage(error.message.message || 'Validation error');
+        setChecker(true);
       } else if (error.errors && typeof error.errors === 'object') {
-        // API validation errors
         const fieldErrors: Record<string, string> = {};
         Object.keys(error.errors).forEach((key) => {
           fieldErrors[key] = error.errors[key][0];
         });
         setErrors(fieldErrors);
+        setAlertMessage(error.message || 'Validation error');
+        setChecker(true);
       } else {
-        // General error
-        Toast.show({
-          type: 'error',
-          text1: 'Login failed',
-          text2: error.message || 'Invalid email or password',
-        });
+        setAlertMessage(error.message || 'Login failed. Please try again.');
+        setChecker(true);
       }
     } finally {
       setIsSubmitting(false);
@@ -82,6 +129,9 @@ export default function LoginScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background">
+      <PortalHost name="root" />
+      <Alert open={checker} onOpenChange={setChecker} message={alertMessage} />
+      <AlertSuccess open={checkerSuccess} onOpenChange={setChecker} message={alertMessage} />
       <View className="flex-1 items-center justify-center p-6">
         <View className="w-full max-w-md gap-6">
           {/* Header */}

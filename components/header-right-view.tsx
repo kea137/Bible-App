@@ -1,14 +1,16 @@
 import { Button } from '@showcase/components/ui/button';
 import { Text } from '@showcase/components/ui/text';
 import { AvatarButton } from '@showcase/components/avatar-button';
-import { SettingsDialog } from '@showcase/components/settings-dialog';
 import * as Updates from 'expo-updates';
 import * as React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 
-export function HeaderRightView() {
+interface HeaderRightViewProps {
+  onSettingsPress?: () => void;
+}
+
+export function HeaderRightView({ onSettingsPress }: HeaderRightViewProps) {
   const { isUpdateAvailable, isUpdatePending, isDownloading } = Updates.useUpdates();
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   async function onReload() {
     try {
@@ -35,16 +37,14 @@ export function HeaderRightView() {
             <Text className="text-sky-600 dark:text-sky-500">Update</Text>
           )}
         </Button>
-        <AvatarButton onPress={() => setSettingsOpen(true)} />
-        <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+        <AvatarButton onPress={onSettingsPress} />
       </View>
     );
   }
 
   return (
     <View className="flex-row items-center gap-2">
-      <AvatarButton onPress={() => setSettingsOpen(true)} />
-      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      <AvatarButton onPress={onSettingsPress} />
     </View>
   );
 }

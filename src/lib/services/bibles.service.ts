@@ -78,6 +78,19 @@ const parseApiError = (error: unknown): ApiError => {
     message: error instanceof Error ? error.message : 'An unknown error occurred',
   };
 };
+/**
+ * Get dashboard data
+ */
+export const getDashboardData = async (): Promise<DashboardData> => {
+  try {
+    const response = await apiClient.get<DashboardData>(API_ENDPOINTS.dashboard);
+    console.log('[DashboardService] Fetched dashboard data successfully');
+    return response;
+  } catch (error) {
+    console.error('[DashboardService] Failed to fetch dashboard data:', error);
+    throw parseApiError(error);
+  }
+};
 
 /**
  * Get all bibles

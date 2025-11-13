@@ -20,7 +20,7 @@ export default function BiblesScreen() {
       try {
         setLoading(true);
         const data = await getBibles();
-        setBibles(data);
+        setBibles(Array.isArray(data) ? data : []);
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch bibles:', err);
@@ -81,11 +81,11 @@ export default function BiblesScreen() {
     fetchBibles();
   }, []);
 
-  const filteredBibles = bibles.filter((bible) =>
+  const filteredBibles = Array.isArray(bibles) ? bibles.filter((bible) =>
     bible.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
     bible.abbreviation.toLowerCase().includes(searchQuery.toLowerCase()) ||
     bible.language.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  ) : [];
 
   return (
     <ScrollView className="flex-1 bg-background">

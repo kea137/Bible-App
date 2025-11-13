@@ -8,8 +8,8 @@ import { NAV_THEME } from '@showcase/lib/theme';
 import { HeaderRightView } from '@showcase/components/header-right-view';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
 import { MobileFooter } from '@showcase/components/mobile-footer';
-
-// Completely stripped layout to isolate RNSScreen boolean/string prop issue.
+import { SettingsDialog } from '@showcase/components/settings-dialog';
+import { PortalHost } from '@rn-primitives/portal';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -21,8 +21,6 @@ export const unstable_settings = {
   initialRouteName: 'index',
 };
 
-
-
 export default function RootLayout() {
   const { colorScheme } = useColorScheme();
   const theme = NAV_THEME[colorScheme];
@@ -30,6 +28,7 @@ export default function RootLayout() {
   const pathname = usePathname();
   // Hide footer on auth pages (anything under /auth) and welcome screen.
   const hideFooter = pathname.startsWith('/auth') || pathname === '/welcome';
+  const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   return (
     <AuthProvider>
@@ -38,8 +37,6 @@ export default function RootLayout() {
           headerBackTitle: 'Back',
           headerStyle: {
             backgroundColor: colors.card,
-            borderBottomWidth: 1,
-            borderBottomColor: colorScheme === 'dark' ? '#333' : '#e5e5e5',
           },
           headerTintColor: colors.text,
           headerTitleStyle: {
@@ -52,7 +49,7 @@ export default function RootLayout() {
             }) || undefined,
             fontSize: 18,
           },
-          headerRight: () => <HeaderRightView />,
+          headerRight: () => <HeaderRightView onSettingsPress={() => setSettingsOpen(true)} />,
         }}
       >
         <Stack.Screen name="index" options={{ headerTitle: 'Bible App' }} />
@@ -66,8 +63,8 @@ export default function RootLayout() {
         />
       </Stack>
       {!hideFooter && <MobileFooter />}
+      <PortalHost name="root" />
+      <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
     </AuthProvider>
   );
 }
-
-// Removed helper until root cause of boolean/string screen prop mismatch is resolved.

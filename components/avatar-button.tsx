@@ -33,7 +33,7 @@ export function AvatarButton({ onPress }: AvatarButtonProps) {
       variant="ghost"
       size="icon"
       className="web:mr-5 size-9 rounded-full p-0">
-      <Avatar className="size-8">
+      <Avatar className="size-8" alt="User Avatar">
         {/* If user has an avatar image, it would go here */}
         {/* <AvatarImage source={{ uri: user?.avatar }} /> */}
         <AvatarFallback>

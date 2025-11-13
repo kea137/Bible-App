@@ -51,7 +51,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" portalHost="root">
         <DialogHeader>
           <DialogTitle>Settings</DialogTitle>
           <DialogDescription>

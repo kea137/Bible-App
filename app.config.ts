@@ -30,6 +30,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       associatedDomains: ['applinks:reactnativereusables.com'],
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
+        NSAppTransportSecurity: {
+          NSAllowsArbitraryLoads: true,
+          NSExceptionDomains: {
+            'localhost': { NSExceptionAllowsInsecureHTTPLoads: true, NSIncludesSubdomains: true },
+          },
+        },
       },
     },
     android: {

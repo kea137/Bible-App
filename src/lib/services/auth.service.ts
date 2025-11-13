@@ -78,21 +78,21 @@ const parseApiError = (error: unknown): ApiError => {
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
     const response = await apiClient.post<any>(API_ENDPOINTS.login, credentials);
+    console.log('[AUTH SERVICE] Login response:', response);
+    // apiClient.post returns response.data already
+    const user = response?.data.user;
+    const token = response?.data.token;
     
-    // Extract user and token from nested data structure
-    const user = response.data?.user || response.user;
-    const token = response.data?.token || response.token;
-    
+    console.log('[AUTH SERVICE] Login response user:', user);
+    console.log('[AUTH SERVICE] Login response token:', token);
     // Store token if provided (for token-based auth)
     if (token) {
       setAuthToken(token);
-    } else {
     }
     
     // Store user data
     if (user) {
       setUserData(user);
-    } else {
     }
     
     return { user, token };

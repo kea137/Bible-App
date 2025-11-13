@@ -24,42 +24,42 @@ export const API_ENDPOINTS = {
   user: '/api/mobile/auth/user',
   
   // Mobile app endpoints
-  home: '/api/mobile/home',
-  dashboard: '/api/mobile/dashboard',
-  onboarding: '/api/mobile/onboarding',
-  share: '/api/mobile/share',
-  sitemap: '/api/mobile/sitemap',
+  home: '/api/home',
+  dashboard: '/api/dashboard',
+  onboarding: '/api/onboarding',
+  share: '/api/share',
+  sitemap: '/api/sitemap',
   
   // User preferences
-  updateLocale: '/api/mobile/update-locale',
-  updateTheme: '/api/mobile/update-theme',
-  updateTranslations: '/api/mobile/update-translations',
+  updateLocale: '/api/update-locale',
+  updateTheme: '/api/update-theme',
+  updateTranslations: '/api/update-translations',
   
   // Bibles
-  bibles: '/api/mobile/bibles',
-  biblesParallel: '/api/mobile/bibles/parallel',
-  apiBibles: '/api/mobile/api-bibles',
+  bibles: '/api/bibles',
+  biblesParallel: '/api/bibles/parallel',
+  apiBibles: '/api/api-bibles',
   
   // Highlights
-  verseHighlights: '/api/mobile/verse-highlights',
-  highlightedVerses: '/api/mobile/highlighted-verses',
+  verseHighlights: '/api/verse-highlights',
+  highlightedVerses: '/api/highlighted-verses',
   
   // Notes
-  notes: '/api/mobile/notes',
+  notes: '/api/notes',
   
   // Reading plan
-  readingPlan: '/api/mobile/reading-plan',
-  readingProgress: '/api/mobile/reading-progress',
+  readingPlan: '/api/reading-plan',
+  readingProgress: '/api/reading-progress',
   
   // Lessons
-  lessons: '/api/mobile/lessons',
-  lessonProgress: '/api/mobile/lesson-progress',
+  lessons: '/api/lessons',
+  lessonProgress: '/api/lesson-progress',
 } as const;
 
 // API configuration
 export const API_CONFIG = {
   timeout: 300000, 
-  withCredentials: true, // Required for CSRF cookies
+  withCredentials: false, // Disable for Bearer token auth (Sanctum uses tokens, not cookies)
   headers: {
     'Content-Type': 'application/json',
     'Accept': 'application/json',

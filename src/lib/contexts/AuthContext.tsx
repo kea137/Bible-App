@@ -3,7 +3,6 @@
  * 
  * React context for managing authentication state across the app
  */
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User, AuthResponse, LoginCredentials, RegisterCredentials, ForgotPasswordData } from '../services/auth.service';
 import * as authService from '../services/auth.service';
