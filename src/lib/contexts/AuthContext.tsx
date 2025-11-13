@@ -36,8 +36,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initAuth = async () => {
       try {
-        const token = getAuthToken();
-        const storedUser = getUserData();
+        const token = await getAuthToken();
+        const storedUser = await getUserData();
         
         if (token && storedUser) {
           setUser(storedUser);

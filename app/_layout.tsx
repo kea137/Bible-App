@@ -1,24 +1,14 @@
 import '../global.css';
 
-import { ThemeProvider } from '@react-navigation/native';
-import { PortalHost } from '@rn-primitives/portal';
-import { HeaderRightView } from '@showcase/components/header-right-view';
-import { MobileFooter } from '@showcase/components/mobile-footer';
-import { useGeistFont } from '@showcase/hooks/use-geist-font';
-import { NAV_THEME } from '@showcase/lib/theme';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useColorScheme } from 'nativewind';
 import * as React from 'react';
-import { Text, View, Platform } from 'react-native';
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { Platform } from 'react-native';
+import { Stack } from 'expo-router';
+import { useColorScheme } from 'nativewind';
+import { NAV_THEME } from '@showcase/lib/theme';
+import { HeaderRightView } from '@showcase/components/header-right-view';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
-import Toast from 'react-native-toast-message';
 
-SplashScreen.preventAutoHideAsync();
+// Completely stripped layout to isolate RNSScreen boolean/string prop issue.
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -31,81 +21,37 @@ export const unstable_settings = {
 };
 
 export default function RootLayout() {
-  const [loaded, error] = useGeistFont();
   const { colorScheme } = useColorScheme();
-
-  React.useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
-
-  if (!loaded && !error) {
-    return null;
-  }
+  const theme = NAV_THEME[colorScheme];
+  const colors = theme.colors;
 
   return (
-    <SafeAreaProvider>
-      <AuthProvider>
-        <ThemeProvider value={NAV_THEME[colorScheme]}>
-          <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
-          <GestureHandlerRootView
-            style={{ flex: 1, backgroundColor: NAV_THEME[colorScheme].colors.background }}>
-            <KeyboardProvider>
-              <View style={{ flex: 1 }}>
-                <Stack
-                  screenOptions={{
-                    headerBackTitle: 'Back',
-                    headerTitleStyle: {
-                      fontFamily: 'Geist-Medium',
-                      fontWeight: '500',
-                    },
-                    headerTitle(props) {
-                      return (
-                        <Text style={{ fontFamily: 'Geist-Medium', fontWeight: '500', fontSize: 20, color: colorScheme === 'dark' ? '#FFFFFF' : '#000000' }}>
-                          {toOptions(props.children.split('/').pop())}
-                        </Text>
-                      );
-                    },
-                    headerRight: () => <HeaderRightView />,
-                  }}>
-                  <Stack.Screen
-                    name="index"
-                    options={{
-                      headerLargeTitle: true,
-                      headerTitle: 'Bible App',
-                      headerLargeTitleShadowVisible: false,
-                      headerTransparent: true,
-                    }}
-                  />
-                  <Stack.Screen
-                    name="dashboard"
-                    options={{
-                      headerTitle: 'Dashboard',
-                      headerBackVisible: false,
-                    }}
-                  />
-                </Stack>
-              </View>
-              {<MobileFooter />}
-              <PortalHost />
-            </KeyboardProvider>
-          </GestureHandlerRootView>
-          <Toast />
-        </ThemeProvider>
-      </AuthProvider>
-    </SafeAreaProvider>
+    <AuthProvider>
+      <Stack
+        screenOptions={{
+          headerBackTitle: 'Back',
+          headerStyle: { backgroundColor: colors.card },
+          headerTintColor: colors.text,
+          headerTitleStyle: {
+            color: colors.text,
+            fontFamily: Platform.select({ ios: 'Instrument Sans', android: 'Instrument Sans' }) || undefined,
+            fontSize: 18,
+          },
+          headerRight: () => <HeaderRightView />,
+        }}
+      >
+        <Stack.Screen name="index" options={{ headerTitle: 'Bible App' }} />
+        <Stack.Screen
+          name="dashboard"
+          options={{
+            headerTitle: 'Dashboard',
+            headerBackVisible: false,
+            gestureEnabled: false,
+          }}
+        />
+      </Stack>
+    </AuthProvider>
   );
 }
 
-function toOptions(name: string) {
-  const title = name
-    .split('-')
-    .map(function (str: string) {
-      return str.replace(/\b\w/g, function (char) {
-        return char.toUpperCase();
-      });
-    })
-    .join(' ');
-  return title;
-}
+// Removed helper until root cause of boolean/string screen prop mismatch is resolved.

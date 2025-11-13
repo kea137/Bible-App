@@ -11,7 +11,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     userInterfaceStyle: 'automatic',
-    newArchEnabled: true,
     runtimeVersion: {
       policy: 'appVersion',
     },

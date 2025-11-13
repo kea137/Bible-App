@@ -1,19 +1,11 @@
 /**
  * Bible Storage
  * 
- * Utilities for persisting Bible data using react-native-mmkv for offline access
+ * Utilities for persisting Bible data using AsyncStorage for offline access
  */
 
-import { MMKV } from 'react-native-mmkv';
-import { Platform } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Bible, BibleDetail, ChapterData } from '../services/bibles.service';
-
-// Initialize MMKV storage for bible data
-const storage = new MMKV({
-  id: 'bible-storage',
-  // Only use encryption on native platforms; web doesn't support it
-  ...(Platform.OS !== 'web' && { encryptionKey: 'bible-app-data-key' }),
-});
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -26,10 +18,10 @@ const STORAGE_KEYS = {
 /**
  * Save list of bibles
  */
-export const saveBiblesList = (bibles: Bible[]): void => {
+export const saveBiblesList = async (bibles: Bible[]): Promise<void> => {
   try {
-    storage.set(STORAGE_KEYS.BIBLES_LIST, JSON.stringify(bibles));
-    storage.set(`${STORAGE_KEYS.LAST_UPDATED}bibles_list`, Date.now());
+    await AsyncStorage.setItem(STORAGE_KEYS.BIBLES_LIST, JSON.stringify(bibles));
+    await AsyncStorage.setItem(`${STORAGE_KEYS.LAST_UPDATED}bibles_list`, Date.now().toString());
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to save bibles list:', error);
   }
@@ -38,9 +30,9 @@ export const saveBiblesList = (bibles: Bible[]): void => {
 /**
  * Get list of bibles
  */
-export const getBiblesList = (): Bible[] | null => {
+export const getBiblesList = async (): Promise<Bible[] | null> => {
   try {
-    const data = storage.getString(STORAGE_KEYS.BIBLES_LIST);
+    const data = await AsyncStorage.getItem(STORAGE_KEYS.BIBLES_LIST);
     return data ? JSON.parse(data) : null;
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to get bibles list:', error);
@@ -51,11 +43,11 @@ export const getBiblesList = (): Bible[] | null => {
 /**
  * Save bible detail (bible + books)
  */
-export const saveBibleDetail = (bibleId: number, bibleDetail: BibleDetail): void => {
+export const saveBibleDetail = async (bibleId: number, bibleDetail: BibleDetail): Promise<void> => {
   try {
     const key = `${STORAGE_KEYS.BIBLE_DETAIL}${bibleId}`;
-    storage.set(key, JSON.stringify(bibleDetail));
-    storage.set(`${STORAGE_KEYS.LAST_UPDATED}bible_${bibleId}`, Date.now());
+    await AsyncStorage.setItem(key, JSON.stringify(bibleDetail));
+    await AsyncStorage.setItem(`${STORAGE_KEYS.LAST_UPDATED}bible_${bibleId}`, Date.now().toString());
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to save bible detail:', error);
   }
@@ -64,10 +56,10 @@ export const saveBibleDetail = (bibleId: number, bibleDetail: BibleDetail): void
 /**
  * Get bible detail (bible + books)
  */
-export const getBibleDetail = (bibleId: number): BibleDetail | null => {
+export const getBibleDetail = async (bibleId: number): Promise<BibleDetail | null> => {
   try {
     const key = `${STORAGE_KEYS.BIBLE_DETAIL}${bibleId}`;
-    const data = storage.getString(key);
+    const data = await AsyncStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to get bible detail:', error);
@@ -78,16 +70,19 @@ export const getBibleDetail = (bibleId: number): BibleDetail | null => {
 /**
  * Save chapter data (verses)
  */
-export const saveChapterData = (
+export const saveChapterData = async (
   bibleId: number,
   bookId: number,
   chapterNumber: number,
   chapterData: ChapterData
-): void => {
+): Promise<void> => {
   try {
     const key = `${STORAGE_KEYS.CHAPTER_DATA}${bibleId}_${bookId}_${chapterNumber}`;
-    storage.set(key, JSON.stringify(chapterData));
-    storage.set(`${STORAGE_KEYS.LAST_UPDATED}chapter_${bibleId}_${bookId}_${chapterNumber}`, Date.now());
+    await AsyncStorage.setItem(key, JSON.stringify(chapterData));
+    await AsyncStorage.setItem(
+      `${STORAGE_KEYS.LAST_UPDATED}chapter_${bibleId}_${bookId}_${chapterNumber}`,
+      Date.now().toString()
+    );
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to save chapter data:', error);
   }
@@ -96,14 +91,14 @@ export const saveChapterData = (
 /**
  * Get chapter data (verses)
  */
-export const getChapterData = (
+export const getChapterData = async (
   bibleId: number,
   bookId: number,
   chapterNumber: number
-): ChapterData | null => {
+): Promise<ChapterData | null> => {
   try {
     const key = `${STORAGE_KEYS.CHAPTER_DATA}${bibleId}_${bookId}_${chapterNumber}`;
-    const data = storage.getString(key);
+    const data = await AsyncStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to get chapter data:', error);
@@ -114,10 +109,10 @@ export const getChapterData = (
 /**
  * Get last updated timestamp for a resource
  */
-export const getLastUpdated = (resourceKey: string): number | null => {
+export const getLastUpdated = async (resourceKey: string): Promise<number | null> => {
   try {
-    const timestamp = storage.getNumber(`${STORAGE_KEYS.LAST_UPDATED}${resourceKey}`);
-    return timestamp || null;
+    const timestamp = await AsyncStorage.getItem(`${STORAGE_KEYS.LAST_UPDATED}${resourceKey}`);
+    return timestamp ? parseInt(timestamp, 10) : null;
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to get last updated:', error);
     return null;
@@ -127,8 +122,8 @@ export const getLastUpdated = (resourceKey: string): number | null => {
 /**
  * Check if cached data is fresh (less than 24 hours old)
  */
-export const isCacheFresh = (resourceKey: string, maxAgeHours: number = 24): boolean => {
-  const lastUpdated = getLastUpdated(resourceKey);
+export const isCacheFresh = async (resourceKey: string, maxAgeHours: number = 24): Promise<boolean> => {
+  const lastUpdated = await getLastUpdated(resourceKey);
   if (!lastUpdated) return false;
   
   const ageInHours = (Date.now() - lastUpdated) / (1000 * 60 * 60);
@@ -138,16 +133,14 @@ export const isCacheFresh = (resourceKey: string, maxAgeHours: number = 24): boo
 /**
  * Clear all chapter data for a specific bible
  */
-export const clearBibleChapters = (bibleId: number): void => {
+export const clearBibleChapters = async (bibleId: number): Promise<void> => {
   try {
-    const allKeys = storage.getAllKeys();
+    const allKeys = await AsyncStorage.getAllKeys();
     const chapterKeys = allKeys.filter(key => 
       key.startsWith(`${STORAGE_KEYS.CHAPTER_DATA}${bibleId}_`)
     );
     
-    chapterKeys.forEach(key => {
-      storage.delete(key);
-    });
+    await AsyncStorage.multiRemove(chapterKeys);
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to clear bible chapters:', error);
   }
@@ -156,9 +149,9 @@ export const clearBibleChapters = (bibleId: number): void => {
 /**
  * Clear all bible storage
  */
-export const clearAllBibleStorage = (): void => {
+export const clearAllBibleStorage = async (): Promise<void> => {
   try {
-    storage.clearAll();
+    await AsyncStorage.clear();
   } catch (error) {
     console.error('[BIBLE STORAGE] Failed to clear all storage:', error);
   }
@@ -167,13 +160,13 @@ export const clearAllBibleStorage = (): void => {
 /**
  * Get storage statistics
  */
-export const getStorageStats = (): {
+export const getStorageStats = async (): Promise<{
   totalKeys: number;
   biblesCount: number;
   chaptersCount: number;
-} => {
+}> => {
   try {
-    const allKeys = storage.getAllKeys();
+    const allKeys = await AsyncStorage.getAllKeys();
     const biblesCount = allKeys.filter(key => key.startsWith(STORAGE_KEYS.BIBLE_DETAIL)).length;
     const chaptersCount = allKeys.filter(key => key.startsWith(STORAGE_KEYS.CHAPTER_DATA)).length;
     
