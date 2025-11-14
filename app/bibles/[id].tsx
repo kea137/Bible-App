@@ -15,7 +15,7 @@ import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@showcase/components/ui/avatar';
 import * as React from 'react';
@@ -213,7 +213,20 @@ export default function BibleDetailScreen() {
         setLoading(true);
         const data = await getBibleDetail(Number(id));
         setBibleData(data);
-        if (data.books && data.books.length > 0) {
+        
+        // If initialChapter is provided, use it
+        if (data.initialChapter) {
+          setSelectedBook(data.initialChapter.book);
+          setSelectedChapter(data.initialChapter.chapter_number);
+          setChapterData({
+            book: data.initialChapter.book,
+            chapter_number: data.initialChapter.chapter_number,
+            verses: data.initialChapter.verses,
+            bible: data.bible,
+          });
+          setLoadingChapter(false);
+          console.log('[INITIAL CHAPTER] Loaded verses:', data.initialChapter.verses.length);
+        } else if (data.books && data.books.length > 0) {
           setSelectedBook(data.books[0]);
         }
         setError(null);
@@ -255,8 +268,17 @@ export default function BibleDetailScreen() {
     const fetchChapterData = async () => {
       if (!selectedBook || !bibleData) return;
 
+      // Check if we already have this chapter data loaded (from initial load)
+      if (chapterData && 
+          chapterData.book.id === selectedBook.id && 
+          chapterData.chapter_number === selectedChapter) {
+        console.log('[CHAPTER] Using existing chapter data');
+        return;
+      }
+
       try {
         setLoadingChapter(true);
+        console.log(`[CHAPTER] Fetching bible ${id}, book ${selectedBook.id}, chapter ${selectedChapter}`);
         const data = await getChapterData(Number(id), selectedBook.id, selectedChapter);
         setChapterData(data);
       } catch (err: any) {
@@ -340,9 +362,10 @@ export default function BibleDetailScreen() {
   }
 
   return (
-    <GestureDetector gesture={composedGesture}>
-      <ScrollView className="flex-1 bg-background">
-        <View className="flex-1 gap-4 p-4">
+    <GestureHandlerRootView className="flex-1">
+      <GestureDetector gesture={composedGesture}>
+        <ScrollView className="flex-1 bg-background">
+          <View className="flex-1 gap-4 p-4">
           {/* Error State */}
           {error && (
             <Card className="border-destructive">
@@ -386,7 +409,7 @@ export default function BibleDetailScreen() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectGroup>
-                      {bibleData.books.map((book) => (
+                      {bibleData.books && Array.isArray(bibleData.books) && bibleData.books.map((book: BibleDetail['books'][number]) => (
                         <SelectItem 
                           key={book.id} 
                           value={book.id.toString()}
@@ -459,7 +482,7 @@ export default function BibleDetailScreen() {
                   )}
                   
                   {/* Verses */}
-                  {!loadingChapter && chapterData && chapterData.verses.map((verse) => (
+                  {!loadingChapter && chapterData && chapterData.verses && Array.isArray(chapterData.verses) && chapterData.verses.map((verse) => (
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
                       <View className="flex-row items-start gap-1">
                         <Text className="font-semibold text-base" numberOfLines={1}>
@@ -471,6 +494,14 @@ export default function BibleDetailScreen() {
                       </View>
                     </TouchableOpacity>
                   ))}
+                  
+                  {/* Debug info */}
+                  {!loadingChapter && !chapterData && (
+                    <Text className="text-muted-foreground text-center">No chapter data</Text>
+                  )}
+                  {!loadingChapter && chapterData && (!chapterData.verses || !Array.isArray(chapterData.verses) || chapterData.verses.length === 0) && (
+                    <Text className="text-muted-foreground text-center">No verses found</Text>
+                  )}
                 </CardContent>
               </View>
             </View>
@@ -479,5 +510,6 @@ export default function BibleDetailScreen() {
       </View>
       </ScrollView>
     </GestureDetector>
+    </GestureHandlerRootView>
   );
 }

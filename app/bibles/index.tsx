@@ -34,7 +34,6 @@ export default function BiblesScreen() {
             description: 'A modern, easy-to-read translation',
             language: 'English',
             version: '2011',
-            books_count: 66,
           },
           {
             id: 2,
@@ -43,7 +42,6 @@ export default function BiblesScreen() {
             description: 'Classic translation with traditional language',
             language: 'English',
             version: '1611',
-            books_count: 66,
           },
           {
             id: 3,
@@ -52,25 +50,6 @@ export default function BiblesScreen() {
             description: 'Literal translation for study',
             language: 'English',
             version: '2001',
-            books_count: 66,
-          },
-          {
-            id: 4,
-            name: 'New Living Translation',
-            abbreviation: 'NLT',
-            description: 'Dynamic equivalence translation',
-            language: 'English',
-            version: '1996',
-            books_count: 66,
-          },
-          {
-            id: 5,
-            name: 'The Message',
-            abbreviation: 'MSG',
-            description: 'Contemporary paraphrase',
-            language: 'English',
-            version: '2002',
-            books_count: 66,
           },
         ]);
       } finally {

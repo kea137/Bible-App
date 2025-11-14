@@ -13,14 +13,14 @@ import * as BibleStorage from '../storage/bible-storage';
 // Type definitions
 export interface Bible {
   id: number;
-  name: string;
   abbreviation: string;
   description: string;
   language: string;
+  name: string;
   version: string;
-  books_count?: number;
-  created_at?: string;
-  updated_at?: string;
+}
+export interface BiblesData {
+  data : Bible[];
 }
 
 export interface Book {
@@ -47,10 +47,21 @@ export interface Verse {
 export interface BibleDetail {
   bible: Bible;
   books: Book[];
+  initialChapter?: {
+    id: number;
+    book_id: number;
+    chapter_number: number;
+    book: Book;
+    verses: Verse[];
+  };
+}
+
+export interface BiblesDetailData {
+  data: BibleDetail;
 }
 
 export interface ChapterData {
-  bible: Bible;
+  bible?: Bible;
   book: Book;
   chapter_number: number;
   verses: Verse[];
@@ -78,19 +89,6 @@ const parseApiError = (error: unknown): ApiError => {
     message: error instanceof Error ? error.message : 'An unknown error occurred',
   };
 };
-/**
- * Get dashboard data
- */
-export const getDashboardData = async (): Promise<DashboardData> => {
-  try {
-    const response = await apiClient.get<DashboardData>(API_ENDPOINTS.dashboard);
-    console.log('[DashboardService] Fetched dashboard data successfully');
-    return response;
-  } catch (error) {
-    console.error('[DashboardService] Failed to fetch dashboard data:', error);
-    throw parseApiError(error);
-  }
-};
 
 /**
  * Get all bibles
@@ -101,12 +99,12 @@ export const getBibles = async (): Promise<Bible[]> => {
   const cachedBibles = BibleStorage.getBiblesList();
   
   try {
-    const response = await apiClient.get<Bible[]>(API_ENDPOINTS.bibles);
-    
+    const response = await apiClient.get<BiblesData>(API_ENDPOINTS.bibles);
+
     // Save to local storage for offline access
-    BibleStorage.saveBiblesList(response);
+    BibleStorage.saveBiblesList(response.data);
     
-    return response;
+    return response.data;
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedBibles) {
@@ -127,12 +125,12 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
   const cachedDetail = BibleStorage.getBibleDetail(bibleId);
   
   try {
-    const response = await apiClient.get<BibleDetail>(`${API_ENDPOINTS.bibles}/${bibleId}`);
-    
+    const response = await apiClient.get<{data: BibleDetail; success: boolean}>(`${API_ENDPOINTS.bibles}/${bibleId}`);
+    console.log('[BIBLE LOADED] Bible detail loaded: ', response);
     // Save to local storage for offline access
-    BibleStorage.saveBibleDetail(bibleId, response);
+    BibleStorage.saveBibleDetail(bibleId, response.data);
     
-    return response;
+    return response.data;
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedDetail) {
@@ -157,14 +155,19 @@ export const getChapterData = async (
   const cachedChapter = BibleStorage.getChapterData(bibleId, bookId, chapterNumber);
   
   try {
-    const response = await apiClient.get<ChapterData>(
+    const response = await apiClient.get<any>(
       `${API_ENDPOINTS.bibles}/${bibleId}/books/${bookId}/chapters/${chapterNumber}`
     );
     
-    // Save to local storage for offline access
-    BibleStorage.saveChapterData(bibleId, bookId, chapterNumber, response);
+    console.log('[CHAPTER DATA] Response:', response.data);
     
-    return response;
+    // Check if response is wrapped with {data: ..., success: ...}
+    const chapterData = response.data?.data || response.data;
+    
+    // Save to local storage for offline access
+    BibleStorage.saveChapterData(bibleId, bookId, chapterNumber, chapterData);
+    
+    return chapterData;
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedChapter) {

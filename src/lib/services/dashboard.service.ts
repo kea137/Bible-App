@@ -100,7 +100,6 @@ const parseApiError = (error: unknown): ApiError => {
 export const getDashboardData = async (): Promise<DashData> => {
   try {
     const response = await apiClient.get<DashData>(API_ENDPOINTS.dashboard);
-    console.log('[DashboardService] Fetched dashboard data successfully', response.data.highlightedVerses);
     return { data: response.data };
   } catch (error) {
     console.error('[DashboardService] Failed to fetch dashboard data:', error);
