@@ -43,7 +43,6 @@ export default function ParallelBiblesScreen() {
         }
         setError(null);
       } catch (err: any) {
-        console.error('Failed to fetch bibles:', err);
         setError(err.message || 'Failed to load bibles');
         // Use mock data as fallback
         const mockBibles: Bible[] = [
@@ -89,7 +88,6 @@ export default function ParallelBiblesScreen() {
         setChapter1Data(data1);
         setChapter2Data(data2);
       } catch (err: any) {
-        console.error('Failed to fetch chapter data:', err);
         // Use mock data as fallback
         const mockVerses = Array.from({ length: 31 }, (_, i) => ({
           id: i + 1,

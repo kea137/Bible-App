@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@show
 import { BookOpen, Link2, Share2} from 'lucide-react-native';
 import { View, ScrollView } from 'react-native';
 import { Button } from '@showcase/components/ui/button';
-import { Link } from 'expo-router';
+import { Link, useLocalSearchParams } from 'expo-router';
 import { Input } from '@showcase/components/ui/input';
 import {
   AlertDialog,
@@ -78,12 +78,13 @@ export function NotesAlertDialog() {
 }
 
 export default function VerseStudyScreen() {
+  const { verseId, text, reference } = useLocalSearchParams();
 
-  // Mock verse data
+  // Parse the verse data from route params or use mock data
   const verse = {
-    id: 1,
-    text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
-    reference: 'John 3:16',
+    id: verseId ? Number(verseId) : 1,
+    text: (text as string) || 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
+    reference: (reference as string) || 'John 3:16',
     bible: 'NIV',
     book: 'John',
     chapter: 3,
@@ -112,14 +113,20 @@ export default function VerseStudyScreen() {
             <CardTitle className="flex-row items-center gap-2">
               <BookOpen size={20} className="text-primary" />
               <View>
-                <Text>Philippians 4:13</Text>
-                <CardDescription>AMP 1.0</CardDescription>
+                <Text>{verse.reference}</Text>
+                <CardDescription>{verse.bible}</CardDescription>
               </View>
             </CardTitle>
 
             <NotesAlertDialog/>
 
-            <Link href="/share" asChild>
+            <Link 
+              href={{
+                pathname: '/share',
+                params: { verseId: verse.id, text: verse.text, reference: verse.reference }
+              }} 
+              asChild
+            >
               <Button
                 variant='secondary'
                 className='w-full justify-center'
@@ -134,7 +141,7 @@ export default function VerseStudyScreen() {
               style={{ borderLeftColor: '#e5e7eb', backgroundColor: 'rgba(107, 114, 128, 0.08)' }}
             >
               <Text className="mb-2 text-sm italic">
-              "I can do all things through Christ who strengthens me."
+                "{verse.text}"
               </Text>
             </View>
           </CardHeader>

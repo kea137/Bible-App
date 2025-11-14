@@ -12,12 +12,11 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { View, ScrollView, ActivityIndicator, Platform } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
 import { Gesture, GestureDetector, GestureHandlerRootView, Directions } from 'react-native-gesture-handler';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
-import { Avatar, AvatarFallback, AvatarImage } from '@showcase/components/ui/avatar';
 import * as React from 'react';
 import {
   DropdownMenu,
@@ -97,22 +96,17 @@ export function NotesAlertDialog() {
   );
 }
 
-export function VerseDropdownMenu({text}:{text: string}) {
-  // On native, avoid DropdownMenu wrappers which can break layout; use a simple touchable/text.
-  if (Platform.OS !== 'web') {
-    return (
-      <TouchableOpacity activeOpacity={0.7}>
-        <Text className="flex-1">
-          {text}
-        </Text>
-      </TouchableOpacity>
-    );
-  }
-
+export function VerseDropdownMenu({text, verseId, onHighlight, onRemoveHighlight, currentHighlight}:{
+  text: string;
+  verseId: number;
+  onHighlight?: (verseId: number, color: string) => void;
+  onRemoveHighlight?: (verseId: number) => void;
+  currentHighlight?: string;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild={true}>
-          <Text variant="p" className="flex-1">
+          <Text className="text-base leading-relaxed flex-1" style={{ flexShrink: 1 }}>
             {text}
           </Text>
       </DropdownMenuTrigger>
@@ -122,29 +116,23 @@ export function VerseDropdownMenu({text}:{text: string}) {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span
-                className="flex items-center gap-2"
-            >
-                <span
-                    className="h-4 w-4 rounded bg-yellow-300"
-                ></span>
-            <Text>Highlight - Yellow</Text>
-            </span>
+          <DropdownMenuItem onPress={() => onHighlight?.(verseId, 'yellow')}>
+            <View className="flex-row items-center gap-2">
+              <View className="h-4 w-4 rounded bg-yellow-300" />
+              <Text>Highlight - Yellow</Text>
+            </View>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span
-                className="flex items-center gap-2"
-            >
-                <span
-                    className="h-4 w-4 rounded bg-green-300"
-                ></span>
-            <Text>Highlight - Green</Text>
-            </span>
+          <DropdownMenuItem onPress={() => onHighlight?.(verseId, 'green')}>
+            <View className="flex-row items-center gap-2">
+              <View className="h-4 w-4 rounded bg-green-300" />
+              <Text>Highlight - Green</Text>
+            </View>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Text>Remove Highlight</Text>
-          </DropdownMenuItem>
+          {currentHighlight && (
+            <DropdownMenuItem onPress={() => onRemoveHighlight?.(verseId)}>
+              <Text>Remove Highlight</Text>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuLabel>
           <Text>Learn More</Text>
@@ -152,8 +140,13 @@ export function VerseDropdownMenu({text}:{text: string}) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link key={'/study'} href={'/study'}>
-            <Text>Study this Verse</Text>
+            <Link 
+              href={{
+                pathname: '/study',
+                params: { verseId, text }
+              }}
+            >
+              <Text>Study this Verse</Text>
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
@@ -166,9 +159,16 @@ export function VerseDropdownMenu({text}:{text: string}) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem>
-            <Link key={'/share'} href={'/share'}>
-            <Text className="flex flex-row"> <Share2 className="text-primary mr-4" size={16} /> Share this Verse
-            </Text>
+            <Link 
+              href={{
+                pathname: '/share',
+                params: { verseId, text }
+              }}
+            >
+              <View className="flex-row items-center">
+                <Share2 className="text-primary mr-2" size={16} />
+                <Text>Share this Verse</Text>
+              </View>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
@@ -177,36 +177,20 @@ export function VerseDropdownMenu({text}:{text: string}) {
   );
 }
 
-export function VerseHoverCard({ text }: { text: string }) {
-  // On native, simplify to plain text to avoid web-only HoverCard behavior
-  if (Platform.OS !== 'web') {
-    return (
-      <Text className="font-semibold">{text}.</Text>
-    );
-  }
-
+export function VerseHoverCard({ text, reference }: { text: string; reference?: string }) {
   return (
     <HoverCard>
       <HoverCardTrigger asChild={true}>
-        <Button variant="link">
-          <Text>{text}.</Text>
+        <Button variant="link" className="p-0 min-h-0">
+          <Text className="text-base font-semibold text-primary">{text}</Text>
         </Button>
       </HoverCardTrigger>
-      <HoverCardContent className="w-80 ml-8">
-        <View className="flex-row justify-between gap-4">
-          <Avatar alt="Vercel avatar" className="h-12 w-12">
-            <AvatarImage source={{ uri: 'https://github.com/vercel.png' }} />
-            <AvatarFallback>
-              <Text>VC</Text>
-            </AvatarFallback>
-          </Avatar>
-          <View className="flex-1 gap-1">
-            <Text className="text-sm font-semibold">@nextjs</Text>
-            <Text className="text-sm">The React Framework – created and maintained by @vercel.</Text>
-            <View className="flex-row items-center pt-2">
-              <Text className="text-muted-foreground text-xs">Joined December 2021</Text>
-            </View>
-          </View>
+      <HoverCardContent className="w-64">
+        <View className="gap-2">
+          <Text className="text-sm font-semibold">{reference || `Verse ${text}`}</Text>
+          <Text className="text-xs text-muted-foreground">
+            Click on the verse text to highlight, study, or share this verse.
+          </Text>
         </View>
       </HoverCardContent>
     </HoverCard>
@@ -222,6 +206,9 @@ export default function BibleDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [loadingChapter, setLoadingChapter] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  
+  // Highlighting state: Map of verse IDs to highlight colors
+  const [highlights, setHighlights] = useState<Record<number, string>>({});
 
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState(1);
@@ -229,6 +216,22 @@ export default function BibleDetailScreen() {
   const [bookSelectOpen, setBookSelectOpen] = useState(false);
   const [chapterSelectOpen, setChapterSelectOpen] = useState(false);
   const isAnySelectOpen = bookSelectOpen || chapterSelectOpen;
+  
+  // Highlighting functions
+  const handleHighlight = (verseId: number, color: string) => {
+    setHighlights(prev => ({
+      ...prev,
+      [verseId]: color,
+    }));
+  };
+  
+  const handleRemoveHighlight = (verseId: number) => {
+    setHighlights(prev => {
+      const newHighlights = { ...prev };
+      delete newHighlights[verseId];
+      return newHighlights;
+    });
+  };
 
   // Fetch Bible detail on mount
   useEffect(() => {
@@ -249,13 +252,11 @@ export default function BibleDetailScreen() {
             bible: data.bible,
           });
           setLoadingChapter(false);
-          console.log('[INITIAL CHAPTER] Loaded verses:', data.initialChapter.verses.length);
         } else if (data.books && data.books.length > 0) {
           setSelectedBook(data.books[0]);
         }
         setError(null);
       } catch (err: any) {
-        console.error('Failed to fetch bible detail:', err);
         setError(err.message || 'Failed to load bible');
         // Use mock data as fallback
         const mockBible: BibleDetail = {
@@ -296,17 +297,14 @@ export default function BibleDetailScreen() {
       if (chapterData && 
           chapterData.book.id === selectedBook.id && 
           chapterData.chapter_number === selectedChapter) {
-        console.log('[CHAPTER] Using existing chapter data');
         return;
       }
 
       try {
         setLoadingChapter(true);
-        console.log(`[CHAPTER] Fetching bible ${id}, book ${selectedBook.id}, chapter ${selectedChapter}`);
         const data = await getChapterData(Number(id), selectedBook.id, selectedChapter);
         setChapterData(data);
       } catch (err: any) {
-        console.error('Failed to fetch chapter data:', err);
         // Use mock verses as fallback
         const mockChapter: ChapterData = {
           bible: bibleData.bible,
@@ -510,18 +508,40 @@ export default function BibleDetailScreen() {
                   )}
                   
                   {/* Verses */}
-                  {!loadingChapter && chapterData && chapterData.verses && Array.isArray(chapterData.verses) && chapterData.verses.map((verse) => (
-                    <TouchableOpacity key={verse.id} activeOpacity={0.7}>
-                      <View className="flex-row items-start gap-2">
-                        <View>
-                          <VerseHoverCard text={verse.verse_number.toString()} />
-                        </View>
-                        <View className="flex-1">
-                          <VerseDropdownMenu text={verse.text} />
+                  {!loadingChapter && chapterData && chapterData.verses && Array.isArray(chapterData.verses) && chapterData.verses.map((verse) => {
+                    const highlightColor = highlights[verse.id];
+                    const highlightStyle = highlightColor 
+                      ? highlightColor === 'yellow' 
+                        ? { backgroundColor: '#fef08a' }
+                        : { backgroundColor: '#86efac' }
+                      : undefined;
+                    
+                    return (
+                      <View 
+                        key={verse.id} 
+                        style={highlightStyle}
+                        className="rounded px-1 py-0.5"
+                      >
+                        <View className="flex-row items-start gap-2">
+                          <View className="pt-0.5">
+                            <VerseHoverCard 
+                              text={verse.verse_number.toString()} 
+                              reference={`${selectedBook?.title} ${selectedChapter}:${verse.verse_number}`}
+                            />
+                          </View>
+                          <View className="flex-1" style={{ flex: 1, flexShrink: 1 }}>
+                            <VerseDropdownMenu 
+                              text={verse.text}
+                              verseId={verse.id}
+                              onHighlight={handleHighlight}
+                              onRemoveHighlight={handleRemoveHighlight}
+                              currentHighlight={highlightColor}
+                            />
+                          </View>
                         </View>
                       </View>
-                    </TouchableOpacity>
-                  ))}
+                    );
+                  })}
                   
                   {/* Debug info */}
                   {!loadingChapter && !chapterData && (
