@@ -4,9 +4,12 @@
  * Configure the base URL for the Laravel backend API.
  * In production, this should be set via environment variables.
  */
+import { Platform } from 'react-native';
 
 // Default API URL - should be overridden by environment variable in production
-export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://bible.test';
+export const API_BASE_URL = Platform.OS === 'ios' ? process.env.EXPO_PUBLIC_API_URL_IOS
+  : process.env.EXPO_PUBLIC_API_URL || 'http://bible.test';
+
 
 // API endpoints
 export const API_ENDPOINTS = {
@@ -24,36 +27,36 @@ export const API_ENDPOINTS = {
   user: '/api/mobile/auth/user',
   
   // Mobile app endpoints
-  home: '/api/home',
-  dashboard: '/api/dashboard',
-  onboarding: '/api/onboarding',
-  share: '/api/share',
-  sitemap: '/api/sitemap',
+  home: '/api/mobile/home',
+  dashboard: '/api/mobile/dashboard',
+  onboarding: '/api/mobile/onboarding',
+  share: '/api/mobile/share',
+  sitemap: '/api/mobile/sitemap',
   
   // User preferences
-  updateLocale: '/api/update-locale',
-  updateTheme: '/api/update-theme',
-  updateTranslations: '/api/update-translations',
+  updateLocale: '/api/mobile/update-locale',
+  updateTheme: '/api/mobile/update-theme',
+  updateTranslations: '/api/mobile/update-translations',
   
   // Bibles
-  bibles: '/api/bibles',
-  biblesParallel: '/api/bibles/parallel',
-  apiBibles: '/api/api-bibles',
+  bibles: '/api/mobile/bibles',
+  biblesParallel: '/api/mobile/bibles/parallel',
+  apiBibles: '/api/mobile/api-bibles',
   
   // Highlights
-  verseHighlights: '/api/verse-highlights',
-  highlightedVerses: '/api/highlighted-verses',
+  verseHighlights: '/api/mobile/verse-highlights',
+  highlightedVerses: '/api/mobile/highlighted-verses',
   
   // Notes
-  notes: '/api/notes',
+  notes: '/api/mobile/notes',
   
   // Reading plan
-  readingPlan: '/api/reading-plan',
-  readingProgress: '/api/reading-progress',
+  readingPlan: '/api/mobile/reading-plan',
+  readingProgress: '/api/mobile/reading-progress',
   
   // Lessons
-  lessons: '/api/lessons',
-  lessonProgress: '/api/lesson-progress',
+  lessons: '/api/mobile/lessons',
+  lessonProgress: '/api/mobile/lesson-progress',
 } as const;
 
 // API configuration

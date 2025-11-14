@@ -74,12 +74,18 @@ class ApiClient {
           // eslint-disable-next-line no-console
           console.log(`[API] ✖ ${status ?? 'ERR'} ${method} ${url}${location ? ` → ${location}` : ''}`);
         } catch {}
-        // If we get a 401 or 419 (CSRF token mismatch), clear the auth token
+        // Only clear token for non-GET requests on 401/419
         if (error.response?.status === 401 || error.response?.status === 419) {
-          await removeAuthToken();
-          this.csrfTokenFetched = false;
+          const method = (error.config?.method || 'get').toUpperCase();
+          if (method === 'GET') {
+            // Keep token for GET requests to avoid unintended logout
+            try { console.log('[API] 401/419 on GET – keeping token to avoid unintended logout'); } catch {}
+          } else {
+            await removeAuthToken();
+            this.csrfTokenFetched = false;
+            try { console.log('[API] Auth cleared due to 401/419 on non-GET request'); } catch {}
+          }
         }
-        
         return Promise.reject(error);
       }
     );

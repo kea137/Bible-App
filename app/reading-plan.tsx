@@ -19,7 +19,7 @@ export default function ReadingPlanScreen() {
       try {
         setLoading(true);
         const data = await getReadingPlan();
-        setPlanData(data);
+        setPlanData(Array.isArray(data) ? data : data);
         setCompletedDays(data.progress.filter(p => p.completed).map(p => p.day));
         setError(null);
       } catch (err: any) {

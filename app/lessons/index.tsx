@@ -20,7 +20,7 @@ export default function LessonsScreen() {
       try {
         setLoading(true);
         const data = await getLessons();
-        setLessons(data);
+        setLessons(Array.isArray(data) ? data : []);
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch lessons:', err);

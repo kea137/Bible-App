@@ -10,12 +10,21 @@ import { API_ENDPOINTS } from '../api/config';
 
 // Type definitions
 export interface VerseOfTheDay {
+  id: number;
   text: string;
-  reference: string;
-  bible: string;
-  book?: string;
-  chapter?: number;
-  verse_number?: number;
+  verse_number: number;
+  bible: {
+    id: number;
+    name: string;
+  };
+  book: {
+    id: number;
+    title: string;
+  };
+  chapter: {
+    id: number;
+    chapter_number: number;
+  };
 }
 
 export interface ReadingStats {
@@ -34,18 +43,32 @@ export interface LastReading {
 
 export interface HighlightedVerse {
   id: number;
-  text: string;
-  reference: string;
   color: string;
-  note?: string;
-  created_at: string;
+  user_id: number;
+  note?: string | null;
+  verse_id: number;
+  verse: {
+    id: number;
+    text: string;
+    verse_number: number;
+    bible_id: number;
+    book_id: number;
+    chapter_id: number;
+    book: object; // Replace 'object' with a more specific type if available
+    chapter: object; // Replace 'object' with a more specific type if available
+  };
 }
 
 export interface DashboardData {
-  verse_of_the_day: VerseOfTheDay;
-  reading_stats: ReadingStats;
-  last_reading: LastReading | null;
-  recent_highlights: HighlightedVerse[];
+  userName?: string;
+  verseOfTheDay: VerseOfTheDay;
+  readingStats: ReadingStats;
+  lastReading: LastReading | null;
+  highlightedVerses: HighlightedVerse[];
+}
+
+export interface DashData {
+  data: DashboardData;
 }
 
 export interface ApiError {
@@ -74,11 +97,11 @@ const parseApiError = (error: unknown): ApiError => {
 /**
  * Get dashboard data
  */
-export const getDashboardData = async (): Promise<DashboardData> => {
+export const getDashboardData = async (): Promise<DashData> => {
   try {
-    const response = await apiClient.get<DashboardData>(API_ENDPOINTS.dashboard);
-    console.log('[DashboardService] Fetched dashboard data successfully');
-    return response;
+    const response = await apiClient.get<DashData>(API_ENDPOINTS.dashboard);
+    console.log('[DashboardService] Fetched dashboard data successfully', response.data.highlightedVerses);
+    return { data: response.data };
   } catch (error) {
     console.error('[DashboardService] Failed to fetch dashboard data:', error);
     throw parseApiError(error);

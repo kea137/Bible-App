@@ -13,13 +13,18 @@ import {
 } from 'lucide-react-native';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { getDashboardData, DashboardData } from '@/lib/services/dashboard.service';
+import { getDashboardData, DashData } from '@/lib/services/dashboard.service';
+import { useColorScheme } from 'nativewind';
 
 export default function DashboardScreen() {
+  const { colorScheme } = useColorScheme();
   const [searchQuery, setSearchQuery] = useState('');
-  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch dashboard data on mount
   useEffect(() => {
@@ -34,47 +39,81 @@ export default function DashboardScreen() {
         setError(err.message || 'Failed to load dashboard data');
         // Use mock data as fallback
         setDashboardData({
-          verse_of_the_day: {
-            text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
-            reference: 'John 3:16',
-            bible: 'NIV',
-          },
-          reading_stats: {
-            total_bibles: 5,
-            verses_read_today: 12,
-            chapters_completed: 3,
-          },
-          last_reading: {
-            bible_id: 1,
-            bible_name: 'NIV Bible',
-            book_id: 19,
-            book_title: 'Psalms',
-            chapter_number: 23,
-          },
-          recent_highlights: [
-            {
+          data: {
+            verseOfTheDay: {
               id: 1,
-              text: 'Trust in the LORD with all your heart and lean not on your own understanding.',
-              reference: 'Proverbs 3:5',
-              color: '#fbbf24',
-              note: 'Remember to rely on God\'s wisdom, not my own',
-              created_at: new Date().toISOString(),
+              text: 'For God so loved the world that he gave his one and only Son, that whoever believes in him shall not perish but have eternal life.',
+              verse_number: 16,
+              bible: { id: 1, name: 'NIV' },
+              book: { id: 43, title: 'John' },
+              chapter: { id: 1001, chapter_number: 3 },
             },
-            {
-              id: 2,
-              text: 'I can do all things through Christ who strengthens me.',
-              reference: 'Philippians 4:13',
-              color: '#3b82f6',
-              created_at: new Date().toISOString(),
+            readingStats: {
+              total_bibles: 5,
+              verses_read_today: 12,
+              chapters_completed: 3,
             },
-            {
+            lastReading: {
+              bible_id: 1,
+              bible_name: 'NIV Bible',
+              book_id: 19,
+              book_title: 'Psalms',
+              chapter_number: 23,
+            },
+            highlightedVerses: [
+              {
+              id: 4,
+              color: "green",
+              user_id: 2,
+              note: null,
+              verse_id: 1311291,
+              verse: {
+                id: 1311291,
+                bible_id: 42,
+                book_id: 2765,
+                book: { id: 2765, title: "Isaiah" },
+                chapter_id: 50016,
+                chapter: { id: 50016, chapter_number: 62 },
+                text: "Nimeweka walinzi juu ya kuta zako, Ee Yerusalemu; hawatanyamaza mchana wala usiku; ninyi wenye kumkumbusha Bwana, msiwe na kimya; ",
+                verse_number: 6,
+              },
+              },
+              {
               id: 3,
-              text: 'The LORD is my shepherd, I lack nothing.',
-              reference: 'Psalms 23:1',
-              color: '#34d399',
-              created_at: new Date().toISOString(),
-            },
-          ],
+              color: "yellow",
+              user_id: 2,
+              note: null,
+              verse_id: 1306721,
+              verse: {
+                id: 1306721,
+                bible_id: 42,
+                book_id: 2761,
+                book: { id: 2761, title: "Psalms" },
+                chapter_id: 49780,
+                chapter: { id: 49780, chapter_number: 27 },
+                text: "Mradi atanisitiri bandani mwake siku ya mabaya, Atanisitiri katika sitara ya hema yake, Na kuniinua juu ya mwamba. ",
+                verse_number: 5,
+              },
+              },
+              {
+              id: 1,
+              color: "yellow",
+              user_id: 2,
+              note: null,
+              verse_id: 31113,
+              verse: {
+                id: 31113,
+                bible_id: 2,
+                book_id: 67,
+                book: { id: 67, title: "Genesis" },
+                chapter_id: 1190,
+                chapter: { id: 1190, chapter_number: 1 },
+                text: "So God said, “Let the earth sprout [tender] vegetation, plants yielding seed, and fruit trees bearing fruit according to (limited to, consistent with) their kind, whose seed is in them upon the earth”; and it was so.",
+                verse_number: 11,
+              },
+              },
+            ],
+          },
         });
       } finally {
         setLoading(false);
@@ -84,16 +123,17 @@ export default function DashboardScreen() {
     fetchDashboardData();
   }, []);
 
-  const verseOfTheDay = dashboardData?.verse_of_the_day;
-  const readingStats = dashboardData?.reading_stats;
-  const lastReading = dashboardData?.last_reading;
+  const verseOfTheDay = dashboardData?.data?.verseOfTheDay;
+  const readingStats = dashboardData?.data?.readingStats;
+  const lastReading = dashboardData?.data?.lastReading;
 
   return (
     <ScrollView className="flex-1 bg-background">
       <View className="flex-1 gap-6 p-4">
+
         {/* Header */}
         <View className="gap-2">
-          <Text className="text-3xl font-bold">Welcome back!</Text>
+          <Text className="text-3xl font-bold">Welcome back! {dashboardData?.data?.userName}</Text>
           <Text className="text-base text-muted-foreground">
             Continue your journey through God's Word
           </Text>
@@ -101,7 +141,7 @@ export default function DashboardScreen() {
 
         {/* Search Bar */}
         <View className="flex-row items-center gap-2 rounded-lg border border-border bg-card px-3">
-          <Search size={20} className="text-muted-foreground" />
+          <Search size={20} color={primaryIconColor} />
           <Input
             placeholder="Search verses, highlights, or bibles..."
             value={searchQuery}
@@ -140,7 +180,7 @@ export default function DashboardScreen() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex-row items-center gap-2">
-                    <TrendingUp size={20} className="text-primary" />
+                    <TrendingUp size={20} color={primaryIconColor} />
                     <Text>Reading Progress</Text>
                   </CardTitle>
                 </CardHeader>
@@ -168,14 +208,14 @@ export default function DashboardScreen() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex-row items-center gap-2">
-                    <Quote size={20} className="text-primary" />
+                    <Quote size={20} color={primaryIconColor} />
                     <Text>Verse of the Day</Text>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="gap-3">
                   <Text className="text-base leading-6">{verseOfTheDay.text}</Text>
                   <Text className="text-sm font-semibold text-primary">
-                    {verseOfTheDay.reference} ({verseOfTheDay.bible})
+                    {verseOfTheDay.book.title} {verseOfTheDay.chapter.chapter_number}:{verseOfTheDay.verse_number} ({verseOfTheDay.bible.name})
                   </Text>
                 </CardContent>
               </Card>
@@ -219,7 +259,7 @@ export default function DashboardScreen() {
                     variant='outline'
                     className='w-full justify-start'
                   >
-                    <BookOpen className="mr-2 h-4 w-4 text-primary" />
+                    <BookOpen className="mr-2 h-4 w-4" color={primaryIconColor} />
                     <Text>Browse Bibles</Text>
                   </Button>
                 </Link>
@@ -228,7 +268,7 @@ export default function DashboardScreen() {
                     variant='outline'
                     className='w-full justify-start'
                   >
-                    <Library className="mr-2 h-4 w-4 text-primary" />
+                    <Library className="mr-2 h-4 w-4" color={primaryIconColor} />
                     <Text>Compare Translations</Text>
                   </Button>
                 </Link>
@@ -247,18 +287,19 @@ export default function DashboardScreen() {
                               Set aside time each day to read and reflect on the Word
                             </CardDescription>
                         <BookOpen
-                            className="h-6 w-6 mt-2 text-primary/40 sm:h-8 sm:w-8"
+                            className="h-6 w-6 mt-2 sm:h-8 sm:w-8"
+                            color={primaryIconColor}
                         />
                 
                 </CardContent>
             </Card>
 
             {/* Highlighted Verses */}
-            {dashboardData.recent_highlights && dashboardData.recent_highlights.length > 0 && (
+            {dashboardData.data?.highlightedVerses && dashboardData.data?.highlightedVerses.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex-row items-center gap-2">
-                    <Highlighter size={20} className="text-primary" />
+                    <Highlighter size={20} color={primaryIconColor} />
                     <Text>Your Highlighted Verses</Text>
                   </CardTitle>
                   <CardDescription>
@@ -266,28 +307,34 @@ export default function DashboardScreen() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="gap-3">
-                  {dashboardData.recent_highlights.map((highlight) => (
+                  {dashboardData.data?.highlightedVerses.map((highlight) =>{
+                    const bgClass = 
+                    highlight.color === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
+                    const bgColor = 
+                      highlight.color === 'yellow' ? '#FEF08A1F' : '#86EFAC1F'; // 1F hex = 12% opacity
+
+                    return (
                     <View
                       key={highlight.id}
-                      className="rounded-r border-l-4 py-2 pl-3"
+                      className={`rounded-r border-l-4 py-2 pl-3 ${bgClass}`}
                       style={{ 
                         borderLeftColor: highlight.color, 
-                        backgroundColor: `${highlight.color}14` 
+                        backgroundColor: bgColor // More transparent tint (hex alpha 20 ≈ 12% opacity)
                       }}
                     >
                       <Text className="mb-2 text-sm">
-                        {highlight.text}
+                        {highlight.verse.text}
                       </Text>
-                      <Text className="text-xs font-medium text-muted-foreground">
+                      {/* <Text className="text-xs font-medium tex</View>t-muted-foreground">
                         {highlight.reference}
-                      </Text>
+                      </Text> */}
                       {highlight.note && (
                         <Text className="mt-1 text-xs italic text-muted-foreground">
                           Note: {highlight.note}
                         </Text>
                       )}
                     </View>
-                  ))}
+                  )})}
                   
                   <Link href="/highlights" asChild>
                     <Button variant="outline" className="mt-4 w-full">

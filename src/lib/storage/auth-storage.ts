@@ -15,13 +15,15 @@ const STORAGE_KEYS = {
 /**
  * Save authentication token
  */
-export const setAuthToken = (token: string): void => {
-  console.log('[AUTH STORAGE] Setting token:', token);
-  AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token).then(() => {
+export const setAuthToken = async (token: string): Promise<void> => {
+  try {
+    console.log('[AUTH STORAGE] Setting token:', token);
+    await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
     console.log('[AUTH STORAGE] Token saved');
-  }).catch(err => {
+  } catch (err) {
     console.error('[AUTH STORAGE] Failed to save token:', err);
-  });
+    throw err;
+  }
 };
 
 /**
@@ -52,13 +54,15 @@ export const removeAuthToken = async (): Promise<void> => {
 /**
  * Save user data
  */
-export const setUserData = (userData: any): void => {
-  console.log('[AUTH STORAGE] Setting user data:', userData);
-  AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData)).then(() => {
+export const setUserData = async (userData: any): Promise<void> => {
+  try {
+    console.log('[AUTH STORAGE] Setting user data:', userData);
+    await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
     console.log('[AUTH STORAGE] User data saved');
-  }).catch(err => {
+  } catch (err) {
     console.error('[AUTH STORAGE] Failed to save user data:', err);
-  });
+    throw err;
+  }
 };
 
 /**
@@ -89,6 +93,7 @@ export const removeUserData = async (): Promise<void> => {
  * Clear all auth storage
  */
 export const clearAuthStorage = async (): Promise<void> => {
+  console.log('[AUTH STORAGE] clearAuthStorage called');
   try {
     await Promise.all([
       AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN),

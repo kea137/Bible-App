@@ -31,10 +31,8 @@ export function MobileFooter() {
 
   return (
     <View 
+      className="bg-background border-t border-border"
       style={{ 
-        borderTopWidth: 1,
-        borderTopColor: colorScheme === 'dark' ? '#333' : '#e5e5e5',
-        backgroundColor: colorScheme === 'dark' ? 'primary' : 'secondary',
         paddingBottom: Platform.OS === 'ios' ? insets.bottom : 8,
         paddingTop: 8,
       }}
