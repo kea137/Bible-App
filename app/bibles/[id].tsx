@@ -96,9 +96,10 @@ export function NotesAlertDialog() {
   );
 }
 
-export function VerseDropdownMenu({text, verseId, onHighlight, onRemoveHighlight, currentHighlight}:{
+export function VerseDropdownMenu({text, verseId, verseReference, onHighlight, onRemoveHighlight, currentHighlight}:{
   text: string;
   verseId: number;
+  verseReference: string;
   onHighlight?: (verseId: number, color: string) => void;
   onRemoveHighlight?: (verseId: number) => void;
   currentHighlight?: string;
@@ -143,7 +144,11 @@ export function VerseDropdownMenu({text, verseId, onHighlight, onRemoveHighlight
             <Link 
               href={{
                 pathname: '/study',
-                params: { verseId, text }
+                params: { 
+                  verseId, 
+                  text,
+                  reference: verseReference
+                }
               }}
             >
               <Text>Study this Verse</Text>
@@ -162,7 +167,7 @@ export function VerseDropdownMenu({text, verseId, onHighlight, onRemoveHighlight
             <Link 
               href={{
                 pathname: '/share',
-                params: { verseId, text }
+                params: { verseId, text, reference: verseReference }
               }}
             >
               <View className="flex-row items-center">
@@ -341,18 +346,18 @@ export default function BibleDetailScreen() {
 
   // Swipe gesture handler
   const handleSwipe = (direction: 'left' | 'right') => {
-    if (direction === 'left' && selectedChapter) {
-      // Swipe left = next chapter
+    if (direction === 'left' && canGoNext) {
+      // Swipe left (right-to-left) = next chapter
       setSelectedChapter(selectedChapter + 1);
-    } else if (direction === 'right' && selectedChapter) {
-      // Swipe right = previous chapter
+    } else if (direction === 'right' && canGoPrevious) {
+      // Swipe right (left-to-right) = previous chapter
       setSelectedChapter(selectedChapter - 1);
     }
   };
 
   // Use explicit Directions for clarity
   const swipeRightGesture = Gesture.Fling()
-    .direction(Directions.RIGHT) // left-to-right swipe -> next chapter
+    .direction(Directions.RIGHT) // left-to-right swipe -> previous chapter
     .onEnd(() => {
       handleSwipe('right');
     })
@@ -360,7 +365,7 @@ export default function BibleDetailScreen() {
     .enabled(!isAnySelectOpen);
 
   const swipeLeftGesture = Gesture.Fling()
-    .direction(Directions.LEFT) // right-to-left swipe -> previous chapter
+    .direction(Directions.LEFT) // right-to-left swipe -> next chapter
     .onEnd(() => {
       handleSwipe('left');
     })
@@ -515,6 +520,7 @@ export default function BibleDetailScreen() {
                         ? { backgroundColor: '#fef08a' }
                         : { backgroundColor: '#86efac' }
                       : undefined;
+                    const verseReference = `${selectedBook?.title} ${selectedChapter}:${verse.verse_number}`;
                     
                     return (
                       <View 
@@ -526,13 +532,14 @@ export default function BibleDetailScreen() {
                           <View className="pt-0.5">
                             <VerseHoverCard 
                               text={verse.verse_number.toString()} 
-                              reference={`${selectedBook?.title} ${selectedChapter}:${verse.verse_number}`}
+                              reference={verseReference}
                             />
                           </View>
                           <View className="flex-1" style={{ flex: 1, flexShrink: 1 }}>
                             <VerseDropdownMenu 
                               text={verse.text}
                               verseId={verse.id}
+                              verseReference={verseReference}
                               onHighlight={handleHighlight}
                               onRemoveHighlight={handleRemoveHighlight}
                               currentHighlight={highlightColor}
