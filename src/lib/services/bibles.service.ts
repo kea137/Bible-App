@@ -108,7 +108,6 @@ export const getBibles = async (): Promise<Bible[]> => {
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedBibles) {
-      console.log('[BIBLES SERVICE] Using cached bibles (offline mode)');
       return cachedBibles;
     }
     
@@ -126,7 +125,7 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
   
   try {
     const response = await apiClient.get<{data: BibleDetail; success: boolean}>(`${API_ENDPOINTS.bibles}/${bibleId}`);
-    console.log('[BIBLE LOADED] Bible detail loaded: ', response);
+    
     // Save to local storage for offline access
     BibleStorage.saveBibleDetail(bibleId, response.data);
     
@@ -134,7 +133,6 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedDetail) {
-      console.log('[BIBLES SERVICE] Using cached bible detail (offline mode)');
       return cachedDetail;
     }
     
@@ -159,8 +157,6 @@ export const getChapterData = async (
       `${API_ENDPOINTS.bibles}/${bibleId}/books/${bookId}/chapters/${chapterNumber}`
     );
     
-    console.log('[CHAPTER DATA] Response:', response.data);
-    
     // Check if response is wrapped with {data: ..., success: ...}
     const chapterData = response.data?.data || response.data;
     
@@ -171,7 +167,6 @@ export const getChapterData = async (
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedChapter) {
-      console.log('[BIBLES SERVICE] Using cached chapter data (offline mode)');
       return cachedChapter;
     }
     

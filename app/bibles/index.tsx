@@ -23,7 +23,6 @@ export default function BiblesScreen() {
         setBibles(Array.isArray(data) ? data : []);
         setError(null);
       } catch (err: any) {
-        console.error('Failed to fetch bibles:', err);
         setError(err.message || 'Failed to load bibles');
         // Use mock data as fallback
         setBibles([

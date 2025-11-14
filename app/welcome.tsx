@@ -54,8 +54,6 @@ export default function WelcomeScreen() {
   const { colorScheme } = useColorScheme();
   const { user, isAuthenticated } = useAuth();
 
-  console.log(user, isAuthenticated);
-
   return (
     <ScrollView className="flex-1 bg-[#FDFDFC] dark:bg-[#0a0a0a]">
       <View className="flex-1 items-center p-6 lg:justify-center lg:p-8">
