@@ -12,10 +12,10 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
-import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { Gesture, GestureDetector, GestureHandlerRootView, Directions } from 'react-native-gesture-handler';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@showcase/components/ui/avatar';
 import * as React from 'react';
@@ -98,10 +98,23 @@ export function NotesAlertDialog() {
 }
 
 export function VerseDropdownMenu({text}:{text: string}) {
+  // On native, avoid DropdownMenu wrappers which can break layout; use a simple touchable/text.
+  if (Platform.OS !== 'web') {
+    return (
+      <TouchableOpacity activeOpacity={0.7}>
+        <Text className="flex-1">
+          {text}
+        </Text>
+      </TouchableOpacity>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild={true}>
-          <Text variant="p">{text}</Text>
+          <Text variant="p" className="flex-1">
+            {text}
+          </Text>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>
@@ -165,6 +178,13 @@ export function VerseDropdownMenu({text}:{text: string}) {
 }
 
 export function VerseHoverCard({ text }: { text: string }) {
+  // On native, simplify to plain text to avoid web-only HoverCard behavior
+  if (Platform.OS !== 'web') {
+    return (
+      <Text className="font-semibold">{text}.</Text>
+    );
+  }
+
   return (
     <HoverCard>
       <HoverCardTrigger asChild={true}>
@@ -205,6 +225,10 @@ export default function BibleDetailScreen() {
 
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState(1);
+  // Track Select open state to avoid gesture conflicts on native
+  const [bookSelectOpen, setBookSelectOpen] = useState(false);
+  const [chapterSelectOpen, setChapterSelectOpen] = useState(false);
+  const isAnySelectOpen = bookSelectOpen || chapterSelectOpen;
 
   // Fetch Bible detail on mount
   useEffect(() => {
@@ -319,44 +343,39 @@ export default function BibleDetailScreen() {
 
   // Swipe gesture handler
   const handleSwipe = (direction: 'left' | 'right') => {
-    if (direction === 'right' && canGoNext) {
+    if (direction === 'left' && selectedChapter) {
       // Swipe left = next chapter
       setSelectedChapter(selectedChapter + 1);
-    } else if (direction === 'left' && canGoPrevious) {
+    } else if (direction === 'right' && selectedChapter) {
       // Swipe right = previous chapter
       setSelectedChapter(selectedChapter - 1);
     }
   };
 
-  const swipeGesture = Gesture.Fling()
-    .direction(1) // right to left
-    .onEnd(() => {
-      handleSwipe('left');
-    })
-    .runOnJS(true);
-
-  const swipeLeftGesture = Gesture.Fling()
-    .direction(2) // left to right
+  // Use explicit Directions for clarity
+  const swipeRightGesture = Gesture.Fling()
+    .direction(Directions.RIGHT) // left-to-right swipe -> next chapter
     .onEnd(() => {
       handleSwipe('right');
     })
-    .runOnJS(true);
+    .runOnJS(true)
+    .enabled(!isAnySelectOpen);
 
-  const composedGesture = Gesture.Exclusive(swipeGesture, swipeLeftGesture);
+  const swipeLeftGesture = Gesture.Fling()
+    .direction(Directions.LEFT) // right-to-left swipe -> previous chapter
+    .onEnd(() => {
+      handleSwipe('left');
+    })
+    .runOnJS(true)
+    .enabled(!isAnySelectOpen);
 
-  if (loading) {
-    return (
-      <View className="flex-1 items-center justify-center bg-background">
-        <ActivityIndicator size="large" />
-        <Text className="mt-4 text-muted-foreground">Loading bible...</Text>
-      </View>
-    );
-  }
+  const composedGesture = Gesture.Exclusive(swipeRightGesture, swipeLeftGesture);
 
-  if (!bibleData) {
+  if (!bibleData || loading) {
     return (
       <View className="flex-1 items-center justify-center bg-background p-4">
-        <Text className="text-destructive text-center">Failed to load bible</Text>
+        <ActivityIndicator size="large" />
+        <Text className="mt-4 text-muted-foreground text-center">Loading Bible...</Text>
       </View>
     );
   }
@@ -395,9 +414,14 @@ export default function BibleDetailScreen() {
               <View className="w-full">
                 <Select
                   className="w-full"
-                  value={{ value: selectedBook?.id.toString() || '', label: selectedBook?.title || '' }}
+                  value={selectedBook ? { value: String(selectedBook.id), label: selectedBook.title } : undefined}
+                  onOpenChange={(open) => {
+                    setBookSelectOpen(!!open);
+                  }}
                   onValueChange={(option) => {
-                    const book = bibleData.books.find(b => b.id === Number(option?.value));
+                    const v = (option as any)?.value as string | undefined;
+                    if (!v) return;
+                    const book = bibleData.books.find(b => b.id === Number(v));
                     if (book) {
                       setSelectedBook(book);
                       setSelectedChapter(1);
@@ -426,10 +450,14 @@ export default function BibleDetailScreen() {
 
             <View className="w-full">
               <Select
-                value={{ value: selectedChapter.toString(), label: selectedChapter.toString() }}
+                value={{ value: String(selectedChapter), label: String(selectedChapter) }}
+                onOpenChange={(open) => {
+                  setChapterSelectOpen(!!open);
+                }}
                 onValueChange={(option) => {
-                  if (option?.value) {
-                    setSelectedChapter(Number(option.value));
+                  const v = (option as any)?.value as string | undefined;
+                  if (v) {
+                    setSelectedChapter(Number(v));
                   }
                 }}
               >
@@ -484,13 +512,13 @@ export default function BibleDetailScreen() {
                   {/* Verses */}
                   {!loadingChapter && chapterData && chapterData.verses && Array.isArray(chapterData.verses) && chapterData.verses.map((verse) => (
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
-                      <View className="flex-row items-start gap-1">
-                        <Text className="font-semibold text-base" numberOfLines={1}>
+                      <View className="flex-row items-start gap-2">
+                        <View>
                           <VerseHoverCard text={verse.verse_number.toString()} />
-                        </Text>
-                        <Text className="flex-1" numberOfLines={3}>
+                        </View>
+                        <View className="flex-1">
                           <VerseDropdownMenu text={verse.text} />
-                        </Text>
+                        </View>
                       </View>
                     </TouchableOpacity>
                   ))}
