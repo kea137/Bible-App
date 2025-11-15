@@ -1,20 +1,20 @@
-import { Text } from '@showcase/components/ui/text';
+import { DashData, getDashboardData } from '@/lib/services/dashboard.service';
 import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Input } from '@showcase/components/ui/input';
+import { Text } from '@showcase/components/ui/text';
 import { Link } from 'expo-router';
-import { 
-  BookOpen, 
-  Highlighter, 
-  Library, 
-  Quote, 
-  Search, 
+import {
+  BookOpen,
+  Highlighter,
+  Library,
+  Quote,
+  Search,
   TrendingUp,
 } from 'lucide-react-native';
-import { View, ScrollView, ActivityIndicator } from 'react-native';
-import { useState, useEffect } from 'react';
-import { getDashboardData, DashData } from '@/lib/services/dashboard.service';
 import { useColorScheme } from 'nativewind';
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, View } from 'react-native';
 
 export default function DashboardScreen() {
   const { colorScheme } = useColorScheme();

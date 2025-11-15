@@ -76,7 +76,6 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange}: {text: 
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>
         <TouchableOpacity onPress={() => onOpenChange(true)}>
-          <Text>Put Notes on this Verse</Text>
         </TouchableOpacity>
       </AlertDialogTrigger>
       <AlertDialogContent portalHost="root">
@@ -132,7 +131,7 @@ export function VerseDropdownMenu({text, verse}:{text: string, verse: string}) {
         <DropdownMenuTrigger asChild={true}>
             <Text variant="p" className="flex-1">{verse}. {text}</Text>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" portalHost="root">
+        <DropdownMenuContent className="w-60" portalHost="root">
           <DropdownMenuLabel>
             <Text>Highlight</Text>
           </DropdownMenuLabel>
@@ -595,7 +594,7 @@ export default function BibleDetailScreen() {
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
                       <View className="flex-row w-80 items-start pr-4">
                         <View className="flex-1 w-full">
-                          <VerseDropdownMenu text={verse.text} verse={verse.verse_number.toString()} navigation={navigation}/>
+                          <VerseDropdownMenu text={verse.text} verse={verse.verse_number.toString()}/>
                         </View>
                       </View>
                     </TouchableOpacity>
