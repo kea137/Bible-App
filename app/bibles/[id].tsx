@@ -12,7 +12,7 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, ScrollViewComponent } from 'react-native';
 import { useState, useEffect } from 'react';
 import { Link } from 'expo-router';
 import { Gesture, GestureDetector, GestureHandlerRootView, Directions } from 'react-native-gesture-handler';
@@ -42,6 +42,7 @@ import {
 } from '@showcase/components/ui/alert-dialog';
 import { Textarea } from '@showcase/components/ui/textarea';
 import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/lib/services/bibles.service';
+import { PortalHost } from '@rn-primitives/portal';
 
 export function NotesAlertDialog() {
     const [notes, setNotes] = React.useState('');
@@ -54,7 +55,7 @@ export function NotesAlertDialog() {
           <Text>Put Notes on this Verse</Text>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent portalHost="root">
         <AlertDialogHeader className="items-center justify-center">
           <AlertDialogTitle className="text-center">Add Note to Verse</AlertDialogTitle>
           <AlertDialogDescription className="text-center mb-4">
@@ -116,7 +117,7 @@ export function VerseDropdownMenu({text}:{text: string}) {
             {text}
           </Text>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56">
+      <DropdownMenuContent className="w-56" portalHost="root">
         <DropdownMenuLabel>
           <Text>Highlight</Text>
         </DropdownMenuLabel>
@@ -197,7 +198,7 @@ export function VerseHoverCard({ text }: { text: string }) {
           <Avatar alt="Vercel avatar" className="h-12 w-12">
             <AvatarImage source={{ uri: 'https://github.com/vercel.png' }} />
             <AvatarFallback>
-              <Text>VC</Text>
+              VC
             </AvatarFallback>
           </Avatar>
           <View className="flex-1 gap-1">
@@ -222,9 +223,9 @@ export default function BibleDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [loadingChapter, setLoadingChapter] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState(1);
+  const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
   // Track Select open state to avoid gesture conflicts on native
   const [bookSelectOpen, setBookSelectOpen] = useState(false);
   const [chapterSelectOpen, setChapterSelectOpen] = useState(false);
@@ -240,16 +241,19 @@ export default function BibleDetailScreen() {
         
         // If initialChapter is provided, use it
         if (data.initialChapter) {
-          setSelectedBook(data.initialChapter.book);
+          // Find the full book object from data.books which has the chapters array
+          const fullBook = data.books?.find(b => b.id === data.initialChapter.book.id) || data.initialChapter.book;
+          setSelectedBook(fullBook);
           setSelectedChapter(data.initialChapter.chapter_number);
+          setSelectedChapterId(data.initialChapter.id);
           setChapterData({
-            book: data.initialChapter.book,
+            id: data.initialChapter.id,
+            book: fullBook,
             chapter_number: data.initialChapter.chapter_number,
             verses: data.initialChapter.verses,
             bible: data.bible,
           });
           setLoadingChapter(false);
-          console.log('[INITIAL CHAPTER] Loaded verses:', data.initialChapter.verses.length);
         } else if (data.books && data.books.length > 0) {
           setSelectedBook(data.books[0]);
         }
@@ -268,11 +272,18 @@ export default function BibleDetailScreen() {
             version: '2011',
           },
           books: [
-            { id: 1, bible_id: Number(id), title: 'Genesis', book_number: 1, chapters_count: 50 },
-            { id: 2, bible_id: Number(id), title: 'Exodus', book_number: 2, chapters_count: 40 },
-            { id: 3, bible_id: Number(id), title: 'Psalms', book_number: 19, chapters_count: 150 },
-            { id: 4, bible_id: Number(id), title: 'Matthew', book_number: 40, chapters_count: 28 },
-            { id: 5, bible_id: Number(id), title: 'John', book_number: 43, chapters_count: 21 },
+            { id: 1, bible_id: Number(id), title: 'Genesis', book_number: 1, chapters_count: 50, chapters: [] },
+            { id: 2, bible_id: Number(id), title: 'Exodus', book_number: 2, chapters_count: 40, chapters: [] },
+            { id: 3, bible_id: Number(id), title: 'Psalms', book_number: 19, chapters_count: 150, chapters: [] },
+          ],
+          chapters: [
+            {id: 1, book_id: 1, chapter_number: 1, verses: []},
+            {id: 2, book_id: 1, chapter_number: 2, verses: []},
+            {id: 3, book_id: 1, chapter_number: 3, verses: []},
+          ],
+          verses: [
+            {id: 1, book_id: 1, chapter_number: 1, verse_number: 1, text: 'In the beginning God created the heavens and the earth.'},
+            {id: 2, book_id: 1, chapter_number: 1, verse_number: 2, text: 'Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters.'},
           ],
         };
         setBibleData(mockBible);
@@ -290,21 +301,38 @@ export default function BibleDetailScreen() {
   // Fetch chapter data when book or chapter changes
   useEffect(() => {
     const fetchChapterData = async () => {
-      if (!selectedBook || !bibleData) return;
+      if (!selectedBook || !bibleData) {
+        console.log('[CHAPTER FETCH] Skipped - no book or bible data');
+        return;
+      }
 
-      // Check if we already have this chapter data loaded (from initial load)
+      if (!selectedChapterId) {
+        console.log('[CHAPTER FETCH] Skipped - no chapter ID yet');
+        return;
+      }
+
+      // Check if we already have this chapter data loaded
       if (chapterData && 
-          chapterData.book.id === selectedBook.id && 
-          chapterData.chapter_number === selectedChapter) {
-        console.log('[CHAPTER] Using existing chapter data');
+          chapterData.id === selectedChapterId) {
+        console.log('[CHAPTER] Using existing chapter data for chapter ID:', selectedChapterId);
         return;
       }
 
       try {
         setLoadingChapter(true);
-        console.log(`[CHAPTER] Fetching bible ${id}, book ${selectedBook.id}, chapter ${selectedChapter}`);
-        const data = await getChapterData(Number(id), selectedBook.id, selectedChapter);
-        setChapterData(data);
+        console.log(`[CHAPTER] Fetching bible ${id}, book ${selectedBook.id} (${selectedBook.title}), chapter ${selectedChapter}, chapterId ${selectedChapterId}`);
+        const data = await getChapterData(Number(id), selectedBook.id, selectedChapterId);
+        console.log('[CHAPTER] Received data:', {
+          hasBook: !!data.book,
+          versesCount: data.verses?.length,
+          chapterNumber: data.chapter_number,
+          chapterId: data.id
+        });
+        // Ensure the chapter data has the id field
+        setChapterData({
+          ...data,
+          id: selectedChapterId
+        });
       } catch (err: any) {
         console.error('Failed to fetch chapter data:', err);
         // Use mock verses as fallback
@@ -327,7 +355,7 @@ export default function BibleDetailScreen() {
     };
 
     fetchChapterData();
-  }, [selectedBook, selectedChapter, id, bibleData]);
+  }, [selectedBook, selectedChapter, selectedChapterId, id, bibleData]);
 
   // Update header title with Bible version
   useEffect(() => {
@@ -340,15 +368,32 @@ export default function BibleDetailScreen() {
 
   const canGoPrevious = selectedChapter > 1;
   const canGoNext = selectedBook && selectedChapter < selectedBook.chapters_count;
-
+  console.log('[CHAPTER AND BOOK DATA]', selectedChapter);
   // Swipe gesture handler
   const handleSwipe = (direction: 'left' | 'right') => {
-    if (direction === 'left' && selectedChapter) {
+    console.log('[SWIPE] Direction:', direction, 'Current chapter:', selectedChapter);
+    if (direction === 'left' &&  (selectedChapter < selectedBook.chapters_count)) {
       // Swipe left = next chapter
-      setSelectedChapter(selectedChapter + 1);
-    } else if (direction === 'right' && selectedChapter) {
+      const nextChapterNum = selectedChapter + 1;
+      const nextChapter = selectedBook?.chapters?.find(ch => ch.chapter_number === nextChapterNum);
+      console.log('[SWIPE] Next chapter:', {
+        chapterNum: nextChapterNum,
+        chapterId: nextChapter?.id,
+        found: !!nextChapter
+      });
+      setSelectedChapter(nextChapterNum);
+      setSelectedChapterId(nextChapter?.id || null);
+    } else if (direction === 'right' && (selectedChapter > 1)) {
       // Swipe right = previous chapter
-      setSelectedChapter(selectedChapter - 1);
+      const prevChapterNum = selectedChapter - 1;
+      const prevChapter = selectedBook?.chapters?.find(ch => ch.chapter_number === prevChapterNum);
+      console.log('[SWIPE] Previous chapter:', {
+        chapterNum: prevChapterNum,
+        chapterId: prevChapter?.id,
+        found: !!prevChapter
+      });
+      setSelectedChapter(prevChapterNum);
+      setSelectedChapterId(prevChapter?.id || null);
     }
   };
 
@@ -382,6 +427,7 @@ export default function BibleDetailScreen() {
 
   return (
     <GestureHandlerRootView className="flex-1">
+      <PortalHost name="root" />
       <GestureDetector gesture={composedGesture}>
         <ScrollView className="flex-1 bg-background">
           <View className="flex-1 gap-4 p-4">
@@ -415,33 +461,39 @@ export default function BibleDetailScreen() {
                 <Select
                   className="w-full"
                   value={selectedBook ? { value: String(selectedBook.id), label: selectedBook.title } : undefined}
-                  onOpenChange={(open) => {
-                    setBookSelectOpen(!!open);
-                  }}
                   onValueChange={(option) => {
+
                     const v = (option as any)?.value as string | undefined;
                     if (!v) return;
                     const book = bibleData.books.find(b => b.id === Number(v));
                     if (book) {
+                      console.log('[BOOK SELECT] Setting book:', book);
                       setSelectedBook(book);
                       setSelectedChapter(1);
+                      // Find chapter 1's ID from the book's chapters array
+                      const firstChapter = book.chapters?.find(ch => ch.chapter_number === 1);
+                      setSelectedChapterId(firstChapter?.id || null);
                     }
                   }}
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select book" />
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {bibleData.books && Array.isArray(bibleData.books) && bibleData.books.map((book: BibleDetail['books'][number]) => (
-                        <SelectItem 
-                          key={book.id} 
+                  <SelectContent portalHost="root" className="h-100">
+                    <SelectGroup className='h-80 w-[320px]'>
+                      <ScrollView className="h-100 w-full">  
+                      {bibleData.books && Array.isArray(bibleData.books) && bibleData.books.map((book: BibleDetail['books'][number]) => {
+                        
+                        return (
+                        <SelectItem
+                          key={book.id}
                           value={book.id.toString()}
                           label={book.title}
                         >
                           {book.title}
                         </SelectItem>
-                      ))}
+                      )})}
+                      </ScrollView>
                     </SelectGroup>
                   </SelectContent>
                 </Select>
@@ -450,31 +502,53 @@ export default function BibleDetailScreen() {
 
             <View className="w-full">
               <Select
-                value={{ value: String(selectedChapter), label: String(selectedChapter) }}
+                value={{ value: String(selectedChapter), label: `Chapter ${selectedChapter}` }}
                 onOpenChange={(open) => {
+                  console.log('[CHAPTER SELECT] Open changed:', open);
                   setChapterSelectOpen(!!open);
                 }}
                 onValueChange={(option) => {
+                  console.log('[CHAPTER SELECT] Value change:', option);
                   const v = (option as any)?.value as string | undefined;
                   if (v) {
-                    setSelectedChapter(Number(v));
+                    const chapterNum = Number(v);
+                    console.log('[CHAPTER SELECT] Setting chapter:', chapterNum);
+                    setSelectedChapter(chapterNum);
+                    // Find the chapter ID from the book's chapters array
+                    const chapter = selectedBook?.chapters?.find(ch => ch.chapter_number === chapterNum);
+                    setSelectedChapterId(chapter?.id || null);
                   }
                 }}
               >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Chapter" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {selectedBook && Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
-                      <SelectItem 
-                        key={ch} 
-                        value={ch.toString()}
-                        label={ch.toString()}
-                      >
-                        {ch}
-                      </SelectItem>
-                    ))}
+                <SelectContent portalHost="root">
+                  <SelectGroup className='h-80 w-[320px]'>
+                    <ScrollView>
+                    {selectedBook?.chapters && selectedBook.chapters.length > 0 ? (
+                      selectedBook.chapters.map((chapter) => (
+                        <SelectItem 
+                          key={chapter.id} 
+                          value={chapter.chapter_number.toString()}
+                          label={`Chapter ${chapter.chapter_number}`}
+                        >
+                          Chapter {chapter.chapter_number}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      // Fallback to chapters_count if chapters array not available
+                      selectedBook && Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
+                        <SelectItem 
+                          key={ch} 
+                          value={ch.toString()}
+                          label={ch.toString()}
+                        >
+                          {ch}
+                        </SelectItem>
+                      ))
+                    )}
+                    </ScrollView>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -512,11 +586,11 @@ export default function BibleDetailScreen() {
                   {/* Verses */}
                   {!loadingChapter && chapterData && chapterData.verses && Array.isArray(chapterData.verses) && chapterData.verses.map((verse) => (
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
-                      <View className="flex-row items-start gap-2">
+                      <View className="flex-row w-80 items-start pr-4">
                         <View>
                           <VerseHoverCard text={verse.verse_number.toString()} />
                         </View>
-                        <View className="flex-1">
+                        <View className="flex-1 w-full">
                           <VerseDropdownMenu text={verse.text} />
                         </View>
                       </View>

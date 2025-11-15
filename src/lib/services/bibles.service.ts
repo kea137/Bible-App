@@ -29,9 +29,14 @@ export interface Book {
   title: string;
   book_number: number;
   chapters_count: number;
-  testament?: string;
-  created_at?: string;
-  updated_at?: string;
+  chapters: Chapter[];
+}
+
+export interface Chapter {
+  id: number;
+  book_id: number;
+  chapter_number: number;
+  verses: Verse[];
 }
 
 export interface Verse {
@@ -40,13 +45,13 @@ export interface Verse {
   chapter_number: number;
   verse_number: number;
   text: string;
-  created_at?: string;
-  updated_at?: string;
 }
 
 export interface BibleDetail {
   bible: Bible;
   books: Book[];
+  chapters: Chapter[];
+  verses: Verse[];
   initialChapter?: {
     id: number;
     book_id: number;
@@ -56,11 +61,8 @@ export interface BibleDetail {
   };
 }
 
-export interface BiblesDetailData {
-  data: BibleDetail;
-}
-
 export interface ChapterData {
+  id?: number;
   bible?: Bible;
   book: Book;
   chapter_number: number;
@@ -108,7 +110,6 @@ export const getBibles = async (): Promise<Bible[]> => {
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedBibles) {
-      console.log('[BIBLES SERVICE] Using cached bibles (offline mode)');
       return cachedBibles;
     }
     
@@ -125,16 +126,33 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
   const cachedDetail = BibleStorage.getBibleDetail(bibleId);
   
   try {
-    const response = await apiClient.get<{data: BibleDetail; success: boolean}>(`${API_ENDPOINTS.bibles}/${bibleId}`);
-    console.log('[BIBLE LOADED] Bible detail loaded: ', response);
-    // Save to local storage for offline access
-    BibleStorage.saveBibleDetail(bibleId, response.data);
+    const response = await apiClient.get<any>(`${API_ENDPOINTS.bibles}/${bibleId}`);
+    console.log('[BIBLE SERVICE] Raw response:', response.data);
     
-    return response.data;
+    // The response structure is { bible: {..., books: [...]}, initialChapter: {...} }
+    // We need to restructure it to match our BibleDetail interface
+    const apiData = response.data.data || response.data;
+    
+    const bibleDetail: BibleDetail = {
+      bible: apiData.bible,
+      books: apiData.bible.books || [],
+      chapters: apiData.chapters || [],
+      verses: apiData.verses || [],
+      initialChapter: apiData.initialChapter,
+    };
+    
+    console.log('[BIBLE SERVICE] Extracted detail:', { 
+      booksCount: bibleDetail.books?.length,
+      hasInitialChapter: !!bibleDetail.initialChapter 
+    });
+    
+    // Save to local storage for offline access
+    BibleStorage.saveBibleDetail(bibleId, bibleDetail);
+    
+    return bibleDetail;
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedDetail) {
-      console.log('[BIBLES SERVICE] Using cached bible detail (offline mode)');
       return cachedDetail;
     }
     
@@ -149,23 +167,33 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
 export const getChapterData = async (
   bibleId: number,
   bookId: number,
-  chapterNumber: number
+  chapterId: number
 ): Promise<ChapterData> => {
   // Try to get from local storage first
-  const cachedChapter = BibleStorage.getChapterData(bibleId, bookId, chapterNumber);
-  
+  const cachedChapter = BibleStorage.getChapterData(bibleId, bookId, chapterId);
+  console.log('[BIBLES SERVICE] Fetching chapter data for:', { bibleId, bookId, chapterId });
   try {
+    // API expects: /bibles/{bible}/books/{book}/chapters/{chapter}
     const response = await apiClient.get<any>(
-      `${API_ENDPOINTS.bibles}/${bibleId}/books/${bookId}/chapters/${chapterNumber}`
+      `${API_ENDPOINTS.bibles}/${bibleId}/books/${bookId}/chapters/${chapterId}`
     );
-    
-    console.log('[CHAPTER DATA] Response:', response.data);
-    
+
+    console.log('[BIBLES SERVICE] Raw API response:', JSON.stringify(response.data).substring(0, 200));
+
     // Check if response is wrapped with {data: ..., success: ...}
     const chapterData = response.data?.data || response.data;
+
+    console.log('[BIBLES SERVICE] Fetching chapter data:', { bibleId, bookId, chapterId });
+
+    console.log('[CHAPTER DATA] Extracted chapter:', {
+      hasBook: !!chapterData.book,
+      versesCount: chapterData.verses?.length,
+      chapterNumber: chapterData.chapter_number,
+      chapterId: chapterData.id
+    });
     
     // Save to local storage for offline access
-    BibleStorage.saveChapterData(bibleId, bookId, chapterNumber, chapterData);
+    BibleStorage.saveChapterData(bibleId, bookId, chapterId, chapterData);
     
     return chapterData;
   } catch (error) {
