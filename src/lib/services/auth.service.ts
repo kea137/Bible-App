@@ -78,15 +78,15 @@ const parseApiError = (error: unknown): ApiError => {
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
     const response = await apiClient.post<any>(API_ENDPOINTS.login, credentials);
-    console.log('[AUTH SERVICE] Login raw response:', response);
+    // console.log('[AUTH SERVICE] Login raw response:', response);
 
     // Adjust to your actual shape
     const payload = response.data ?? response; // if apiClient.post returns the whole body
     const user = payload.data?.user ?? payload.user;
     const token = payload.data?.token ?? payload.token;
 
-    console.log('[AUTH SERVICE] Parsed user:', user);
-    console.log('[AUTH SERVICE] Parsed token:', token);
+    // console.log('[AUTH SERVICE] Parsed user:', user);
+    // console.log('[AUTH SERVICE] Parsed token:', token);
 
     if (token) {
       await setAuthToken(token);
@@ -116,7 +116,7 @@ export const register = async (credentials: RegisterCredentials): Promise<AuthRe
     // Store token if provided
     if (token) {
       await setAuthToken(token);
-      console.log('[AUTH SERVICE] Confirm token persisted:', await getAuthToken());
+      // console.log('[AUTH SERVICE] Confirm token persisted:', await getAuthToken());
     }
     
     // Store user data
@@ -134,14 +134,14 @@ export const register = async (credentials: RegisterCredentials): Promise<AuthRe
  * Logout user
  */
 export const logout = async (): Promise<void> => {
-  console.log('[AUTH SERVICE] logout() called');
+  // console.log('[AUTH SERVICE] logout() called');
   try {
     await apiClient.post(API_ENDPOINTS.logout);
   } catch (error) {
-    console.log('[AUTH SERVICE] logout() API failed:', error);
+    // console.log('[AUTH SERVICE] logout() API failed:', error);
     // Continue with local logout even if API call fails
   } finally {
-     console.log('[AUTH SERVICE] Clearing auth storage...');
+    //  console.log('[AUTH SERVICE] Clearing auth storage...');
     // Clear all auth data
     clearAuthStorage();
     apiClient.resetCsrfToken();

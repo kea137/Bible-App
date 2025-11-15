@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, ScrollViewComponent } from 'react-native';
 import { useState, useEffect } from 'react';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { Gesture, GestureDetector, GestureHandlerRootView, Directions } from 'react-native-gesture-handler';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
 import { Avatar, AvatarFallback, AvatarImage } from '@showcase/components/ui/avatar';
@@ -43,27 +43,51 @@ import {
 import { Textarea } from '@showcase/components/ui/textarea';
 import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/lib/services/bibles.service';
 import { PortalHost } from '@rn-primitives/portal';
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from '@showcase/components/ui/context-menu';
 
-export function NotesAlertDialog() {
+export function VerseContextMenu({ text, verse }: { text: string; verse: string }) {
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <View>
+          <Text>{verse}. {text}</Text>
+        </View>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="w-64">
+        <ContextMenuItem inset>
+          <Text>Back</Text>
+        </ContextMenuItem>
+      </ContextMenuContent>
+    </ContextMenu>
+  );
+}
+
+export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void}) {
     const [notes, setNotes] = React.useState('');
     const [tags, setTags] = React.useState('');
     
   return (
-    <AlertDialog>
+    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>
-        <Button variant="ghost" className="p-0 m-0 min-h-0 h-auto">
+        <TouchableOpacity onPress={() => onOpenChange(true)}>
           <Text>Put Notes on this Verse</Text>
-        </Button>
+        </TouchableOpacity>
       </AlertDialogTrigger>
       <AlertDialogContent portalHost="root">
         <AlertDialogHeader className="items-center justify-center">
           <AlertDialogTitle className="text-center">Add Note to Verse</AlertDialogTitle>
           <AlertDialogDescription className="text-center mb-4">
-            Philippians 4:13
+            {verseRef}
           </AlertDialogDescription>
           <AlertDialogDescription>
             <View className="rounded-lg border bg-muted/50 p-3 items-center">
-          <Text className="text-sm italic text-center">"I can do all things through Christ who strengthens me."</Text>
+          <Text className="text-sm italic text-center">{text}</Text>
             </View>
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -98,83 +122,66 @@ export function NotesAlertDialog() {
   );
 }
 
-export function VerseDropdownMenu({text}:{text: string}) {
-  // On native, avoid DropdownMenu wrappers which can break layout; use a simple touchable/text.
-  if (Platform.OS !== 'web') {
-    return (
-      <TouchableOpacity activeOpacity={0.7}>
-        <Text className="flex-1">
-          {text}
-        </Text>
-      </TouchableOpacity>
-    );
-  }
-
+export function VerseDropdownMenu({text, verse}:{text: string, verse: string}) {
+  const router = useRouter();
+  const [isNotesOpen, setIsNotesOpen] = React.useState(false);
+  
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild={true}>
-          <Text variant="p" className="flex-1">
-            {text}
-          </Text>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-56" portalHost="root">
-        <DropdownMenuLabel>
-          <Text>Highlight</Text>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <span
-                className="flex items-center gap-2"
-            >
-                <span
-                    className="h-4 w-4 rounded bg-yellow-300"
-                ></span>
-            <Text>Highlight - Yellow</Text>
-            </span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <span
-                className="flex items-center gap-2"
-            >
-                <span
-                    className="h-4 w-4 rounded bg-green-300"
-                ></span>
-            <Text>Highlight - Green</Text>
-            </span>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Text>Remove Highlight</Text>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuLabel>
-          <Text>Learn More</Text>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Link key={'/study'} href={'/study'}>
-            <Text>Study this Verse</Text>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <NotesAlertDialog />
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuLabel>
-          <Text>Share</Text>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <Link key={'/share'} href={'/share'}>
-            <Text className="flex flex-row"> <Share2 className="text-primary mr-4" size={16} /> Share this Verse
-            </Text>
-            </Link>
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild={true}>
+            <Text variant="p" className="flex-1">{verse}. {text}</Text>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent className="w-56" portalHost="root">
+          <DropdownMenuLabel>
+            <Text>Highlight</Text>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem>
+              <View className="flex-row items-center gap-2">
+                <View className="h-4 w-4 rounded bg-yellow-300" />
+                <Text>Highlight - Yellow</Text>
+              </View>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <View className="flex-row items-center gap-2">
+                <View className="h-4 w-4 rounded bg-green-300" />
+                <Text>Highlight - Green</Text>
+              </View>
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Text>Remove Highlight</Text>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuLabel>
+            <Text>Learn More</Text>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem onPress={() => router.push('/study')}>
+              <Text>Study this Verse</Text>
+            </DropdownMenuItem>
+            <DropdownMenuItem onPress={() => setIsNotesOpen(true)}>
+              <Text>Put Notes on this Verse</Text>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuLabel>
+            <Text>Share</Text>
+          </DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuGroup>
+            <DropdownMenuItem onPress={() => router.push('/share')}>
+              <View className="flex-row items-center gap-2">
+                <Share2 className="text-primary" size={16} />
+                <Text>Share this Verse</Text>
+              </View>
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <NotesAlertDialog verseRef='Ps 1:12' text={text} isOpen={isNotesOpen} onOpenChange={setIsNotesOpen} />
+    </>
   );
 }
 
@@ -587,11 +594,8 @@ export default function BibleDetailScreen() {
                   {!loadingChapter && chapterData && chapterData.verses && Array.isArray(chapterData.verses) && chapterData.verses.map((verse) => (
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
                       <View className="flex-row w-80 items-start pr-4">
-                        <View>
-                          <VerseHoverCard text={verse.verse_number.toString()} />
-                        </View>
                         <View className="flex-1 w-full">
-                          <VerseDropdownMenu text={verse.text} />
+                          <VerseDropdownMenu text={verse.text} verse={verse.verse_number.toString()} navigation={navigation}/>
                         </View>
                       </View>
                     </TouchableOpacity>

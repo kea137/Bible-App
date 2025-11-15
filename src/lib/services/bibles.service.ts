@@ -127,7 +127,6 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
   
   try {
     const response = await apiClient.get<any>(`${API_ENDPOINTS.bibles}/${bibleId}`);
-    console.log('[BIBLE SERVICE] Raw response:', response.data);
     
     // The response structure is { bible: {..., books: [...]}, initialChapter: {...} }
     // We need to restructure it to match our BibleDetail interface
@@ -140,12 +139,7 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
       verses: apiData.verses || [],
       initialChapter: apiData.initialChapter,
     };
-    
-    console.log('[BIBLE SERVICE] Extracted detail:', { 
-      booksCount: bibleDetail.books?.length,
-      hasInitialChapter: !!bibleDetail.initialChapter 
-    });
-    
+     
     // Save to local storage for offline access
     BibleStorage.saveBibleDetail(bibleId, bibleDetail);
     
@@ -171,27 +165,15 @@ export const getChapterData = async (
 ): Promise<ChapterData> => {
   // Try to get from local storage first
   const cachedChapter = BibleStorage.getChapterData(bibleId, bookId, chapterId);
-  console.log('[BIBLES SERVICE] Fetching chapter data for:', { bibleId, bookId, chapterId });
   try {
     // API expects: /bibles/{bible}/books/{book}/chapters/{chapter}
     const response = await apiClient.get<any>(
       `${API_ENDPOINTS.bibles}/${bibleId}/books/${bookId}/chapters/${chapterId}`
     );
 
-    console.log('[BIBLES SERVICE] Raw API response:', JSON.stringify(response.data).substring(0, 200));
-
     // Check if response is wrapped with {data: ..., success: ...}
     const chapterData = response.data?.data || response.data;
 
-    console.log('[BIBLES SERVICE] Fetching chapter data:', { bibleId, bookId, chapterId });
-
-    console.log('[CHAPTER DATA] Extracted chapter:', {
-      hasBook: !!chapterData.book,
-      versesCount: chapterData.verses?.length,
-      chapterNumber: chapterData.chapter_number,
-      chapterId: chapterData.id
-    });
-    
     // Save to local storage for offline access
     BibleStorage.saveChapterData(bibleId, bookId, chapterId, chapterData);
     
@@ -199,7 +181,6 @@ export const getChapterData = async (
   } catch (error) {
     // If API fails, return cached data if available
     if (cachedChapter) {
-      console.log('[BIBLES SERVICE] Using cached chapter data (offline mode)');
       return cachedChapter;
     }
     
