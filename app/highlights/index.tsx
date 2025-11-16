@@ -7,11 +7,18 @@ import {
 import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { getHighlightedVerses, VerseHighlight } from '@/lib/services/highlights.service';
+import { useColorScheme } from 'nativewind';
+import { Link } from 'expo-router';
+import { Button } from '@showcase/components/ui/button';
 
 export default function HighlightsScreen() {
+  const { colorScheme } = useColorScheme();
   const [highlights, setHighlights] = useState<VerseHighlight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch highlights on mount
   useEffect(() => {
@@ -39,8 +46,6 @@ export default function HighlightsScreen() {
               chapter_number: 3,
               verse_number: 5,
             },
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
           },
           {
             id: 2,
@@ -54,8 +59,6 @@ export default function HighlightsScreen() {
               chapter_number: 4,
               verse_number: 13,
             },
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
           },
           {
             id: 3,
@@ -69,8 +72,6 @@ export default function HighlightsScreen() {
               chapter_number: 23,
               verse_number: 1,
             },
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
           },
         ]);
       } finally {
@@ -125,11 +126,11 @@ export default function HighlightsScreen() {
         )}
 
         {/* Highlighted Verses */}
-        {!loading && highlights.length > 0 && (
+        {highlights && highlights.length > 0 && (
           <Card>
             <CardHeader>
               <CardTitle className="flex-row items-center gap-2">
-                <Highlighter size={20} className="text-primary" />
+                <Highlighter size={20} color={primaryIconColor} />
                 <Text>Your Highlighted Verses</Text>
               </CardTitle>
               <CardDescription>
@@ -137,28 +138,35 @@ export default function HighlightsScreen() {
               </CardDescription>
             </CardHeader>
             <CardContent className="gap-3">
-              {highlights.map((highlight) => (
+              {highlights.map((highlight) =>{
+                const bgClass = 
+                highlight.color === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
+                const bgColor = 
+                  highlight.color === 'yellow' ? '#FEF08A1F' : '#86EFAC1F'; // 1F hex = 12% opacity
+
+                return (
                 <View
                   key={highlight.id}
-                  className="rounded-r border-l-4 py-2 pl-3"
+                  className={`rounded-r border-l-4 py-2 pl-3 ${bgClass}`}
                   style={{ 
                     borderLeftColor: highlight.color, 
-                    backgroundColor: `${highlight.color}14` 
+                    backgroundColor: bgColor // More transparent tint (hex alpha 20 ≈ 12% opacity)
                   }}
                 >
                   <Text className="mb-2 text-sm">
-                    {highlight.verse?.text}
+                    {highlight.verse.text}
                   </Text>
-                  <Text className="text-xs font-medium text-muted-foreground">
-                    {highlight.verse?.reference}
-                  </Text>
+                  {/* <Text className="text-xs font-medium tex</View>t-muted-foreground">
+                    {highlight.reference}
+                  </Text> */}
                   {highlight.note && (
                     <Text className="mt-1 text-xs italic text-muted-foreground">
                       Note: {highlight.note}
                     </Text>
                   )}
                 </View>
-              ))}
+              )})}
+          
             </CardContent>
           </Card>
         )}

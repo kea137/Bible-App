@@ -23,8 +23,6 @@ export interface VerseHighlight {
     chapter_number: number;
     verse_number: number;
   };
-  created_at: string;
-  updated_at: string;
 }
 
 export interface CreateHighlightData {
@@ -41,6 +39,10 @@ export interface UpdateHighlightData {
 export interface ApiError {
   message: string;
   errors?: Record<string, string[]>;
+}
+
+export interface VerseHighlightData {
+  data: VerseHighlight[];
 }
 
 /**
@@ -67,7 +69,7 @@ const parseApiError = (error: unknown): ApiError => {
 export const getHighlightedVerses = async (): Promise<VerseHighlight[]> => {
   try {
     const response = await apiClient.get<VerseHighlight[]>(API_ENDPOINTS.highlightedVerses);
-    return response;
+    return response.data;
   } catch (error) {
     throw parseApiError(error);
   }

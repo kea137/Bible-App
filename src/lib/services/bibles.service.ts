@@ -9,6 +9,7 @@ import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
 import * as BibleStorage from '../storage/bible-storage';
+import { number } from 'zod';
 
 // Type definitions
 export interface Bible {

@@ -69,8 +69,8 @@ export function VerseContextMenu({ text, verse }: { text: string; verse: string 
 }
 
 export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void}) {
-    const [notes, setNotes] = React.useState('');
-    const [tags, setTags] = React.useState('');
+  const [notes, setNotes] = React.useState('');
+  const [tags, setTags] = React.useState('');
     
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
@@ -121,7 +121,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange}: {text: 
   );
 }
 
-export function VerseDropdownMenu({text, verse}:{text: string, verse: string}) {
+export function VerseDropdownMenu({text, verse, verseId}:{text: string, verse: string, verseId:number}) {
   const router = useRouter();
   const [isNotesOpen, setIsNotesOpen] = React.useState(false);
   
@@ -158,7 +158,7 @@ export function VerseDropdownMenu({text, verse}:{text: string, verse: string}) {
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem onPress={() => router.push('/study')}>
+            <DropdownMenuItem onPress={() => router.push(`bibles/study/${verseId}`)}>
               <Text>Study this Verse</Text>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={() => setIsNotesOpen(true)}>
@@ -372,8 +372,6 @@ export default function BibleDetailScreen() {
     }
   }, [navigation, bibleData]);
 
-  const canGoPrevious = selectedChapter > 1;
-  const canGoNext = selectedBook && selectedChapter < selectedBook.chapters_count;
   console.log('[CHAPTER AND BOOK DATA]', selectedChapter);
   // Swipe gesture handler
   const handleSwipe = (direction: 'left' | 'right') => {
@@ -594,7 +592,7 @@ export default function BibleDetailScreen() {
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
                       <View className="flex-row w-80 items-start pr-4">
                         <View className="flex-1 w-full">
-                          <VerseDropdownMenu text={verse.text} verse={verse.verse_number.toString()}/>
+                          <VerseDropdownMenu text={verse.text} verseId={verse.id} verse={verse.verse_number.toString()}/>
                         </View>
                       </View>
                     </TouchableOpacity>
