@@ -42,6 +42,7 @@ import {
 } from '@showcase/components/ui/alert-dialog';
 import { Textarea } from '@showcase/components/ui/textarea';
 import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/lib/services/bibles.service';
+import { createNote, CreateNoteData } from '@/lib/services/notes.service';
 import { PortalHost } from '@rn-primitives/portal';
 import {
   ContextMenu,
@@ -68,9 +69,37 @@ export function VerseContextMenu({ text, verse }: { text: string; verse: string 
   );
 }
 
-export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void}) {
+export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void, verseId: number}) {
   const [notes, setNotes] = React.useState('');
-  const [tags, setTags] = React.useState('');
+  const [title, setTitle] = React.useState('');
+  const [saving, setSaving] = React.useState(false);
+
+  const handleSaveNote = async () => {
+    if (!notes.trim()) {
+      console.warn('Note content is empty');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      const noteData: CreateNoteData = {
+        title: title || undefined,
+        content: notes,
+        verse_id: verseId,
+      };
+      await createNote(noteData);
+      console.log('Note saved successfully');
+      // Reset form
+      setNotes('');
+      setTitle('');
+      // Close dialog
+      onOpenChange(false);
+    } catch (error) {
+      console.error('Failed to save note:', error);
+    } finally {
+      setSaving(false);
+    }
+  };
     
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
@@ -94,8 +123,8 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange}: {text: 
             <Text className="text-sm font-medium">Title (Optional)</Text>
             <Input
                 placeholder="Enter a title for your note"
-                value={tags}
-                onChangeText={setTags}
+                value={title}
+                onChangeText={setTitle}
             />
         </View>
 
@@ -112,8 +141,8 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange}: {text: 
           <AlertDialogCancel>
             <Text>Cancel</Text>
           </AlertDialogCancel>
-          <AlertDialogAction>
-            <Text>Save Note</Text>
+          <AlertDialogAction onPress={handleSaveNote} disabled={saving}>
+            <Text>{saving ? 'Saving...' : 'Save Note'}</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -121,23 +150,39 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange}: {text: 
   );
 }
 
-export function VerseDropdownMenu({text, verse, verseId}:{text: string, verse: string, verseId:number}) {
+export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string}) {
   const router = useRouter();
   const [isNotesOpen, setIsNotesOpen] = React.useState(false);
-  
+  const bgClass = highlight === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
+  const bgColor = highlight === 'yellow' ? '#FEF08A1F' : '#86EFAC1F'; 
+
   return (
     <>
       <DropdownMenu>
-        <DropdownMenuTrigger asChild={true}>
-            <Text variant="p" className="flex-1">{verse}. {text}</Text>
-        </DropdownMenuTrigger>
+        {
+          (highlight != null && highlight !== '') ? (
+            <DropdownMenuTrigger asChild={true} className={`rounded-r py-2 pl-3 ${bgClass}`}
+              style={{  
+                backgroundColor: bgColor // More transparent tint (hex alpha 20 ≈ 12% opacity)
+              }}>
+              <Text variant="p" className="flex-1">{verse}. {text}</Text>
+            </DropdownMenuTrigger>
+          ) : (
+            <DropdownMenuTrigger asChild={true}>
+              <Text variant="p" className="flex-1">{verse}. {text}</Text>
+            </DropdownMenuTrigger>
+          )
+        }
+        
         <DropdownMenuContent className="w-60" portalHost="root">
           <DropdownMenuLabel>
             <Text>Highlight</Text>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
-            <DropdownMenuItem>
+            <DropdownMenuItem onPress={()=>{
+            
+            }}>
               <View className="flex-row items-center gap-2">
                 <View className="h-4 w-4 rounded bg-yellow-300" />
                 <Text>Highlight - Yellow</Text>
@@ -179,44 +224,29 @@ export function VerseDropdownMenu({text, verse, verseId}:{text: string, verse: s
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <NotesAlertDialog verseRef='Ps 1:12' text={text} isOpen={isNotesOpen} onOpenChange={setIsNotesOpen} />
+      <NotesAlertDialog verseRef={verseRef} text={text} isOpen={isNotesOpen} onOpenChange={setIsNotesOpen} verseId={verseId} />
     </>
   );
 }
 
-export function VerseHoverCard({ text }: { text: string }) {
-  // On native, simplify to plain text to avoid web-only HoverCard behavior
-  if (Platform.OS !== 'web') {
-    return (
-      <Text className="font-semibold">{text}.</Text>
-    );
-  }
+export function AlertSuccess({ message, open, onOpenChange }: { message: string; open: boolean; onOpenChange: (open: boolean) => void }) {
 
   return (
-    <HoverCard>
-      <HoverCardTrigger asChild={true}>
-        <Button variant="link">
-          <Text>{text}.</Text>
-        </Button>
-      </HoverCardTrigger>
-      <HoverCardContent className="w-80 ml-8">
-        <View className="flex-row justify-between gap-4">
-          <Avatar alt="Vercel avatar" className="h-12 w-12">
-            <AvatarImage source={{ uri: 'https://github.com/vercel.png' }} />
-            <AvatarFallback>
-              VC
-            </AvatarFallback>
-          </Avatar>
-          <View className="flex-1 gap-1">
-            <Text className="text-sm font-semibold">@nextjs</Text>
-            <Text className="text-sm">The React Framework – created and maintained by @vercel.</Text>
-            <View className="flex-row items-center pt-2">
-              <Text className="text-muted-foreground text-xs">Joined December 2021</Text>
-            </View>
-          </View>
-        </View>
-      </HoverCardContent>
-    </HoverCard>
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent portalHost="root">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-destructive">Error</AlertDialogTitle>
+          <AlertDialogDescription>
+            {message}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            <Text>Cancel</Text>
+          </AlertDialogCancel>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   );
 }
 
@@ -232,10 +262,12 @@ export default function BibleDetailScreen() {
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
-  // Track Select open state to avoid gesture conflicts on native
   const [bookSelectOpen, setBookSelectOpen] = useState(false);
   const [chapterSelectOpen, setChapterSelectOpen] = useState(false);
   const isAnySelectOpen = bookSelectOpen || chapterSelectOpen;
+  const [checker, setChecker] = useState(false);
+  const [checkerSuccess, setCheckerSuccess] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   // Fetch Bible detail on mount
   useEffect(() => {
@@ -288,8 +320,8 @@ export default function BibleDetailScreen() {
             {id: 3, book_id: 1, chapter_number: 3, verses: []},
           ],
           verses: [
-            {id: 1, book_id: 1, chapter_number: 1, verse_number: 1, text: 'In the beginning God created the heavens and the earth.'},
-            {id: 2, book_id: 1, chapter_number: 1, verse_number: 2, text: 'Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters.'},
+            {id: 1, book_id: 1, chapter_number: 1, verse_number: 1, text: 'In the beginning God created the heavens and the earth.', highlight: { id: 0, color: 'yellow' }},
+            {id: 2, book_id: 1, chapter_number: 1, verse_number: 2, text: 'Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters.', highlight: { id: 0, color: 'yellow' }},
           ],
         };
         setBibleData(mockBible);
@@ -352,6 +384,7 @@ export default function BibleDetailScreen() {
             chapter_number: selectedChapter,
             verse_number: i + 1,
             text: `This is verse ${i + 1} from ${selectedBook.title} chapter ${selectedChapter}. The content would be the actual verse text from the Bible.`,
+            highlight: { id: 0, color: 'yellow' }
           })),
         };
         setChapterData(mockChapter);
@@ -432,6 +465,7 @@ export default function BibleDetailScreen() {
   return (
     <GestureHandlerRootView className="flex-1">
       <PortalHost name="root" />
+      <AlertSuccess open={checkerSuccess} onOpenChange={setChecker} message={alertMessage} />
       <GestureDetector gesture={composedGesture}>
         <ScrollView className="flex-1 bg-background">
           <View className="flex-1 gap-4 p-4">
@@ -592,7 +626,7 @@ export default function BibleDetailScreen() {
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
                       <View className="flex-row w-80 items-start pr-4">
                         <View className="flex-1 w-full">
-                          <VerseDropdownMenu text={verse.text} verseId={verse.id} verse={verse.verse_number.toString()}/>
+                          <VerseDropdownMenu text={verse.text} verseId={verse.id} highlight={verse.highlight?.color} verse={verse.verse_number.toString()} verseRef={`${selectedBook?.title} ${selectedChapter}:${verse.verse_number}`}/>
                         </View>
                       </View>
                     </TouchableOpacity>

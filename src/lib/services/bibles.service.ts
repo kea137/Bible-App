@@ -46,6 +46,10 @@ export interface Verse {
   chapter_number: number;
   verse_number: number;
   text: string;
+  highlight: {
+    id: number;
+    color: string; 
+  }
 }
 
 export interface BibleDetail {
@@ -132,6 +136,8 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
     // The response structure is { bible: {..., books: [...]}, initialChapter: {...} }
     // We need to restructure it to match our BibleDetail interface
     const apiData = response.data.data || response.data;
+
+    console.log('[API data loaded for bible]:', apiData);
     
     const bibleDetail: BibleDetail = {
       bible: apiData.bible,

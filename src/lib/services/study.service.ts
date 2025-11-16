@@ -89,7 +89,7 @@ const parseApiError = (error: unknown): ApiError => {
  */
 export const getVerseWithReferences = async (VerseId: number): Promise<VerseWithReferences> => {
   try {
-    const response = await apiClient.get<VerseWithReferences>(`${API_ENDPOINTS.VerseWithReferences}/${VerseId}`);
+    const response = await apiClient.get<{ data: VerseWithReferences }>(`${API_ENDPOINTS.VerseWithReferences}/${VerseId}`);
     console.log(response);
     return response.data;
   } catch (error) {

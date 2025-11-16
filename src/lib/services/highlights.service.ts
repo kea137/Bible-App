@@ -68,7 +68,7 @@ const parseApiError = (error: unknown): ApiError => {
  */
 export const getHighlightedVerses = async (): Promise<VerseHighlight[]> => {
   try {
-    const response = await apiClient.get<VerseHighlight[]>(API_ENDPOINTS.highlightedVerses);
+    const response = await apiClient.get<{ data: VerseHighlight[] }>(API_ENDPOINTS.highlightedVerses);
     return response.data;
   } catch (error) {
     throw parseApiError(error);

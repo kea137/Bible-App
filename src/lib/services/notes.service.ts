@@ -15,7 +15,6 @@ export interface Note {
   verse_id?: number;
   title?: string;
   content: string;
-  tags?: string[];
   verse?: {
     id: number;
     text: string;
@@ -32,13 +31,11 @@ export interface CreateNoteData {
   verse_id?: number;
   title?: string;
   content: string;
-  tags?: string[];
 }
 
 export interface UpdateNoteData {
   title?: string;
   content?: string;
-  tags?: string[];
 }
 
 export interface ApiError {
@@ -94,6 +91,7 @@ export const getNote = async (noteId: number): Promise<Note> => {
 export const createNote = async (data: CreateNoteData): Promise<Note> => {
   try {
     const response = await apiClient.post<Note>(API_ENDPOINTS.notes, data);
+    console.log(response);
     return response;
   } catch (error) {
     throw parseApiError(error);
