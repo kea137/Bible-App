@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@show
 import { BookOpen, Link2, Share2, StickyNote} from 'lucide-react-native';
 import { View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { Button } from '@showcase/components/ui/button';
-import { Link } from 'expo-router';
+import { Link, useNavigation } from 'expo-router';
 import { Input } from '@showcase/components/ui/input';
 import { useColorScheme } from 'nativewind';
 import {
@@ -160,6 +160,7 @@ export default function VerseStudyScreen() {
   const verseRef = `${verseData?.verse.book.title} ${verseData?.verse.chapter.chapter_number}:${verseData?.verse.verse_number}`;
   const text = verseData?.verse.text || '';
   const verseId = verseData?.verse.id || 0;
+  const navigation = useNavigation();
 
   const handleNoteSaveSuccess = () => {
     setShowSuccessAlert(true);
@@ -169,6 +170,11 @@ export default function VerseStudyScreen() {
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   useEffect(()=>{
+
+    navigation.setOptions({
+      headerTitle: 'Verse Study'
+    })
+
     const fetchVerseWithReferences = async () =>{
       try {
         setLoading(true);
@@ -291,7 +297,7 @@ export default function VerseStudyScreen() {
             <NotesAlertDialog verseRef={verseRef} text={text} isOpen={isNotesOpen} onOpenChange={setIsNotesOpen} verseId={verseId} onSaveSuccess={handleNoteSaveSuccess} />
             <AlertSuccess open={showSuccessAlert} onOpenChange={setShowSuccessAlert} />
 
-            <Link href="/share" asChild>
+            <Link href={`/bibles/share/${verseId}`} asChild>
               <Button
                 variant='secondary'
                 className='w-full justify-center'

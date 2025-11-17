@@ -16,6 +16,7 @@ import * as React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { LogOut } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
+import { getUserData } from '@showcase/src/lib/storage/auth-storage';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -23,9 +24,16 @@ interface SettingsDialogProps {
 }
 
 export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
-  const { isAuthenticated, logout, user } = useAuth();
+  const { isAuthenticated, logout} = useAuth();
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
+  const [user, setUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    getUserData().then((result) => {
+      setUser(result.data.user);
+    });
+  }, []);
 
   async function handleLogout() {
     try {
@@ -70,16 +78,17 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
             <ThemeToggle />
           </View>
 
-          {/* User Info Section */}
-          {isAuthenticated && user && (
-            <View className="border-border border-t pt-4">
-              <Text className="text-sm font-medium">Account</Text>
-              <View className="mt-2 gap-1">
-                <Text className="text-muted-foreground text-xs">Name: {user.name}</Text>
-                <Text className="text-muted-foreground text-xs">Email: {user.email}</Text>
-              </View>
+        {/* User Info Section */}
+        {isAuthenticated && user && (
+          <View className="border-border border-t pt-4">
+            <Text className="text-sm font-medium">Account</Text>
+            <View className="mt-2 gap-1">
+              <Text className="text-muted-foreground text-xs">Name: {user.name}</Text>
+              <Text className="text-muted-foreground text-xs">Email: {user.email}</Text>
             </View>
-          )}
+          </View>
+        )}
+
         </View>
         <DialogFooter>
           {isAuthenticated && (

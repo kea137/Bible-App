@@ -11,9 +11,11 @@ import {
 } from '@showcase/components/ui/select';
 import { Share2, Download, Palette, Type, Image as ImageIcon } from 'lucide-react-native';
 import { View, ScrollView } from 'react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
 
 export default function ShareScreen() {
+  const navigation = useNavigation();
   const [selectedFont, setSelectedFont] = useState('serif');
   const [selectedBackground, setSelectedBackground] = useState('gradient');
   const [fontSize, setFontSize] = useState('medium');
@@ -42,6 +44,13 @@ export default function ShareScreen() {
     { value: 'medium', label: 'Medium' },
     { value: 'large', label: 'Large' },
   ];
+
+  useEffect(() => {
+    // Any side effects based on selections can be handled here
+    navigation.setOptions({
+        headerTitle: 'Share Verse',
+    });
+  }, []);
 
   return (
     <ScrollView className="flex-1 bg-background">

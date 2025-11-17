@@ -71,6 +71,7 @@ export const setUserData = async (userData: any): Promise<void> => {
 export const getUserData = async (): Promise<any | null> => {
   try {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.USER_DATA);
+    console.log("[User data]: ", data);
     return data ? JSON.parse(data) : null;
   } catch (error) {
     console.error('[AUTH STORAGE] Failed to get user data:', error);

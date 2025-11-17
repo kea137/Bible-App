@@ -2,7 +2,7 @@ import { Text } from '@showcase/components/ui/text';
 import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Input } from '@showcase/components/ui/input';
-import { Link } from 'expo-router';
+import { Link, useNavigation } from 'expo-router';
 import { BookOpen, Search } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
@@ -13,9 +13,15 @@ export default function BiblesScreen() {
   const [bibles, setBibles] = useState<Bible[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation();
 
   // Fetch bibles on mount
   useEffect(() => {
+
+    navigation.setOptions({
+      headerTitle: 'Bibles'
+    })
+
     const fetchBibles = async () => {
       try {
         setLoading(true);

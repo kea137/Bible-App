@@ -234,9 +234,9 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {
           <DropdownMenuLabel>
             <Text>Share</Text>
           </DropdownMenuLabel>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator/>
           <DropdownMenuGroup>
-            <DropdownMenuItem onPress={() => router.push('/share')}>
+            <DropdownMenuItem onPress={() => router.push(`bibles/share/${verseId}`)}>
               <View className="flex-row items-center gap-2">
                 <Share2 color={primaryIconColor} size={16} />
                 <Text>Share this Verse</Text>
@@ -288,7 +288,6 @@ export default function BibleDetailScreen() {
   const [chapterSelectOpen, setChapterSelectOpen] = useState(false);
   const isAnySelectOpen = bookSelectOpen || chapterSelectOpen;
   const { colorScheme } = useColorScheme();
-  const [ alertSuccess, setAlertSuccess] = useState(false);
 
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';

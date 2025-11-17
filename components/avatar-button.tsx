@@ -1,16 +1,22 @@
 import { Button } from '@showcase/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@showcase/components/ui/avatar';
 import { Text } from '@showcase/components/ui/text';
-import { useAuth } from '@/lib/contexts/AuthContext';
 import * as Haptics from 'expo-haptics';
 import * as React from 'react';
+import { getUserData, setUserData } from '@/lib/auth';
 
 interface AvatarButtonProps {
   onPress: () => void;
 }
 
 export function AvatarButton({ onPress }: AvatarButtonProps) {
-  const { user, isAuthenticated } = useAuth();
+  const [user, setUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    getUserData().then((result) => {
+      setUser(result.data.user);
+    });
+  }, []);
 
   function handlePress() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -38,7 +44,7 @@ export function AvatarButton({ onPress }: AvatarButtonProps) {
         {/* <AvatarImage source={{ uri: user?.avatar }} /> */}
         <AvatarFallback>
           <Text className="text-foreground text-xs font-medium">
-            {isAuthenticated && user ? getUserInitials(user.name) : 'G'}
+            {user ? getUserInitials(user.name) : 'G'}
           </Text>
         </AvatarFallback>
       </Avatar>
