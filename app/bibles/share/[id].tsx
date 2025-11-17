@@ -14,7 +14,7 @@ import { View, ScrollView, ActivityIndicator, Platform, Alert } from 'react-nati
 import { useEffect, useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { getShareVerseData, ShareVerseData } from '@/lib/services/share.service';
+import { getShareVerseData, ShareData } from '@/lib/services/share.service';
 import { useColorScheme } from 'nativewind';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
@@ -33,7 +33,7 @@ export default function ShareScreen() {
   // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [verseData, setVerseData] = useState<ShareVerseData | null>(null);
+  const [shareData, setShareData] = useState<ShareData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   
   // Customization states
@@ -104,7 +104,7 @@ export default function ShareScreen() {
       try {
         setLoading(true);
         const data = await getShareVerseData(Number(id));
-        setVerseData(data);
+        setShareData(data);
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch verse data:', err);
@@ -116,12 +116,6 @@ export default function ShareScreen() {
 
     fetchVerseData();
   }, [id]);
-
-  useEffect(() => {
-    navigation.setOptions({
-      headerTitle: 'Share Verse',
-    });
-  }, []);
 
   useEffect(() => {
     navigation.setOptions({
@@ -157,9 +151,7 @@ export default function ShareScreen() {
       // Share the image
       await Sharing.shareAsync(uri, {
         mimeType: 'image/png',
-        dialogTitle: verseData?.verse.book.title + ' ' + 
-                     verseData?.verse.chapter.chapter_number + ':' + 
-                     verseData?.verse.verse_number,
+        dialogTitle: shareData?.verseReference || 'Bible Verse',
       });
     } catch (error: any) {
       console.error('Share error:', error);
@@ -184,7 +176,7 @@ export default function ShareScreen() {
       // For web platform, download directly
       if (Platform.OS === 'web') {
         const link = document.createElement('a');
-        link.download = `verse_${verseData?.verse.book.title}_${verseData?.verse.chapter.chapter_number}_${verseData?.verse.verse_number}.png`;
+        link.download = `verse_${shareData?.verseReference?.replace(/[^a-z0-9]/gi, '_')}.png`;
         link.href = uri;
         link.click();
       } else {
@@ -217,7 +209,7 @@ export default function ShareScreen() {
     );
   }
 
-  if (error || !verseData) {
+  if (error || !shareData) {
     return (
       <View className="flex-1 items-center justify-center bg-background p-4">
         <Text className="text-destructive mb-4 text-center">{error || 'Failed to load verse'}</Text>
@@ -227,8 +219,6 @@ export default function ShareScreen() {
       </View>
     );
   }
-
-  const verseReference = `${verseData.verse.book.title} ${verseData.verse.chapter.chapter_number}:${verseData.verse.verse_number}`;
 
   return (
     <ScrollView className="flex-1 bg-background">
@@ -296,7 +286,7 @@ export default function ShareScreen() {
                         textShadowRadius: 15,
                       }}
                     >
-                      "{verseData.verse.text}"
+                      "{shareData.verseText}"
                     </Text>
                     <Text 
                       className="text-center font-semibold text-white/90"
@@ -309,7 +299,7 @@ export default function ShareScreen() {
                         textShadowRadius: 15,
                       }}
                     >
-                      {verseReference} ({verseData.verse.bible.abbreviation})
+                      {shareData.verseReference}
                     </Text>
                   </View>
                 </View>
@@ -443,7 +433,13 @@ export default function ShareScreen() {
 
           <Button 
             variant="outline" 
-            onPress={() => router.push(`/bibles/${verseData.verse.bible.id}?book=${verseData.verse.book.id}&chapter=${verseData.verse.chapter.chapter_number}`)}
+            onPress={() => {
+              if (shareData.bible && shareData.book && shareData.chapter) {
+                router.push(`/bibles/${shareData.bible}?book=${shareData.book}&chapter=${shareData.chapter}`);
+              } else {
+                router.back();
+              }
+            }}
           >
             <BookMarked size={16} color={primaryIconColor} />
             <Text className="ml-2">Back to Bible</Text>
@@ -458,15 +454,11 @@ export default function ShareScreen() {
           <CardContent className="gap-2">
             <View>
               <Text className="font-semibold">Reference:</Text>
-              <Text className="text-muted-foreground">{verseReference}</Text>
-            </View>
-            <View>
-              <Text className="font-semibold">Bible:</Text>
-              <Text className="text-muted-foreground">{verseData.verse.bible.name}</Text>
+              <Text className="text-muted-foreground">{shareData.verseReference}</Text>
             </View>
             <View>
               <Text className="font-semibold">Text:</Text>
-              <Text className="text-muted-foreground italic">{verseData.verse.text}</Text>
+              <Text className="text-muted-foreground italic">{shareData.verseText}</Text>
             </View>
           </CardContent>
         </Card>
