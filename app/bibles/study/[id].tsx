@@ -22,21 +22,62 @@ import * as React from 'react';
 import { getVerseWithReferences, References, VerseWithReferences, Translations } from '@showcase/src/lib/services/study.service';
 import { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
+import { createNote, CreateNoteData } from '@/lib/services/notes.service';
 
-export function NotesAlertDialog() {
+export function NotesAlertDialog({
+  verseRef,
+  text,
+  isOpen,
+  onOpenChange,
+  verseId,
+  onSaveSuccess,
+}: {
+  verseRef: string;
+  text: string;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  verseId: number;
+  onSaveSuccess: () => void;
+}) {
   const [notes, setNotes] = React.useState('');
-  const [tags, setTags] = React.useState(''); 
+  const [title, settitle] = React.useState(''); 
   const { colorScheme } = useColorScheme();
+  const [saving, setSaving] = React.useState(false);
 
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
+  const handleSave = async () => {
+    // Here you would save the note, then call onSaveSuccess
+    try {
+      setSaving(true);
+      const noteData: CreateNoteData = {
+        title: title || undefined,
+        content: notes,
+        verse_id: verseId,
+      };
+      await createNote(noteData);
+      settitle('');
+      setNotes('');
+      onSaveSuccess();
+      console.log('Note saved successfully');
+    } catch (error) {
+      console.error('Error saving note:', error);
+    } finally {
+
+    }
+
+    onSaveSuccess();
+    onOpenChange(false);
+  };
+
   return (
-    <AlertDialog>
+    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogTrigger asChild>
         <Button
           variant='outline'
           className='w-full justify-center'
+          onPress={() => onOpenChange(true)}
         >
           <StickyNote className="mr-2 h-4 w-4" color={primaryIconColor} />
           <Text>Put Notes on this Verse</Text>
@@ -46,11 +87,11 @@ export function NotesAlertDialog() {
         <AlertDialogHeader className="items-center justify-center">
           <AlertDialogTitle className="text-center">Add Note to Verse</AlertDialogTitle>
           <AlertDialogDescription className="text-center mb-4">
-            Philippians 4:13
+            {verseRef}
           </AlertDialogDescription>
           <AlertDialogDescription>
             <View className="rounded-lg border bg-muted/50 p-3 items-center">
-          <Text className="text-sm italic text-center">"I can do all things through Christ who strengthens me."</Text>
+              <Text className="text-sm italic text-center">{`"${text}"`}</Text>
             </View>
           </AlertDialogDescription>
         </AlertDialogHeader>
@@ -58,8 +99,8 @@ export function NotesAlertDialog() {
             <Text className="text-sm font-medium">Title (Optional)</Text>
             <Input
                 placeholder="Enter a title for your note"
-                value={tags}
-                onChangeText={setTags}
+                value={title}
+                onChangeText={settitle}
             />
         </View>
 
@@ -76,9 +117,30 @@ export function NotesAlertDialog() {
           <AlertDialogCancel>
             <Text>Cancel</Text>
           </AlertDialogCancel>
-          <AlertDialogAction>
+          <AlertDialogAction onPress={handleSave}>
             <Text>Save Note</Text>
           </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  );
+}
+
+export function AlertSuccess({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+
+  return (
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
+      <AlertDialogContent portalHost="root">
+        <AlertDialogHeader>
+          <AlertDialogTitle className="text-primary">Success</AlertDialogTitle>
+          <AlertDialogDescription>
+            Your note was saved successfully!
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>
+            <Text>Cancel</Text>
+          </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
@@ -93,6 +155,16 @@ export default function VerseStudyScreen() {
   const [ error, setError ] = useState('');
   const [ references, setReferences] = useState<References[]>([]);
   const [translations, setTranslations] = useState<Translations[]>([]);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const verseRef = `${verseData?.verse.book.title} ${verseData?.verse.chapter.chapter_number}:${verseData?.verse.verse_number}`;
+  const text = verseData?.verse.text || '';
+  const verseId = verseData?.verse.id || 0;
+
+  const handleNoteSaveSuccess = () => {
+    setShowSuccessAlert(true);
+  };
+
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
@@ -216,7 +288,8 @@ export default function VerseStudyScreen() {
               </View>
             </CardTitle>
 
-            <NotesAlertDialog/>
+            <NotesAlertDialog verseRef={verseRef} text={text} isOpen={isNotesOpen} onOpenChange={setIsNotesOpen} verseId={verseId} onSaveSuccess={handleNoteSaveSuccess} />
+            <AlertSuccess open={showSuccessAlert} onOpenChange={setShowSuccessAlert} />
 
             <Link href="/share" asChild>
               <Button

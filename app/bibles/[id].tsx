@@ -14,10 +14,9 @@ import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, ScrollViewComponent } from 'react-native';
 import { useState, useEffect } from 'react';
-import { Link, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Gesture, GestureDetector, GestureHandlerRootView, Directions } from 'react-native-gesture-handler';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
-import { Avatar, AvatarFallback, AvatarImage } from '@showcase/components/ui/avatar';
+import { useColorScheme } from 'nativewind';
 import * as React from 'react';
 import {
   DropdownMenu,
@@ -44,32 +43,8 @@ import { Textarea } from '@showcase/components/ui/textarea';
 import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/lib/services/bibles.service';
 import { createNote, CreateNoteData } from '@/lib/services/notes.service';
 import { PortalHost } from '@rn-primitives/portal';
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuTrigger,
-} from '@showcase/components/ui/context-menu';
 
-export function VerseContextMenu({ text, verse }: { text: string; verse: string }) {
-
-  return (
-    <ContextMenu>
-      <ContextMenuTrigger>
-        <View>
-          <Text>{verse}. {text}</Text>
-        </View>
-      </ContextMenuTrigger>
-      <ContextMenuContent className="w-64">
-        <ContextMenuItem inset>
-          <Text>Back</Text>
-        </ContextMenuItem>
-      </ContextMenuContent>
-    </ContextMenu>
-  );
-}
-
-export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void, verseId: number}) {
+export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId, onSaveSuccess}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void, verseId: number, onSaveSuccess?: () => void}) {
   const [notes, setNotes] = React.useState('');
   const [title, setTitle] = React.useState('');
   const [saving, setSaving] = React.useState(false);
@@ -89,14 +64,18 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId}
       };
       await createNote(noteData);
       console.log('Note saved successfully');
-      // Reset form
+      // Reset form and close dialog in batched updates
       setNotes('');
       setTitle('');
-      // Close dialog
-      onOpenChange(false);
+      setSaving(false);
+      // Call success callback
+      onSaveSuccess?.();
+      // Defer closing the dialog slightly to avoid hook order issues
+      setTimeout(() => {
+        onOpenChange(false);
+      }, 100);
     } catch (error) {
       console.error('Failed to save note:', error);
-    } finally {
       setSaving(false);
     }
   };
@@ -153,8 +132,31 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId}
 export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string}) {
   const router = useRouter();
   const [isNotesOpen, setIsNotesOpen] = React.useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = React.useState(false);
   const bgClass = highlight === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
   const bgColor = highlight === 'yellow' ? '#FEF08A1F' : '#86EFAC1F'; 
+  const { colorScheme } = useColorScheme();
+
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
+
+  const handleNoteSaveSuccess = () => {
+    setShowSuccessAlert(true);
+    // Auto-hide success alert after 3 seconds
+    setTimeout(() => {
+      setShowSuccessAlert(false);
+    }, 3000);
+  };
+
+  const highlightColor = async (color: string) => {
+    try {
+
+    } catch (error) {
+
+    } finally {
+
+    }
+  }  
 
   return (
     <>
@@ -188,7 +190,9 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {
                 <Text>Highlight - Yellow</Text>
               </View>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onPress={()=>{
+
+            }}>
               <View className="flex-row items-center gap-2">
                 <View className="h-4 w-4 rounded bg-green-300" />
                 <Text>Highlight - Green</Text>
@@ -217,27 +221,28 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {
           <DropdownMenuGroup>
             <DropdownMenuItem onPress={() => router.push('/share')}>
               <View className="flex-row items-center gap-2">
-                <Share2 className="text-primary" size={16} />
+                <Share2 color={primaryIconColor} size={16} />
                 <Text>Share this Verse</Text>
               </View>
             </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
-      <NotesAlertDialog verseRef={verseRef} text={text} isOpen={isNotesOpen} onOpenChange={setIsNotesOpen} verseId={verseId} />
+      <NotesAlertDialog verseRef={verseRef} text={text} isOpen={isNotesOpen} onOpenChange={setIsNotesOpen} verseId={verseId} onSaveSuccess={handleNoteSaveSuccess} />
+      <AlertSuccess open={showSuccessAlert} onOpenChange={setShowSuccessAlert} />
     </>
   );
 }
 
-export function AlertSuccess({ message, open, onOpenChange }: { message: string; open: boolean; onOpenChange: (open: boolean) => void }) {
+export function AlertSuccess({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent portalHost="root">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-destructive">Error</AlertDialogTitle>
+          <AlertDialogTitle className="text-primary">Success</AlertDialogTitle>
           <AlertDialogDescription>
-            {message}
+            Your note was saved successfully!
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -265,9 +270,11 @@ export default function BibleDetailScreen() {
   const [bookSelectOpen, setBookSelectOpen] = useState(false);
   const [chapterSelectOpen, setChapterSelectOpen] = useState(false);
   const isAnySelectOpen = bookSelectOpen || chapterSelectOpen;
-  const [checker, setChecker] = useState(false);
-  const [checkerSuccess, setCheckerSuccess] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+  const { colorScheme } = useColorScheme();
+  const [ alertSuccess, setAlertSuccess] = useState(false);
+
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch Bible detail on mount
   useEffect(() => {
@@ -465,7 +472,7 @@ export default function BibleDetailScreen() {
   return (
     <GestureHandlerRootView className="flex-1">
       <PortalHost name="root" />
-      <AlertSuccess open={checkerSuccess} onOpenChange={setChecker} message={alertMessage} />
+      {/* <AlertSuccess open={alertSuccess} onOpenChange={setAlertSuccess}/> */}
       <GestureDetector gesture={composedGesture}>
         <ScrollView className="flex-1 bg-background">
           <View className="flex-1 gap-4 p-4">
@@ -487,7 +494,7 @@ export default function BibleDetailScreen() {
         <Card>
           <CardHeader>
             <CardTitle className="flex-row items-center gap-2">
-              <BookOpen size={20} className="text-primary" />
+              <BookOpen size={20} color={primaryIconColor} />
               <Text>{bibleData.bible.name}</Text>
             </CardTitle>
             <CardDescription>{bibleData.bible.description}</CardDescription>
@@ -598,7 +605,7 @@ export default function BibleDetailScreen() {
                 variant={completed ? "default" : "outline"}
                 onPress={() => setCompleted(!completed)}
               >
-                <CheckCircle size={16} className={completed ? "text-secondary" : "text-primary"}/>
+                <CheckCircle size={16} color={primaryIconColor} />
                 <Text className="ml-2">
                   {completed ? 'Completed' : 'Mark as Complete'}
                 </Text>

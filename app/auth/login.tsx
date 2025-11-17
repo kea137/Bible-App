@@ -58,7 +58,7 @@ export function AlertSuccess({ message, open, onOpenChange }: { message: string;
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent portalHost="root">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-destructive">Error</AlertDialogTitle>
+          <AlertDialogTitle className="text-primary">Success</AlertDialogTitle>
           <AlertDialogDescription>
             {message}
           </AlertDialogDescription>
