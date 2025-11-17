@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, ScrollViewComponent } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import { Gesture, GestureDetector, GestureHandlerRootView, Directions } from 'react-native-gesture-handler';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
@@ -42,6 +42,7 @@ import {
 import { Textarea } from '@showcase/components/ui/textarea';
 import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/lib/services/bibles.service';
 import { createNote, CreateNoteData } from '@/lib/services/notes.service';
+import { createHighlight, deleteHighlight } from '@/lib/services/highlights.service';
 import { PortalHost } from '@rn-primitives/portal';
 
 export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId, onSaveSuccess}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void, verseId: number, onSaveSuccess?: () => void}) {
@@ -131,6 +132,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
 
 export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string}) {
   const router = useRouter();
+  const pathname = usePathname();
   const [isNotesOpen, setIsNotesOpen] = React.useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = React.useState(false);
   const bgClass = highlight === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
@@ -150,13 +152,26 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {
 
   const highlightColor = async (color: string) => {
     try {
-
+      await createHighlight({ 
+        verse_id: verseId, 
+        color: color,
+      });
     } catch (error) {
-
+      console.log('Failed to create highlight:', error);
     } finally {
-
+        router.push(pathname);
     }
-  }  
+  };
+  
+  const removeHighlight = async (id: number) => {
+    try {
+      await deleteHighlight(id);
+    } catch (error) {
+      console.log('Failed to remove highlight:', error);
+    } finally {
+        router.push(pathname);
+    }
+  };
 
   return (
     <>
@@ -183,7 +198,7 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onPress={()=>{
-            
+              highlightColor('yellow');
             }}>
               <View className="flex-row items-center gap-2">
                 <View className="h-4 w-4 rounded bg-yellow-300" />
@@ -191,14 +206,16 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {
               </View>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={()=>{
-
+              highlightColor('green');
             }}>
               <View className="flex-row items-center gap-2">
                 <View className="h-4 w-4 rounded bg-green-300" />
                 <Text>Highlight - Green</Text>
               </View>
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onPress={()=>{
+              removeHighlight(verseId);
+            }}>
               <Text>Remove Highlight</Text>
             </DropdownMenuItem>
           </DropdownMenuGroup>
