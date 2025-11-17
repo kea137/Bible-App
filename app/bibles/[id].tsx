@@ -12,7 +12,7 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator, Platform, ScrollViewComponent } from 'react-native';
+import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'expo-router';
 import { Gesture, GestureDetector, GestureHandlerRootView, Directions } from 'react-native-gesture-handler';

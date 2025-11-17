@@ -48,11 +48,11 @@ export async function getShareVerseData(verseId: number): Promise<ShareData> {
       }
     );
     
-    if (!response.data || !response.data.data) {
-      throw new Error('Invalid response format from server');
-    }
+    // if (!response.data || !response.data.data) {
+    //   throw new Error('Invalid response format from server');
+    // }
 
-    return response.data.data;
+    return response.data;
   } catch (error) {
     if (error instanceof AxiosError) {
       if (error.response?.status === 404) {

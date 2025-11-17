@@ -19,6 +19,7 @@ import { useColorScheme } from 'nativewind';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
+import { PortalHost } from '@rn-primitives/portal';
 import { Label } from '@showcase/components/ui/label';
 import { Switch } from '@showcase/components/ui/switch';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -103,6 +104,7 @@ export default function ShareScreen() {
 
       try {
         setLoading(true);
+        console.log('Fetching verse data for ID:', Number(id));
         const data = await getShareVerseData(Number(id));
         setShareData(data);
         setError(null);
@@ -222,6 +224,7 @@ export default function ShareScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background">
+      <PortalHost name="root" />
       <View className="flex-1 gap-4 p-4">{/* Header */}
         <Card>
           <CardHeader>
@@ -358,7 +361,7 @@ export default function ShareScreen() {
                 <SelectTrigger>
                   <SelectValue placeholder="Select font" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent portalHost="root">
                   <SelectGroup>
                     {fonts.map((font) => (
                       <SelectItem key={font.value} value={font.value} label={font.label}>
@@ -384,7 +387,7 @@ export default function ShareScreen() {
                 <SelectTrigger>
                   <SelectValue placeholder="Select size" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent portalHost="root">
                   <SelectGroup>
                     {fontSizeOptions.map((size) => (
                       <SelectItem key={size.value} value={size.value.toString()} label={size.label}>
