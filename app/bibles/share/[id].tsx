@@ -450,13 +450,130 @@ export default function ShareScreen() {
                 </Button>
 
                 {/* Custom Colors Toggle */}
-                <View className=" flex-row items-center justify-between">
+                <View className="mt-4 flex-row items-center justify-between">
                   <Label>Use custom colors</Label>
                   <Switch
                     checked={useCustomColors}
                     onCheckedChange={setUseCustomColors}
                   />
                 </View>
+
+                {/* Custom Color Pickers - Only show when enabled */}
+                {useCustomColors && (
+                  <View className="mt-4 gap-3">
+                    <Text className="text-sm font-semibold">Custom Gradient Colors</Text>
+                    <View className="gap-3">
+                      {/* Color 1 */}
+                      <View className="flex-row items-center gap-3">
+                        <Text className="w-20 text-sm">Color 1:</Text>
+                        <View className="flex-1 flex-row items-center gap-2">
+                          <View 
+                            style={{
+                              width: 40,
+                              height: 40,
+                              backgroundColor: customColor1,
+                              borderRadius: 8,
+                              borderWidth: 1,
+                              borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
+                            }}
+                          />
+                          <input
+                            type="color"
+                            value={customColor1}
+                            onChange={(e) => setCustomColor1(e.target.value)}
+                            style={{
+                              width: '100%',
+                              height: 40,
+                              border: 'none',
+                              borderRadius: 8,
+                              cursor: 'pointer',
+                            }}
+                          />
+                        </View>
+                      </View>
+
+                      {/* Color 2 */}
+                      <View className="flex-row items-center gap-3">
+                        <Text className="w-20 text-sm">Color 2:</Text>
+                        <View className="flex-1 flex-row items-center gap-2">
+                          <View 
+                            style={{
+                              width: 40,
+                              height: 40,
+                              backgroundColor: customColor2,
+                              borderRadius: 8,
+                              borderWidth: 1,
+                              borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
+                            }}
+                          />
+                          <input
+                            type="color"
+                            value={customColor2}
+                            onChange={(e) => setCustomColor2(e.target.value)}
+                            style={{
+                              width: '100%',
+                              height: 40,
+                              border: 'none',
+                              borderRadius: 8,
+                              cursor: 'pointer',
+                            }}
+                          />
+                        </View>
+                      </View>
+
+                      {/* Color 3 */}
+                      <View className="flex-row items-center gap-3">
+                        <Text className="w-20 text-sm">Color 3:</Text>
+                        <View className="flex-1 flex-row items-center gap-2">
+                          <View 
+                            style={{
+                              width: 40,
+                              height: 40,
+                              backgroundColor: customColor3,
+                              borderRadius: 8,
+                              borderWidth: 1,
+                              borderColor: colorScheme === 'dark' ? '#444' : '#ccc',
+                            }}
+                          />
+                          <input
+                            type="color"
+                            value={customColor3}
+                            onChange={(e) => setCustomColor3(e.target.value)}
+                            style={{
+                              width: '100%',
+                              height: 40,
+                              border: 'none',
+                              borderRadius: 8,
+                              cursor: 'pointer',
+                            }}
+                          />
+                        </View>
+                      </View>
+                    </View>
+
+                    {/* Preview of custom gradient */}
+                    <View className="mt-2">
+                      <Text className="mb-2 text-xs text-muted-foreground">Preview:</Text>
+                      <View 
+                        style={{
+                          height: 60,
+                          borderRadius: 8,
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <LinearGradient
+                          colors={[customColor1, customColor2, customColor3] as [string, string, ...string[]]}
+                          start={{ x: 0, y: 0 }}
+                          end={{ x: 1, y: 1 }}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                          }}
+                        />
+                      </View>
+                    </View>
+                  </View>
+                )}
               </>
             ) : (
               <>
