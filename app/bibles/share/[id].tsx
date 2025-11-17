@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@showcase/components/ui/select';
 import { Share2, Download, Palette, Type, Image as ImageIcon, BookMarked, Check } from 'lucide-react-native';
-import { View, ScrollView, ActivityIndicator, Platform, Alert, Image } from 'react-native';
+import { View, ScrollView, ActivityIndicator, Platform, Alert, Image, ImageBackground } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -64,11 +64,11 @@ export default function ShareScreen() {
 
   // Font size options matching web app
   const fontSizeOptions = [
-    { value: 32, label: 'Medium (32px)' },
-    { value: 40, label: 'Large (40px)' },
-    { value: 48, label: 'Extra Large (48px)' },
-    { value: 56, label: 'Huge (56px)' },
-    { value: 64, label: 'Massive (64px)' },
+    { value: 18, label: 'Medium (18px)' },
+    { value: 20, label: 'Large (20px)' },
+    { value: 24, label: 'Extra Large (24px)' },
+    { value: 28, label: 'Huge (28px)' },
+    { value: 32, label: 'Massive (32px)' },
   ];
 
   // Beautiful background gradients matching web app
@@ -121,6 +121,7 @@ export default function ShareScreen() {
   }, [id]);
 
   useEffect(() => {
+    setSelectedFontSize(24);
     navigation.setOptions({
       headerTitle: 'Share Verse',
     });
@@ -263,8 +264,9 @@ export default function ShareScreen() {
               >
                 {/* Background - Gradient or Image */}
                 {backgroundType === 'image' && shareData?.backgroundImages && shareData.backgroundImages.length > 0 ? (
-                  <Image
+                  <ImageBackground
                     source={{ uri: shareData.backgroundImages[currentImageIndex].url }}
+                    resizeMode="cover"
                     style={{
                       position: 'absolute',
                       top: 0,
@@ -274,8 +276,34 @@ export default function ShareScreen() {
                       width: '100%',
                       height: '100%',
                     }}
-                    resizeMode="cover"
-                  />
+                  >
+                    {/* Dark overlay for text contrast (inside to avoid collapsable optimization on iOS) */}
+                    <View
+                      collapsable={false}
+                      pointerEvents="none"
+                      style={{
+                        ...Platform.select({
+                          ios: {
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: '#000',
+                            opacity: 0.4,
+                          },
+                          default: {
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            backgroundColor: 'rgba(0,0,0,0.4)'
+                          }
+                        })
+                      }}
+                    />
+                  </ImageBackground>
                 ) : (
                   <LinearGradient
                     colors={currentBackground.colors as [string, string, ...string[]]}
@@ -297,29 +325,29 @@ export default function ShareScreen() {
                     flex: 1, 
                     justifyContent: 'center',
                     alignItems: 'center',
-                    paddingHorizontal: 60,
-                    paddingVertical: 80,
+                    paddingHorizontal: 40,
+                    paddingVertical: 40,
                   }}
                 >
-                  <View style={{ flex: 1, justifyContent: 'center', width: '100%', gap: 40 }}>
+                  <View style={{ flex: 1, justifyContent: 'center', width: '100%', gap: 30 }}>
                     {/* Verse Text */}
                     <Text 
-                      className="text-center text-white"
+                      className="text-center text-white text-base"
                       style={{
                         fontFamily: selectedFont,
-                        fontSize: selectedFontSize, // Full size for actual image
+                        fontSize: selectedFontSize, // Default to 24px if not set
                         fontWeight: isBoldText ? 'bold' : 'normal',
                         lineHeight: selectedFontSize * 1.4,
-                        textShadowColor: 'rgba(0, 0, 0, 0.3)',
-                        textShadowOffset: { width: 1, height: 1 },
-                        textShadowRadius: 4,
+                        textShadowColor: 'rgba(0, 0, 0, 0.8)',
+                        textShadowOffset: { width: 2, height: 2 },
+                        textShadowRadius: 8,
                       }}
                     >
                       {shareData.verseText}
                     </Text>
                     
                     {/* Reference with decorative line */}
-                    <View style={{ alignItems: 'center', gap: 12 }}>
+                    <View style={{ alignItems: 'center', gap: 2 }}>
                       <Text 
                         className="text-center text-white"
                         style={{
@@ -327,9 +355,9 @@ export default function ShareScreen() {
                           fontSize: selectedFontSize * 0.65,
                           fontWeight: 'bold',
                           letterSpacing: 1,
-                          textShadowColor: 'rgba(0, 0, 0, 0.3)',
-                          textShadowOffset: { width: 1, height: 1 },
-                          textShadowRadius: 4,
+                          textShadowColor: 'rgba(0, 0, 0, 0.8)',
+                          textShadowOffset: { width: 2, height: 2 },
+                          textShadowRadius: 8,
                         }}
                       >
                         {shareData.verseReference}
@@ -346,47 +374,47 @@ export default function ShareScreen() {
                   </View>
                   
                   {/* Logo/Icon in bottom right corner */}
-                  <View 
-                    style={{
-                      position: 'absolute',
-                      bottom: 30,
-                      right: 30,
-                      width: 60,
-                      height: 60,
-                      borderRadius: 15,
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      shadowColor: '#000',
-                      shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.25,
-                      shadowRadius: 6,
-                      overflow: 'hidden',
-                    }}
-                  >
-                    <Image 
-                      source={require('@/assets/images/icon.png')}
+                    <View
                       style={{
-                        width: 48,
-                        height: 48,
-                        resizeMode: 'contain',
+                        position: 'absolute',
+                        bottom: 24,
+                        right: 24,
+                        width: 36,
+                        height: 36,
+                        borderRadius: 8,
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        shadowColor: '#000',
+                        shadowOffset: { width: 0, height: 2 },
+                        shadowOpacity: 0.18,
+                        shadowRadius: 4,
+                        overflow: 'hidden',
                       }}
-                    />
-                  </View>
+                    >
+                      <Image
+                        source={require('../../../assets/images/icon.png')}
+                        style={{
+                          width: 28,
+                          height: 28,
+                          resizeMode: 'contain',
+                        }}
+                      />
+                    </View>
                 </View>
               </View>
             </ViewShot>
           </View>
 
           {/* Background Selection */}
-          <Card className="mx-4 my-4 rounded-lg border p-4">
+          <Card className="mx-4 mt-4 rounded-lg border pt-4 px-4">
             <View className="mb-3 flex flex-row items-center gap-2">
               <ImageIcon color={primaryIconColor} size={24}/>
               <Text className="font-semibold">Background Type</Text>
             </View>
             
             {/* Background Type Toggle */}
-            <View className="mb-4 flex-row gap-2">
+            <View className="mb-2 flex-row gap-2">
               <Button
                 onPress={() => setBackgroundType('gradient')}
                 variant={backgroundType === 'gradient' ? 'default' : 'outline'}
@@ -422,7 +450,7 @@ export default function ShareScreen() {
                 </Button>
 
                 {/* Custom Colors Toggle */}
-                <View className="mt-4 flex-row items-center justify-between">
+                <View className=" flex-row items-center justify-between">
                   <Label>Use custom colors</Label>
                   <Switch
                     checked={useCustomColors}
@@ -434,13 +462,13 @@ export default function ShareScreen() {
               <>
                 {shareData?.backgroundImages && shareData.backgroundImages.length > 0 ? (
                   <>
-                    <Text className="mb-2 text-sm text-muted-foreground">
+                    <Text className="text-sm text-muted-foreground">
                       Image by <Text className="font-semibold">{shareData.backgroundImages[currentImageIndex]?.photographer}</Text> on Pexels
                     </Text>
                     
                     <Button 
                       variant="outline" 
-                      className="mt-2 w-full justify-center"
+                      className=" w-full justify-center"
                       onPress={handleChangeImage}
                       disabled={isGenerating}
                     >
@@ -449,7 +477,7 @@ export default function ShareScreen() {
                   </>
                 ) : (
                   <Text className="text-sm text-yellow-600 dark:text-yellow-400">
-                    No background images available
+                    No background images available, for now.
                   </Text>
                 )}
               </>
@@ -457,14 +485,14 @@ export default function ShareScreen() {
           </Card>
 
           {/* Text Style Selection */}
-          <Card className="mx-4 my-4 rounded-lg border p-4">
+          <Card className="mx-4 rounded-lg border p-4">
             <View className="mb-3 flex-row items-center gap-2">
               <Type color={primaryIconColor} size={24}/>
               <Text className="font-semibold">Text Style</Text>
             </View>
             
             {/* Font Selection */}
-            <View className="mb-4 gap-2">
+            <View className=" gap-2">
               <Label className="text-sm">Font Family</Label>
               <Select
                 value={{ value: selectedFont, label: fonts.find(f => f.value === selectedFont)?.label || '' }}
@@ -490,7 +518,7 @@ export default function ShareScreen() {
             </View>
 
             {/* Font Size Selection */}
-            <View className="mb-4 gap-2">
+            <View className=" gap-2">
               <Label className="text-sm">Font Size</Label>
               <Select
                 value={{ value: selectedFontSize.toString(), label: fontSizeOptions.find(f => f.value === selectedFontSize)?.label || '' }}
@@ -550,19 +578,6 @@ export default function ShareScreen() {
             )}
           </Button>
 
-          <Button 
-            variant="outline" 
-            onPress={() => {
-              if (shareData.bible && shareData.book && shareData.chapter) {
-                router.push(`/bibles/${shareData.bible}?book=${shareData.book}&chapter=${shareData.chapter}`);
-              } else {
-                router.back();
-              }
-            }}
-          >
-            <BookMarked size={16} color={primaryIconColor} />
-            <Text className="ml-2">Back to Bible</Text>
-          </Button>
         </View>
 
         {/* Verse Details */}
@@ -580,6 +595,19 @@ export default function ShareScreen() {
               <Text className="text-muted-foreground italic">{shareData.verseText}</Text>
             </View>
           </CardContent>
+           <Button className='mx-4'
+            variant="outline" 
+            onPress={() => {
+              if (shareData.bible && shareData.book && shareData.chapter) {
+                router.push(`/bibles/${shareData.bible}?book=${shareData.book}&chapter=${shareData.chapter}`);
+              } else {
+                router.back();
+              }
+            }}
+          >
+            <BookMarked size={16} color={primaryIconColor} />
+            <Text className="ml-2">Back to Bible</Text>
+          </Button>
         </Card>
       </View>
     </ScrollView>
