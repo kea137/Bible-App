@@ -8,43 +8,47 @@ import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
 
-// Type definitions
-export interface ShareVerseData {
-  verse: {
-    id: number;
-    text: string;
-    verse_number: number;
-    book: {
-      id: number;
-      title: string;
-    };
-    chapter: {
-      id: number;
-      chapter_number: number;
-    };
-    bible: {
-      id: number;
-      name: string;
-      abbreviation: string;
-    };
-  };
+// Type definitions matching the Laravel API response
+export interface BackgroundImage {
+  id: number;
+  url: string;
+  thumbnail: string;
+  photographer: string;
+  photographer_url: string;
+  alt: string;
 }
 
-export interface ShareVerseResponse {
+export interface ShareData {
+  verseReference: string;
+  verseText: string;
+  verseId: number | null;
+  backgroundImages: BackgroundImage[];
+  bible: number | null;
+  book: number | null;
+  chapter: number | null;
+}
+
+export interface ShareResponse {
   success: boolean;
-  data: ShareVerseData;
+  data: ShareData;
 }
 
 /**
  * Get verse data for sharing
+ * Uses the /api/mobile/share endpoint with verseId as query parameter
  */
-export async function getShareVerseData(verseId: number): Promise<ShareVerseData> {
+export async function getShareVerseData(verseId: number): Promise<ShareData> {
   try {
-    const response = await apiClient.get<ShareVerseResponse>(
-      `${API_ENDPOINTS.VERSES}/${verseId}`
+    const response = await apiClient.get<ShareResponse>(
+      API_ENDPOINTS.share,
+      {
+        params: {
+          verseId: verseId
+        }
+      }
     );
     
-    if (!response.data) {
+    if (!response.data || !response.data.data) {
       throw new Error('Invalid response format from server');
     }
 

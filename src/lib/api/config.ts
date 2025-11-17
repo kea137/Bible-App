@@ -50,9 +50,6 @@ export const API_ENDPOINTS = {
   // Notes
   notes: '/api/mobile/notes',
   
-  // Verses
-  VERSES: '/api/mobile/verses',
-  
   // Study
   VerseWithReferences: '/api/mobile/study',
 
