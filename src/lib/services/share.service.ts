@@ -44,7 +44,7 @@ export async function getShareVerseData(verseId: number): Promise<ShareVerseData
       `${API_ENDPOINTS.VERSES}/${verseId}`
     );
     
-    if (!response.data?.data) {
+    if (!response.data) {
       throw new Error('Invalid response format from server');
     }
 

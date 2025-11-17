@@ -21,6 +21,7 @@ import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
 import { Label } from '@showcase/components/ui/label';
 import { Switch } from '@showcase/components/ui/switch';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export default function ShareScreen() {
   const { id } = useLocalSearchParams();
@@ -256,54 +257,61 @@ export default function ShareScreen() {
                 style={{
                   width: '100%',
                   aspectRatio: 1,
-                  padding: 40,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: currentBackground.colors[0],
                   borderRadius: 12,
+                  overflow: 'hidden',
                 }}
               >
-                {/* Gradient overlay */}
-                <View 
+                {/* Gradient background */}
+                <LinearGradient
+                  colors={currentBackground.colors as [string, string, ...string[]]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
                   style={{
                     position: 'absolute',
                     top: 0,
                     left: 0,
                     right: 0,
                     bottom: 0,
-                    borderRadius: 12,
-                    background: `linear-gradient(135deg, ${currentBackground.colors.join(', ')})`,
                   }}
                 />
                 
                 {/* Content */}
-                <View className="z-10 gap-6 px-8" style={{ flex: 1, justifyContent: 'center' }}>
-                  <Text 
-                    className="text-center text-white leading-relaxed"
-                    style={{
-                      fontFamily: selectedFont,
-                      fontSize: selectedFontSize * 0.6, // Scale down for mobile preview
-                      fontWeight: isBoldText ? 'bold' : 'normal',
-                      textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                      textShadowOffset: { width: 2, height: 2 },
-                      textShadowRadius: 15,
-                    }}
-                  >
-                    "{verseData.verse.text}"
-                  </Text>
-                  <Text 
-                    className="text-center font-semibold text-white/90"
-                    style={{
-                      fontFamily: selectedFont,
-                      fontSize: (selectedFontSize * 0.6) * 0.6, // Reference text smaller
-                      fontWeight: 'bold',
-                      textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                      textShadowOffset: { width: 2, height: 2 },
-                      textShadowRadius: 15,
-                    }}
-                  >
-                    {verseReference} ({verseData.verse.bible.abbreviation})
-                  </Text>
+                <View 
+                  style={{ 
+                    flex: 1, 
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    padding: 40,
+                  }}
+                >
+                  <View className="z-10 gap-6 px-8" style={{ flex: 1, justifyContent: 'center', width: '100%' }}>
+                    <Text 
+                      className="text-center text-white leading-relaxed"
+                      style={{
+                        fontFamily: selectedFont,
+                        fontSize: selectedFontSize * 0.6, // Scale down for mobile preview
+                        fontWeight: isBoldText ? 'bold' : 'normal',
+                        textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                        textShadowOffset: { width: 2, height: 2 },
+                        textShadowRadius: 15,
+                      }}
+                    >
+                      "{verseData.verse.text}"
+                    </Text>
+                    <Text 
+                      className="text-center font-semibold text-white/90"
+                      style={{
+                        fontFamily: selectedFont,
+                        fontSize: (selectedFontSize * 0.6) * 0.6, // Reference text smaller
+                        fontWeight: 'bold',
+                        textShadowColor: 'rgba(0, 0, 0, 0.5)',
+                        textShadowOffset: { width: 2, height: 2 },
+                        textShadowRadius: 15,
+                      }}
+                    >
+                      {verseReference} ({verseData.verse.bible.abbreviation})
+                    </Text>
+                  </View>
                 </View>
               </View>
             </ViewShot>
@@ -351,7 +359,11 @@ export default function ShareScreen() {
               <Label className="text-sm">Font Family</Label>
               <Select
                 value={{ value: selectedFont, label: fonts.find(f => f.value === selectedFont)?.label || '' }}
-                onValueChange={(option) => option && setSelectedFont(option.value)}
+                onValueChange={(option) => {
+                  if (option?.value) {
+                    setSelectedFont(option.value);
+                  }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select font" />
@@ -372,8 +384,12 @@ export default function ShareScreen() {
             <View className="mb-4 gap-2">
               <Label className="text-sm">Font Size</Label>
               <Select
-                value={{ value: selectedFontSize, label: fontSizeOptions.find(f => f.value === selectedFontSize)?.label || '' }}
-                onValueChange={(option) => option && setSelectedFontSize(option.value)}
+                value={{ value: selectedFontSize.toString(), label: fontSizeOptions.find(f => f.value === selectedFontSize)?.label || '' }}
+                onValueChange={(option) => {
+                  if (option?.value) {
+                    setSelectedFontSize(parseInt(option.value, 10));
+                  }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select size" />
@@ -381,7 +397,7 @@ export default function ShareScreen() {
                 <SelectContent>
                   <SelectGroup>
                     {fontSizeOptions.map((size) => (
-                      <SelectItem key={size.value} value={size.value} label={size.label}>
+                      <SelectItem key={size.value} value={size.value.toString()} label={size.label}>
                         {size.label}
                       </SelectItem>
                     ))}
