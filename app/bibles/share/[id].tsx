@@ -10,7 +10,7 @@ import {
   SelectValue,
 } from '@showcase/components/ui/select';
 import { Share2, Download, Palette, Type, Image as ImageIcon, BookMarked, Check } from 'lucide-react-native';
-import { View, ScrollView, ActivityIndicator, Platform, Alert } from 'react-native';
+import { View, ScrollView, ActivityIndicator, Platform, Alert, Image } from 'react-native';
 import { useEffect, useState, useRef } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
@@ -41,8 +41,9 @@ export default function ShareScreen() {
   const [selectedFont, setSelectedFont] = useState('Georgia');
   const [selectedFontSize, setSelectedFontSize] = useState(48);
   const [isBoldText, setIsBoldText] = useState(false);
-  const [backgroundType, setBackgroundType] = useState<'gradient'>('gradient');
+  const [backgroundType, setBackgroundType] = useState<'gradient' | 'image'>('gradient');
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [useCustomColors, setUseCustomColors] = useState(false);
   const [customColor1, setCustomColor1] = useState('#667eea');
   const [customColor2, setCustomColor2] = useState('#764ba2');
@@ -127,6 +128,12 @@ export default function ShareScreen() {
 
   const handleChangeBackground = () => {
     setCurrentBackgroundIndex((currentBackgroundIndex + 1) % backgrounds.length);
+  };
+
+  const handleChangeImage = () => {
+    if (shareData?.backgroundImages && shareData.backgroundImages.length > 0) {
+      setCurrentImageIndex((currentImageIndex + 1) % shareData.backgroundImages.length);
+    }
   };
 
   const captureAndShare = async () => {
@@ -254,19 +261,35 @@ export default function ShareScreen() {
                   overflow: 'hidden',
                 }}
               >
-                {/* Gradient background */}
-                <LinearGradient
-                  colors={currentBackground.colors as [string, string, ...string[]]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    bottom: 0,
-                  }}
-                />
+                {/* Background - Gradient or Image */}
+                {backgroundType === 'image' && shareData?.backgroundImages && shareData.backgroundImages.length > 0 ? (
+                  <Image
+                    source={{ uri: shareData.backgroundImages[currentImageIndex].url }}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                      width: '100%',
+                      height: '100%',
+                    }}
+                    resizeMode="cover"
+                  />
+                ) : (
+                  <LinearGradient
+                    colors={currentBackground.colors as [string, string, ...string[]]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      bottom: 0,
+                    }}
+                  />
+                )}
                 
                 {/* Content */}
                 <View 
@@ -330,17 +353,25 @@ export default function ShareScreen() {
                       right: 30,
                       width: 60,
                       height: 60,
-                      borderRadius: 10,
-                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                      borderRadius: 15,
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
                       justifyContent: 'center',
                       alignItems: 'center',
                       shadowColor: '#000',
                       shadowOffset: { width: 0, height: 2 },
-                      shadowOpacity: 0.2,
-                      shadowRadius: 4,
+                      shadowOpacity: 0.25,
+                      shadowRadius: 6,
+                      overflow: 'hidden',
                     }}
                   >
-                    <BookMarked size={36} color="#1e293b" strokeWidth={1.5} />
+                    <Image 
+                      source={require('@/assets/images/icon.png')}
+                      style={{
+                        width: 48,
+                        height: 48,
+                        resizeMode: 'contain',
+                      }}
+                    />
                   </View>
                 </View>
               </View>
@@ -351,30 +382,78 @@ export default function ShareScreen() {
           <Card className="mx-4 my-4 rounded-lg border p-4">
             <View className="mb-3 flex flex-row items-center gap-2">
               <ImageIcon color={primaryIconColor} size={24}/>
-              <Text className="font-semibold">Background Style</Text>
+              <Text className="font-semibold">Background Type</Text>
             </View>
             
-            <Text className="mb-2 text-sm text-muted-foreground">
-              Current Style: <Text className="font-semibold">{currentBackground.name}</Text>
-            </Text>
-            
-            <Button 
-              variant="outline" 
-              className="mt-2 w-full justify-center"
-              onPress={handleChangeBackground}
-              disabled={isGenerating || useCustomColors}
-            >
-              <Text>Change Background Style</Text>
-            </Button>
+            {/* Background Type Toggle */}
+            <View className="mb-4 flex-row gap-2">
+              <Button
+                onPress={() => setBackgroundType('gradient')}
+                variant={backgroundType === 'gradient' ? 'default' : 'outline'}
+                className="flex-1"
+              >
+                <Palette size={16} color={backgroundType === 'gradient' ? '#fff' : primaryIconColor} />
+                <Text className="ml-2">Gradient</Text>
+              </Button>
+              <Button
+                onPress={() => setBackgroundType('image')}
+                variant={backgroundType === 'image' ? 'default' : 'outline'}
+                className="flex-1"
+                disabled={!shareData?.backgroundImages || shareData.backgroundImages.length === 0}
+              >
+                <ImageIcon size={16} color={backgroundType === 'image' ? '#fff' : primaryIconColor} />
+                <Text className="ml-2">Image</Text>
+              </Button>
+            </View>
 
-            {/* Custom Colors Toggle */}
-            <View className="mt-4 flex-row items-center justify-between">
-              <Label>Use custom colors</Label>
-              <Switch
-                checked={useCustomColors}
-                onCheckedChange={setUseCustomColors}
-              />
-            </View>
+            {backgroundType === 'gradient' ? (
+              <>
+                <Text className="mb-2 text-sm text-muted-foreground">
+                  Current Style: <Text className="font-semibold">{currentBackground.name}</Text>
+                </Text>
+                
+                <Button 
+                  variant="outline" 
+                  className="mt-2 w-full justify-center"
+                  onPress={handleChangeBackground}
+                  disabled={isGenerating || useCustomColors}
+                >
+                  <Text>Change Background Style</Text>
+                </Button>
+
+                {/* Custom Colors Toggle */}
+                <View className="mt-4 flex-row items-center justify-between">
+                  <Label>Use custom colors</Label>
+                  <Switch
+                    checked={useCustomColors}
+                    onCheckedChange={setUseCustomColors}
+                  />
+                </View>
+              </>
+            ) : (
+              <>
+                {shareData?.backgroundImages && shareData.backgroundImages.length > 0 ? (
+                  <>
+                    <Text className="mb-2 text-sm text-muted-foreground">
+                      Image by <Text className="font-semibold">{shareData.backgroundImages[currentImageIndex]?.photographer}</Text> on Pexels
+                    </Text>
+                    
+                    <Button 
+                      variant="outline" 
+                      className="mt-2 w-full justify-center"
+                      onPress={handleChangeImage}
+                      disabled={isGenerating}
+                    >
+                      <Text>Change Image</Text>
+                    </Button>
+                  </>
+                ) : (
+                  <Text className="text-sm text-yellow-600 dark:text-yellow-400">
+                    No background images available
+                  </Text>
+                )}
+              </>
+            )}
           </Card>
 
           {/* Text Style Selection */}
