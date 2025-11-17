@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@show
 import { Input } from '@showcase/components/ui/input';
 import { Link } from 'expo-router';
 import { NotebookPen, Search, Plus } from 'lucide-react-native';
-import { View, ScrollView, ActivityIndicator } from 'react-native';
+import { View, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
 import { useState, useEffect } from 'react';
 import {
   AlertDialog,
@@ -23,7 +23,7 @@ import { getNotes, Note } from '@/lib/services/notes.service';
 
 export function NotesAlertDialog() {
     const [notes, setNotes] = React.useState('');
-    const [tags, setTags] = React.useState('');
+    const [title, setTags] = React.useState('');
 
   return (
     <AlertDialog>
@@ -33,39 +33,44 @@ export function NotesAlertDialog() {
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-          <AlertDialogDescription>
-            This action cannot be undone. This will permanently delete your account and remove your
-            data from our servers.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <View className="gap-2">
-            <Text className="text-sm font-medium">Title (Optional)</Text>
-            <Input
-                placeholder="Add tags (comma separated)"
-                value={tags}
-                onChangeText={setTags}
-            />
-        </View>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={{ flex: 1 }}
+        >
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your account and remove your
+              data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <View className="gap-2">
+              <Text className="text-sm font-medium">Title (Optional)</Text>
+              <Input
+                  placeholder="Add title (comma separated)"
+                  value={title}
+                  onChangeText={setTags}
+              />
+          </View>
 
-        <View className="gap-2">
-            <Text className="text-sm font-medium">Notes</Text>
-            <Textarea
-                placeholder="Write your thoughts about this verse..."
-                value={notes}
-                onChangeText={setNotes}
-                className="min-h-32"
-            />
-        </View>
-        <AlertDialogFooter>
-          <AlertDialogCancel>
-            <Text>Cancel</Text>
-          </AlertDialogCancel>
-          <AlertDialogAction>
-            <Text>Continue</Text>
-          </AlertDialogAction>
-        </AlertDialogFooter>
+          <View className="gap-2">
+              <Text className="text-sm font-medium">Notes</Text>
+              <Textarea
+                  placeholder="Write your thoughts about this verse..."
+                  value={notes}
+                  onChangeText={setNotes}
+                  className="min-h-32"
+              />
+          </View>
+          <AlertDialogFooter>
+            <AlertDialogCancel>
+              <Text>Cancel</Text>
+            </AlertDialogCancel>
+            <AlertDialogAction>
+              <Text>Continue</Text>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </KeyboardAvoidingView>
       </AlertDialogContent>
     </AlertDialog>
   );
@@ -97,7 +102,6 @@ export default function NotesScreen() {
             verse_id: 1,
             title: 'Reflections on John 3:16',
             content: 'For God so loved the world that he gave his one and only Son...',
-            tags: ['salvation', 'love'],
             verse: {
               id: 1,
               text: 'For God so loved the world...',
@@ -114,7 +118,6 @@ export default function NotesScreen() {
             verse_id: 2,
             title: 'Prayer Points from Psalms',
             content: 'The Lord is my shepherd, I lack nothing...',
-            tags: ['prayer'],
             verse: {
               id: 2,
               text: 'The Lord is my shepherd...',
@@ -130,7 +133,6 @@ export default function NotesScreen() {
             user_id: 1,
             title: 'Faith and Works',
             content: 'Faith without works is dead...',
-            tags: ['faith', 'works'],
             verse: {
               id: 3,
               text: 'Faith without works is dead...',

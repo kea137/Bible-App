@@ -1,7 +1,7 @@
 import { Text } from '@showcase/components/ui/text';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { BookOpen, Link2, Share2, StickyNote} from 'lucide-react-native';
-import { View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, ScrollView, ActivityIndicator, TouchableOpacity, KeyboardAvoidingViewComponent } from 'react-native';
 import { Button } from '@showcase/components/ui/button';
 import { Link, useNavigation } from 'expo-router';
 import { Input } from '@showcase/components/ui/input';
@@ -23,6 +23,7 @@ import { getVerseWithReferences, References, VerseWithReferences, Translations }
 import { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { createNote, CreateNoteData } from '@/lib/services/notes.service';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 export function NotesAlertDialog({
   verseRef,
@@ -83,7 +84,8 @@ export function NotesAlertDialog({
           <Text>Put Notes on this Verse</Text>
         </Button>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent portalHost='root'>
+        <KeyboardAwareScrollView>
         <AlertDialogHeader className="items-center justify-center">
           <AlertDialogTitle className="text-center">Add Note to Verse</AlertDialogTitle>
           <AlertDialogDescription className="text-center mb-4">
@@ -121,6 +123,7 @@ export function NotesAlertDialog({
             <Text>Save Note</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
+        </KeyboardAwareScrollView>
       </AlertDialogContent>
     </AlertDialog>
   );

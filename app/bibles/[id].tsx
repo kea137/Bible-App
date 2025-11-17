@@ -44,6 +44,7 @@ import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/lib/
 import { createNote, CreateNoteData } from '@/lib/services/notes.service';
 import { createHighlight, deleteHighlight } from '@/lib/services/highlights.service';
 import { PortalHost } from '@rn-primitives/portal';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId, onSaveSuccess}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void, verseId: number, onSaveSuccess?: () => void}) {
   const [notes, setNotes] = React.useState('');
@@ -88,6 +89,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
         </TouchableOpacity>
       </AlertDialogTrigger>
       <AlertDialogContent portalHost="root">
+        <KeyboardAwareScrollView>
         <AlertDialogHeader className="items-center justify-center">
           <AlertDialogTitle className="text-center">Add Note to Verse</AlertDialogTitle>
           <AlertDialogDescription className="text-center mb-4">
@@ -125,6 +127,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
             <Text>{saving ? 'Saving...' : 'Save Note'}</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
+        </KeyboardAwareScrollView>
       </AlertDialogContent>
     </AlertDialog>
   );
