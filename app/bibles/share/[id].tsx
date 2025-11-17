@@ -250,7 +250,7 @@ export default function ShareScreen() {
                 style={{
                   width: '100%',
                   aspectRatio: 1,
-                  borderRadius: 12,
+                  borderRadius: 0,
                   overflow: 'hidden',
                 }}
               >
@@ -274,36 +274,73 @@ export default function ShareScreen() {
                     flex: 1, 
                     justifyContent: 'center',
                     alignItems: 'center',
-                    padding: 40,
+                    paddingHorizontal: 60,
+                    paddingVertical: 80,
                   }}
                 >
-                  <View className="z-10 gap-6 px-8" style={{ flex: 1, justifyContent: 'center', width: '100%' }}>
+                  <View style={{ flex: 1, justifyContent: 'center', width: '100%', gap: 40 }}>
+                    {/* Verse Text */}
                     <Text 
-                      className="text-center text-white leading-relaxed"
+                      className="text-center text-white"
                       style={{
                         fontFamily: selectedFont,
-                        fontSize: selectedFontSize * 0.6, // Scale down for mobile preview
+                        fontSize: selectedFontSize, // Full size for actual image
                         fontWeight: isBoldText ? 'bold' : 'normal',
-                        textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                        textShadowOffset: { width: 2, height: 2 },
-                        textShadowRadius: 15,
+                        lineHeight: selectedFontSize * 1.4,
+                        textShadowColor: 'rgba(0, 0, 0, 0.3)',
+                        textShadowOffset: { width: 1, height: 1 },
+                        textShadowRadius: 4,
                       }}
                     >
-                      "{shareData.verseText}"
+                      {shareData.verseText}
                     </Text>
-                    <Text 
-                      className="text-center font-semibold text-white/90"
-                      style={{
-                        fontFamily: selectedFont,
-                        fontSize: (selectedFontSize * 0.6) * 0.6, // Reference text smaller
-                        fontWeight: 'bold',
-                        textShadowColor: 'rgba(0, 0, 0, 0.5)',
-                        textShadowOffset: { width: 2, height: 2 },
-                        textShadowRadius: 15,
-                      }}
-                    >
-                      {shareData.verseReference}
-                    </Text>
+                    
+                    {/* Reference with decorative line */}
+                    <View style={{ alignItems: 'center', gap: 12 }}>
+                      <Text 
+                        className="text-center text-white"
+                        style={{
+                          fontFamily: selectedFont,
+                          fontSize: selectedFontSize * 0.65,
+                          fontWeight: 'bold',
+                          letterSpacing: 1,
+                          textShadowColor: 'rgba(0, 0, 0, 0.3)',
+                          textShadowOffset: { width: 1, height: 1 },
+                          textShadowRadius: 4,
+                        }}
+                      >
+                        {shareData.verseReference}
+                      </Text>
+                      {/* Decorative line */}
+                      <View 
+                        style={{
+                          width: 200,
+                          height: 2,
+                          backgroundColor: 'rgba(255, 255, 255, 0.8)',
+                        }}
+                      />
+                    </View>
+                  </View>
+                  
+                  {/* Logo/Icon in bottom right corner */}
+                  <View 
+                    style={{
+                      position: 'absolute',
+                      bottom: 30,
+                      right: 30,
+                      width: 60,
+                      height: 60,
+                      borderRadius: 10,
+                      backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      shadowColor: '#000',
+                      shadowOffset: { width: 0, height: 2 },
+                      shadowOpacity: 0.2,
+                      shadowRadius: 4,
+                    }}
+                  >
+                    <BookMarked size={36} color="#1e293b" strokeWidth={1.5} />
                   </View>
                 </View>
               </View>
