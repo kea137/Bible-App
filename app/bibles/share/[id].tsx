@@ -290,7 +290,7 @@ export default function ShareScreen() {
                             right: 0,
                             bottom: 0,
                             backgroundColor: '#000',
-                            opacity: 0.4,
+                            opacity: 0.6,
                           },
                           default: {
                             position: 'absolute',
@@ -298,7 +298,7 @@ export default function ShareScreen() {
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            backgroundColor: 'rgba(0,0,0,0.25)'
+                            backgroundColor: 'rgba(0,0,0,0.4)'
                           }
                         })
                       }}
@@ -458,8 +458,9 @@ export default function ShareScreen() {
                   />
                 </View>
 
-                {/* Custom Color Pickers - Only show when enabled */}
+                {/* Custom Color Pickers - Web only; on native show a note */}
                 {useCustomColors && (
+                  Platform.OS === 'web' ? (
                   <View className="mt-4 gap-3">
                     <Text className="text-sm font-semibold">Custom Gradient Colors</Text>
                     <View className="gap-3">
@@ -573,6 +574,12 @@ export default function ShareScreen() {
                       </View>
                     </View>
                   </View>
+                  ) : (
+                    <View className="mt-4 gap-2">
+                      <Text className="text-sm text-muted-foreground">Custom color pickers are available on web.</Text>
+                      <Text className="text-sm text-muted-foreground">For mobile, use the preset gradients above.</Text>
+                    </View>
+                  )
                 )}
               </>
             ) : (
