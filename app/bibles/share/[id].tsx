@@ -64,11 +64,11 @@ export default function ShareScreen() {
 
   // Font size options matching web app
   const fontSizeOptions = [
-    { value: 18, label: 'Medium (18px)' },
-    { value: 20, label: 'Large (20px)' },
-    { value: 24, label: 'Extra Large (24px)' },
-    { value: 28, label: 'Huge (28px)' },
-    { value: 32, label: 'Massive (32px)' },
+    { value: 16, label: 'Medium (16px)' },
+    { value: 18, label: 'Large (18px)' },
+    { value: 20, label: 'Extra Large (20px)' },
+    { value: 22, label: 'Huge (22px)' },
+    { value: 24, label: 'Massive (24px)' },
   ];
 
   // Beautiful background gradients matching web app
@@ -298,7 +298,7 @@ export default function ShareScreen() {
                             left: 0,
                             right: 0,
                             bottom: 0,
-                            backgroundColor: 'rgba(0,0,0,0.4)'
+                            backgroundColor: 'rgba(0,0,0,0.25)'
                           }
                         })
                       }}
