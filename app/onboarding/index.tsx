@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { getOnboardingData, storeOnboardingPreferences, Bible } from '@/lib/services/onboarding.service';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Checkbox } from '@showcase/components/ui/checkbox';
+import * as Haptics from 'expo-haptics';
 
 const languages = [
   { value: 'en', label: 'English' },
@@ -36,7 +37,7 @@ const themes = [
 ] as const;
 
 export default function OnboardingScreen() {
-  const { colorScheme } = useColorScheme();
+  const { colorScheme, setColorScheme } = useColorScheme();
   const router = useRouter();
   const { user, refreshUser } = useAuth();
   
@@ -103,6 +104,20 @@ export default function OnboardingScreen() {
       setSelectedTranslations(selectedTranslations.filter(tid => tid !== id));
     } else {
       setSelectedTranslations([...selectedTranslations, id]);
+    }
+  };
+
+  const handleThemeSelection = (theme: 'light' | 'dark' | 'system') => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setSelectedTheme(theme);
+    
+    // Apply theme immediately for live preview
+    if (theme === 'system') {
+      // For system theme, we'd need to detect the system preference
+      // For now, we'll just set it to the current system default
+      setColorScheme(theme);
+    } else {
+      setColorScheme(theme);
     }
   };
 
@@ -271,30 +286,32 @@ export default function OnboardingScreen() {
                   Choose your preferred theme for reading
                 </Text>
 
-                <View className="mt-2 gap-3">
+                <View className="mt-2 flex-row gap-3">
                   {themes.map((theme) => (
-                    <Button
-                      key={theme.value}
-                      variant="outline"
-                      onPress={() => setSelectedTheme(theme.value)}
-                      className={`flex-col items-center justify-center border-2 py-6 ${
-                        selectedTheme === theme.value
-                          ? 'border-[#f53003] bg-[#f53003]/10 dark:border-[#FF4433] dark:bg-[#FF4433]/10'
-                          : 'border-[#e5e5e5] dark:border-[#333]'
-                      }`}
-                    >
-                      <Text className="mb-2 text-3xl">{theme.icon}</Text>
-                      <Text className={selectedTheme === theme.value ? 'font-semibold' : ''}>
-                        {theme.label}
-                      </Text>
-                      {selectedTheme === theme.value && (
-                        <Check 
-                          size={16} 
-                          color={colorScheme === 'dark' ? '#FF4433' : '#f53003'} 
-                          className="mt-2"
-                        />
-                      )}
-                    </Button>
+                    <View key={theme.value} className="flex-1">
+                      <Button
+                        variant="outline"
+                        onPress={() => handleThemeSelection(theme.value)}
+                        className={`flex-col items-center justify-center border-2 py-8 ${
+                          selectedTheme === theme.value
+                            ? 'border-[#f53003] bg-[#f53003]/10 dark:border-[#FF4433] dark:bg-[#FF4433]/10'
+                            : 'border-[#e5e5e5] dark:border-[#333]'
+                        }`}
+                      >
+                        <View className="items-center gap-2">
+                          <Text className="text-4xl">{theme.icon}</Text>
+                          <Text className={`text-center text-sm ${selectedTheme === theme.value ? 'font-semibold text-[#1b1b18] dark:text-[#EDEDEC]' : 'text-[#706f6c] dark:text-[#A1A09A]'}`}>
+                            {theme.label}
+                          </Text>
+                          {selectedTheme === theme.value && (
+                            <Check 
+                              size={18} 
+                              color={colorScheme === 'dark' ? '#FF4433' : '#f53003'} 
+                            />
+                          )}
+                        </View>
+                      </Button>
+                    </View>
                   ))}
                 </View>
               </View>
