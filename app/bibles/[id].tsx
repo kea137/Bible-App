@@ -133,7 +133,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
   );
 }
 
-export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, onHighlightChange}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string, onHighlightChange?: () => void}) {
+export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, highlightId, onHighlightChange}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string, highlightId?: number, onHighlightChange?: () => void}) {
   const router = useRouter();
   const pathname = usePathname();
   const [isNotesOpen, setIsNotesOpen] = React.useState(false);
@@ -172,9 +172,13 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, on
     }
   };
   
-  const removeHighlight = async (id: number) => {
+  const removeHighlight = async () => {
+    if (!highlightId) {
+      console.log('No highlight ID to remove');
+      return;
+    }
     try {
-      await deleteHighlight(id);
+      await deleteHighlight(highlightId);
       setCurrentHighlight(undefined);
       onHighlightChange?.();
     } catch (error) {
@@ -223,7 +227,7 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, on
               </View>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={()=>{
-              removeHighlight(verseId);
+              removeHighlight();
             }}>
               <Text>Remove Highlight</Text>
             </DropdownMenuItem>
@@ -743,6 +747,7 @@ export default function BibleDetailScreen() {
                             text={verse.text} 
                             verseId={verse.id} 
                             highlight={verse.highlight?.color} 
+                            highlightId={verse.highlight?.id}
                             verse={verse.verse_number.toString()} 
                             verseRef={`${selectedBook?.title} ${selectedChapter}:${verse.verse_number}`}
                             onHighlightChange={handleHighlightChange}
