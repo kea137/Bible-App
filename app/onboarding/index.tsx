@@ -286,7 +286,7 @@ export default function OnboardingScreen() {
                   Choose your preferred theme for reading
                 </Text>
 
-                <View className="mt-2 flex-row gap-3">
+                <View className="mt-2 flex-row gap-2">
                   {themes.map((theme) => (
                     <View key={theme.value} className="flex-1">
                       <Button
@@ -299,16 +299,10 @@ export default function OnboardingScreen() {
                         }`}
                       >
                         <View className="items-center gap-2">
-                          <Text className="text-4xl">{theme.icon}</Text>
+                          <Text className="text-xl">{theme.icon}</Text>
                           <Text className={`text-center text-sm ${selectedTheme === theme.value ? 'font-semibold text-[#1b1b18] dark:text-[#EDEDEC]' : 'text-[#706f6c] dark:text-[#A1A09A]'}`}>
                             {theme.label}
                           </Text>
-                          {selectedTheme === theme.value && (
-                            <Check 
-                              size={18} 
-                              color={colorScheme === 'dark' ? '#FF4433' : '#f53003'} 
-                            />
-                          )}
                         </View>
                       </Button>
                     </View>
