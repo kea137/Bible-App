@@ -13,7 +13,7 @@ import { SplitSquareHorizontal, BookOpen, CheckCircle } from 'lucide-react-nativ
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
-import { getBibles, getChapterData, Bible, ChapterData } from '@/lib/services/bibles.service';
+import { getBibles, getBibleDetail, getChapterData, Bible, ChapterData, BibleDetail } from '@/lib/services/bibles.service';
 import { useColorScheme } from 'nativewind';
 
 export default function ParallelBiblesScreen() {
@@ -23,14 +23,18 @@ export default function ParallelBiblesScreen() {
   const [bibles, setBibles] = useState<Bible[]>([]);
   const [selectedBible1, setSelectedBible1] = useState<Bible | null>(null);
   const [selectedBible2, setSelectedBible2] = useState<Bible | null>(null);
+  const [bibleData1, setBibleData1] = useState<BibleDetail | null>(null);
+  const [bibleData2, setBibleData2] = useState<BibleDetail | null>(null);
   const [chapter1Data, setChapter1Data] = useState<ChapterData | null>(null);
   const [chapter2Data, setChapter2Data] = useState<ChapterData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingBibleDetails, setLoadingBibleDetails] = useState(false);
   const [loadingChapters, setLoadingChapters] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState(1);
+  const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
   
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
@@ -50,28 +54,6 @@ export default function ParallelBiblesScreen() {
       } catch (err: any) {
         console.error('Failed to fetch bibles:', err);
         setError(err.message || 'Failed to load bibles');
-        // Use mock data as fallback
-        const mockBibles: Bible[] = [
-          {
-            id: 1,
-            name: 'New International Version',
-            abbreviation: 'NIV',
-            description: 'A modern, easy-to-read translation',
-            language: 'English',
-            version: '2011',
-          },
-          {
-            id: 2,
-            name: 'King James Version',
-            abbreviation: 'KJV',
-            description: 'Classic translation with traditional language',
-            language: 'English',
-            version: '1611',
-          },
-        ];
-        setBibles(mockBibles);
-        setSelectedBible1(mockBibles[0]);
-        setSelectedBible2(mockBibles[1]);
       } finally {
         setLoading(false);
       }
@@ -80,81 +62,76 @@ export default function ParallelBiblesScreen() {
     fetchBibles();
   }, []);
 
+  // Fetch Bible details when selected bibles change
+  useEffect(() => {
+    const fetchBibleDetails = async () => {
+      if (!selectedBible1 || !selectedBible2) return;
+
+      try {
+        setLoadingBibleDetails(true);
+        const [data1, data2] = await Promise.all([
+          getBibleDetail(selectedBible1.id),
+          getBibleDetail(selectedBible2.id),
+        ]);
+        setBibleData1(data1);
+        setBibleData2(data2);
+        
+        // Initialize with first book and chapter from bible1
+        if (data1.books && data1.books.length > 0) {
+          const firstBook = data1.books[0];
+          setSelectedBook(firstBook);
+          setSelectedChapter(1);
+          // Find chapter 1's ID from the book's chapters array
+          const firstChapter = firstBook.chapters?.find(ch => ch.chapter_number === 1);
+          setSelectedChapterId(firstChapter?.id || null);
+        }
+      } catch (err: any) {
+        console.error('Failed to fetch bible details:', err);
+        setError(err.message || 'Failed to load bible details');
+      } finally {
+        setLoadingBibleDetails(false);
+      }
+    };
+
+    fetchBibleDetails();
+  }, [selectedBible1, selectedBible2]);
+
   // Fetch chapter data when bible or chapter selection changes
   useEffect(() => {
     const fetchChapterData = async () => {
-      if (!selectedBible1 || !selectedBible2 || !selectedBook) return;
+      if (!selectedBible1 || !selectedBible2 || !selectedBook || !selectedChapterId) return;
 
       try {
         setLoadingChapters(true);
         const [data1, data2] = await Promise.all([
-          getChapterData(selectedBible1.id, selectedBook.id, selectedChapter),
-          getChapterData(selectedBible2.id, selectedBook.id, selectedChapter),
+          getChapterData(selectedBible1.id, selectedBook.id, selectedChapterId),
+          getChapterData(selectedBible2.id, selectedBook.id, selectedChapterId),
         ]);
         setChapter1Data(data1);
         setChapter2Data(data2);
       } catch (err: any) {
         console.error('Failed to fetch chapter data:', err);
-        // Use mock data as fallback
-        const mockVerses = Array.from({ length: 31 }, (_, i) => ({
-          id: i + 1,
-          book_id: selectedBook.id,
-          chapter_number: selectedChapter,
-          verse_number: i + 1,
-          text: `This is verse ${i + 1} from ${selectedBook.title} chapter ${selectedChapter}. The content would be the actual verse text from the Bible.`,
-          highlight: { id: 0, color: '' }
-        }));
-        
-        if (selectedBible1) {
-          setChapter1Data({
-            bible: selectedBible1,
-            book: selectedBook,
-            chapter_number: selectedChapter,
-            verses: mockVerses,
-          });
-        }
-        
-        if (selectedBible2) {
-          setChapter2Data({
-            bible: selectedBible2,
-            book: selectedBook,
-            chapter_number: selectedChapter,
-            verses: mockVerses.map(v => ({ ...v, text: `${v.text} (Translation 2)` })),
-          });
-        }
+        setError(err.message || 'Failed to load chapter data');
       } finally {
         setLoadingChapters(false);
       }
     };
 
     fetchChapterData();
-  }, [selectedBible1, selectedBible2, selectedBook, selectedChapter]);
+  }, [selectedBible1, selectedBible2, selectedBook, selectedChapterId]);
 
   // Initialize with mock book data
   useEffect(() => {
     if (bibles.length > 0 && !selectedBook) {
-      setSelectedBook({
-        id: 1,
-        title: 'Genesis',
-        book_number: 1,
-        chapters_count: 50,
-      });
+      // Wait for bible details to be loaded
+      // Book will be set in the fetchBibleDetails effect
     }
   }, [bibles]);
-
-  // Mock bible data structure for book selection
-  const mockBooks = [
-    { id: 1, title: 'Genesis', book_number: 1, chapters_count: 50 },
-    { id: 2, title: 'Exodus', book_number: 2, chapters_count: 40 },
-    { id: 3, title: 'Psalms', book_number: 19, chapters_count: 150 },
-    { id: 4, title: 'Matthew', book_number: 40, chapters_count: 28 },
-    { id: 5, title: 'John', book_number: 43, chapters_count: 21 },
-  ];
 
   const canGoPrevious = selectedChapter > 1;
   const canGoNext = selectedBook && selectedChapter < selectedBook.chapters_count;
 
-  if (loading) {
+  if (loading || loadingBibleDetails) {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" />
@@ -254,12 +231,17 @@ export default function ParallelBiblesScreen() {
             <View className="w-full">
               <Select
                 className="w-full"
-                value={{ value: selectedBook?.id.toString() || '', label: selectedBook?.title || '' }}
+                value={selectedBook ? { value: String(selectedBook.id), label: selectedBook.title } : undefined}
                 onValueChange={(option) => {
-                  const book = mockBooks.find(b => b.id === Number(option?.value));
+                  const v = (option as any)?.value as string | undefined;
+                  if (!v || !bibleData1) return;
+                  const book = bibleData1.books.find(b => b.id === Number(v));
                   if (book) {
                     setSelectedBook(book);
                     setSelectedChapter(1);
+                    // Find chapter 1's ID from the book's chapters array
+                    const firstChapter = book.chapters?.find(ch => ch.chapter_number === 1);
+                    setSelectedChapterId(firstChapter?.id || null);
                   }
                 }}
               >
@@ -268,7 +250,7 @@ export default function ParallelBiblesScreen() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {mockBooks.map((book) => (
+                    {bibleData1?.books && bibleData1.books.map((book) => (
                       <SelectItem 
                         key={book.id} 
                         value={book.id.toString()}
@@ -285,10 +267,15 @@ export default function ParallelBiblesScreen() {
             {/* Chapter Selector */}
             <View className="w-full">
               <Select
-                value={{ value: selectedChapter.toString(), label: selectedChapter.toString() }}
+                value={{ value: selectedChapter.toString(), label: `Chapter ${selectedChapter}` }}
                 onValueChange={(option) => {
-                  if (option?.value) {
-                    setSelectedChapter(Number(option.value));
+                  const v = (option as any)?.value as string | undefined;
+                  if (v && selectedBook) {
+                    const chapterNum = Number(v);
+                    setSelectedChapter(chapterNum);
+                    // Find the chapter ID from the book's chapters array
+                    const chapter = selectedBook.chapters?.find(ch => ch.chapter_number === chapterNum);
+                    setSelectedChapterId(chapter?.id || null);
                   }
                 }}
               >
@@ -297,15 +284,28 @@ export default function ParallelBiblesScreen() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {selectedBook && Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
-                      <SelectItem 
-                        key={ch} 
-                        value={ch.toString()}
-                        label={ch.toString()}
-                      >
-                        {ch}
-                      </SelectItem>
-                    ))}
+                    {selectedBook?.chapters && selectedBook.chapters.length > 0 ? (
+                      selectedBook.chapters.map((chapter) => (
+                        <SelectItem 
+                          key={chapter.id} 
+                          value={chapter.chapter_number.toString()}
+                          label={`Chapter ${chapter.chapter_number}`}
+                        >
+                          Chapter {chapter.chapter_number}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      // Fallback to chapters_count if chapters array not available
+                      selectedBook && Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
+                        <SelectItem 
+                          key={ch} 
+                          value={ch.toString()}
+                          label={`Chapter ${ch}`}
+                        >
+                          Chapter {ch}
+                        </SelectItem>
+                      ))
+                    )}
                   </SelectGroup>
                 </SelectContent>
               </Select>
