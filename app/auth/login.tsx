@@ -98,7 +98,7 @@ export default function LoginScreen() {
       });
       setAlertMessage('Login successful!');
       setCheckerSuccess(true);
-      router.replace('/dashboard');
+      router.replace('/');
     } catch (error: any) {
       if (error.errors && Array.isArray(error.errors)) {
         const fieldErrors: Record<string, string> = {};

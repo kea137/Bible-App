@@ -50,8 +50,8 @@ export default function RegisterScreen() {
         text2: 'Welcome to Bible App!',
       });
       
-      // Navigate to dashboard
-      router.replace('/dashboard');
+      // Navigate to index (which will redirect to onboarding or dashboard)
+      router.replace('/');
     } catch (error: any) {
       if (error.errors) {
         // Zod validation errors
