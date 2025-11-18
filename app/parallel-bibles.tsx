@@ -331,16 +331,6 @@ export default function ParallelBiblesScreen() {
               </Select>
             </View>
 
-            {/* Mark as Complete */}
-            <Button 
-              variant={completed ? "default" : "outline"}
-              onPress={() => setCompleted(!completed)}
-            >
-              <CheckCircle size={16} color={primaryIconColor} />
-              <Text className="ml-2">
-                {completed ? 'Completed' : 'Mark as Complete'}
-              </Text>
-            </Button>
           </CardContent>
         </Card>
 
@@ -369,8 +359,8 @@ export default function ParallelBiblesScreen() {
                 return (
                   <TouchableOpacity key={verse.id} activeOpacity={0.7}>
                     <View className="flex-row gap-3">
-                      <View className="w-8">
-                        <Text className="text-sm font-semibold text-primary">
+                      <View className="wr-4 mt-1">
+                        <Text className="text-sm text-primary">
                           {verse.verse_number}
                         </Text>
                       </View>
