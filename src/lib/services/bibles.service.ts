@@ -63,6 +63,7 @@ export interface BibleDetail {
     chapter_number: number;
     book: Book;
     verses: Verse[];
+    is_read?: boolean; // progress flag for the initial chapter
   };
 }
 
@@ -72,7 +73,7 @@ export interface ChapterData {
   book: Book;
   chapter_number: number;
   verses: Verse[];
-  is_read?: boolean;
+  is_read?: boolean; // progress flag
 }
 
 export interface ChapterProgress {
@@ -235,7 +236,7 @@ export const getParallelBibles = async (
  */
 export const markChapterProgress = async (data: MarkChapterProgressData): Promise<ChapterProgress> => {
   try {
-    const response = await apiClient.post<ChapterProgress>(API_ENDPOINTS.chapterProgress, data);
+    const response = await apiClient.post<ChapterProgress>(API_ENDPOINTS.markAsRead, data);
     return response;
   } catch (error) {
     throw parseApiError(error);

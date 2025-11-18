@@ -30,7 +30,6 @@ export interface LessonParagraph {
   lesson_id: number;
   title: string;
   text: string;
-  order: number;
   created_at?: string;
   updated_at?: string;
 }

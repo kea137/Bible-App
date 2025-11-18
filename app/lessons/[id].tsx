@@ -48,35 +48,30 @@ export default function LessonDetailScreen() {
               lesson_id: Number(id),
               title: 'What is the Gospel?',
               text: 'The Gospel means "good news." It is the message that God loves us and sent His Son Jesus Christ to save us from our sins. Through faith in Jesus, we can have eternal life and a relationship with God.',
-              order: 1,
             },
             {
               id: 2,
               lesson_id: Number(id),
               title: 'The Need for Salvation',
               text: 'All people have sinned and fall short of the glory of God (Romans 3:23). Sin separates us from God and leads to spiritual death. We cannot save ourselves through our own efforts or good works.',
-              order: 2,
             },
             {
               id: 3,
               lesson_id: Number(id),
               title: 'God\'s Love and Grace',
               text: 'But God demonstrates His own love for us in this: While we were still sinners, Christ died for us (Romans 5:8). Jesus Christ, the Son of God, lived a perfect life, died on the cross for our sins, and rose again on the third day.',
-              order: 3,
             },
             {
               id: 4,
               lesson_id: Number(id),
               title: 'Receiving Salvation',
               text: 'Salvation is a gift from God that we receive through faith in Jesus Christ. We must believe that Jesus is Lord, that He died for our sins and rose again, and confess Him as our Savior. This faith transforms our lives and gives us hope for eternity.',
-              order: 4,
             },
             {
               id: 5,
               lesson_id: Number(id),
               title: 'Living as a Believer',
               text: 'Once we accept Christ, we are called to live for Him. This means reading the Bible, praying, fellowshipping with other believers, and sharing the Gospel with others. Our faith should be evident in how we live each day.',
-              order: 5,
             },
           ],
           completed: false,
@@ -198,7 +193,7 @@ export default function LessonDetailScreen() {
 
             {/* Lesson Content */}
             <View className="gap-4">
-              {lessonData.paragraphs.map((paragraph) => (
+              {(lessonData?.paragraphs ?? []).map((paragraph) => (
                 <Card key={paragraph.id}>
                   <CardHeader>
                     <CardTitle className="text-lg">{paragraph.title}</CardTitle>
