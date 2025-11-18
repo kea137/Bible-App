@@ -292,14 +292,14 @@ export default function OnboardingScreen() {
                       <Button
                         variant="outline"
                         onPress={() => handleThemeSelection(theme.value)}
-                        className={`flex-col items-center justify-center border-2 py-8 ${
+                        className={`flex-col items-center justify-center border-2 pb-12 ${
                           selectedTheme === theme.value
                             ? 'border-[#f53003] bg-[#f53003]/10 dark:border-[#FF4433] dark:bg-[#FF4433]/10'
                             : 'border-[#e5e5e5] dark:border-[#333]'
                         }`}
                       >
                         <View className="items-center gap-2">
-                          <Text className="text-xl">{theme.icon}</Text>
+                          <Text className="text-2xl py-4">{theme.icon}</Text>
                           <Text className={`text-center text-sm ${selectedTheme === theme.value ? 'font-semibold text-[#1b1b18] dark:text-[#EDEDEC]' : 'text-[#706f6c] dark:text-[#A1A09A]'}`}>
                             {theme.label}
                           </Text>
