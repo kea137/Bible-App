@@ -1,22 +1,16 @@
 import { Text } from '@showcase/components/ui/text';
 import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@showcase/components/ui/select';
-import { SplitSquareHorizontal, BookOpen, CheckCircle } from 'lucide-react-native';
+import { SplitSquareHorizontal, BookOpen, CheckCircle, ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { getBibles, getChapterData, Bible, ChapterData } from '@/lib/services/bibles.service';
+import { useColorScheme } from 'nativewind';
 
 export default function ParallelBiblesScreen() {
   const { id } = useLocalSearchParams();
+  const { colorScheme } = useColorScheme();
   const [completed, setCompleted] = useState(false);
   const [bibles, setBibles] = useState<Bible[]>([]);
   const [selectedBible1, setSelectedBible1] = useState<Bible | null>(null);
@@ -29,6 +23,9 @@ export default function ParallelBiblesScreen() {
 
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState(1);
+  
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch all bibles on mount
   useEffect(() => {
@@ -97,6 +94,7 @@ export default function ParallelBiblesScreen() {
           chapter_number: selectedChapter,
           verse_number: i + 1,
           text: `This is verse ${i + 1} from ${selectedBook.title} chapter ${selectedChapter}. The content would be the actual verse text from the Bible.`,
+          highlight: { id: 0, color: '' }
         }));
         
         if (selectedBible1) {
@@ -174,201 +172,164 @@ export default function ParallelBiblesScreen() {
           </Card>
         )}
 
-        {/* Bible 1 */}
-        {selectedBible1 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex-row items-center gap-2">
-                <BookOpen size={20} className="text-primary" />
-                <Text>{selectedBible1.name}</Text>
-              </CardTitle>
-              <CardDescription>{selectedBible1.description}</CardDescription>
-            </CardHeader>
-            <CardContent className="gap-3">
-              {/* Book and Chapter Selector */}
-              <View className="gap-3 w-full">
-                <View className="w-full">
-                  <Select
-                    className="w-full"
-                    value={{ value: selectedBook?.id.toString() || '', label: selectedBook?.title || '' }}
-                    onValueChange={(option) => {
-                      const book = mockBooks.find(b => b.id === Number(option?.value));
-                      if (book) {
-                        setSelectedBook(book);
-                        setSelectedChapter(1);
-                      }
+        {/* Header Card with Bible Selectors */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex-row items-center gap-2">
+              <SplitSquareHorizontal size={20} color={primaryIconColor} />
+              <Text>Parallel Bibles</Text>
+            </CardTitle>
+            <CardDescription>Compare two Bible translations side by side</CardDescription>
+          </CardHeader>
+          <CardContent className="gap-4">
+            {/* Bible 1 Selector */}
+            <View className="gap-2">
+              <Text className="text-sm font-semibold">First Translation</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+                {bibles.map((bible) => (
+                  <Button
+                    key={bible.id}
+                    variant={selectedBible1?.id === bible.id ? "default" : "outline"}
+                    size="sm"
+                    onPress={() => setSelectedBible1(bible)}
+                  >
+                    <Text>{bible.abbreviation}</Text>
+                  </Button>
+                ))}
+              </ScrollView>
+            </View>
+
+            {/* Bible 2 Selector */}
+            <View className="gap-2">
+              <Text className="text-sm font-semibold">Second Translation</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+                {bibles.map((bible) => (
+                  <Button
+                    key={bible.id}
+                    variant={selectedBible2?.id === bible.id ? "default" : "outline"}
+                    size="sm"
+                    onPress={() => setSelectedBible2(bible)}
+                  >
+                    <Text>{bible.abbreviation}</Text>
+                  </Button>
+                ))}
+              </ScrollView>
+            </View>
+
+            {/* Book Selector */}
+            <View className="gap-2">
+              <Text className="text-sm font-semibold">Book</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-2">
+                {mockBooks.map((book) => (
+                  <Button
+                    key={book.id}
+                    variant={selectedBook?.id === book.id ? "default" : "outline"}
+                    size="sm"
+                    onPress={() => {
+                      setSelectedBook(book);
+                      setSelectedChapter(1);
                     }}
                   >
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Select book" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        {mockBooks.map((book) => (
-                          <SelectItem 
-                            key={book.id} 
-                            value={book.id.toString()}
-                            label={book.title}
-                          >
-                            {book.title}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                </View>
-              </View>
+                    <Text>{book.title}</Text>
+                  </Button>
+                ))}
+              </ScrollView>
+            </View>
 
-              <View className="w-full">
-                <Select
-                  value={{ value: selectedChapter.toString(), label: selectedChapter.toString() }}
-                  onValueChange={(option) => {
-                    if (option?.value) {
-                      setSelectedChapter(Number(option.value));
-                    }
-                  }}
+            {/* Chapter Navigation */}
+            <View className="gap-2">
+              <Text className="text-sm font-semibold">Chapter {selectedChapter}</Text>
+              <View className="flex-row items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={selectedChapter <= 1}
+                  onPress={() => setSelectedChapter(prev => Math.max(1, prev - 1))}
                 >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Chapter" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {selectedBook && Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
-                        <SelectItem 
-                          key={ch} 
-                          value={ch.toString()}
-                          label={ch.toString()}
-                        >
-                          {ch}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </View>
-
-              {/* Navigation Buttons */}
-              <View className="flex-col gap-2">
-                <Button 
-                  variant={completed ? "default" : "outline"}
-                  onPress={() => setCompleted(!completed)}
-                >
-                  <CheckCircle size={16} />
-                  <Text className="ml-2">
-                    {completed ? 'Completed' : 'Mark as Complete'}
-                  </Text>
+                  <ChevronLeft size={20} color={primaryIconColor} />
                 </Button>
-                
-                {/* Verses */}
-                <View className="mt-4">
-                  <CardContent className="gap-4 py-4">
-                    {selectedBook && (
-                      <Text className="text-base font-bold">
-                        {selectedBook.title} {selectedChapter}
-                      </Text>
-                    )}
-                    
-                    {loadingChapters && (
-                      <View className="flex-1 items-center justify-center py-8">
-                        <ActivityIndicator />
-                        <Text className="mt-2 text-muted-foreground text-sm">Loading...</Text>
-                      </View>
-                    )}
-                    
-                    {!loadingChapters && chapter1Data && chapter1Data.verses.map((verse) => (
-                      <TouchableOpacity key={verse.id} activeOpacity={0.7}>
-                        <View className="flex-row gap-3">
-                          <View className="w-8">
-                            <Text className="text-sm font-semibold text-primary">
-                              {verse.verse_number}
-                            </Text>
-                          </View>
-                          <View className="flex-1">
-                            <Text className="text-base leading-7">{verse.text}</Text>
-                          </View>
-                        </View>
-                      </TouchableOpacity>
-                    ))}
-                  </CardContent>
-                </View>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-1 flex-row gap-2">
+                  {selectedBook && Array.from({ length: selectedBook.chapters_count }, (_, i) => i + 1).map((ch) => (
+                    <Button
+                      key={ch}
+                      variant={selectedChapter === ch ? "default" : "outline"}
+                      size="sm"
+                      onPress={() => setSelectedChapter(ch)}
+                    >
+                      <Text>{ch}</Text>
+                    </Button>
+                  ))}
+                </ScrollView>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  disabled={!selectedBook || selectedChapter >= selectedBook.chapters_count}
+                  onPress={() => setSelectedChapter(prev => selectedBook ? Math.min(selectedBook.chapters_count, prev + 1) : prev)}
+                >
+                  <ChevronRight size={20} color={primaryIconColor} />
+                </Button>
               </View>
-            </CardContent>
-          </Card>
+            </View>
+
+            {/* Mark as Complete */}
+            <Button 
+              variant={completed ? "default" : "outline"}
+              onPress={() => setCompleted(!completed)}
+            >
+              <CheckCircle size={16} color={primaryIconColor} />
+              <Text className="ml-2">
+                {completed ? 'Completed' : 'Mark as Complete'}
+              </Text>
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Loading State */}
+        {loadingChapters && (
+          <View className="flex-1 items-center justify-center py-8">
+            <ActivityIndicator size="large" />
+            <Text className="mt-4 text-muted-foreground">Loading verses...</Text>
+          </View>
         )}
 
-        {/* Bible 2 */}
-        {selectedBible2 && (
+        {/* Parallel Verses Display */}
+        {!loadingChapters && chapter1Data && chapter2Data && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex-row items-center gap-2">
-                <BookOpen size={20} className="text-primary" />
-                <Text>{selectedBible2.name}</Text>
+              <CardTitle className="text-center">
+                {selectedBook?.title} {selectedChapter}
               </CardTitle>
-              <CardDescription>{selectedBible2.description}</CardDescription>
             </CardHeader>
-            <CardContent className="gap-3">
-              {/* Bible Selector */}
-              <View className="w-full">
-                <Select
-                  value={{ value: selectedBible2.id.toString(), label: selectedBible2.abbreviation }}
-                  onValueChange={(option) => {
-                    const bible = bibles.find(b => b.id === Number(option?.value));
-                    if (bible) {
-                      setSelectedBible2(bible);
-                    }
-                  }}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select translation" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {bibles.map((bible) => (
-                        <SelectItem 
-                          key={bible.id} 
-                          value={bible.id.toString()}
-                          label={bible.abbreviation}
-                        >
-                          {bible.abbreviation}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </View>
-
-              {/* Verses */}
-              <View className="mt-4">
-                <CardContent className="gap-4 py-4">
-                  {selectedBook && (
-                    <Text className="text-base font-bold">
-                      {selectedBook.title} {selectedChapter}
+            <CardContent className="gap-4">
+              {chapter1Data.verses.map((verse, index) => {
+                const verse2 = chapter2Data.verses[index];
+                if (!verse2) return null;
+                
+                return (
+                  <View key={verse.id} className="gap-3 border-b border-border pb-4 last:border-b-0">
+                    {/* Verse Number */}
+                    <Text className="text-sm font-bold text-primary text-center">
+                      Verse {verse.verse_number}
                     </Text>
-                  )}
-                  
-                  {loadingChapters && (
-                    <View className="flex-1 items-center justify-center py-8">
-                      <ActivityIndicator />
-                      <Text className="mt-2 text-muted-foreground text-sm">Loading...</Text>
+                    
+                    {/* Bible 1 */}
+                    <View className="gap-2">
+                      <Text className="text-xs font-semibold text-muted-foreground">
+                        {selectedBible1?.abbreviation}
+                      </Text>
+                      <Text className="text-base leading-7">{verse.text}</Text>
                     </View>
-                  )}
-                  
-                  {!loadingChapters && chapter2Data && chapter2Data.verses.map((verse) => (
-                    <TouchableOpacity key={verse.id} activeOpacity={0.7}>
-                      <View className="flex-row gap-3">
-                        <View className="w-8">
-                          <Text className="text-sm font-semibold text-primary">
-                            {verse.verse_number}
-                          </Text>
-                        </View>
-                        <View className="flex-1">
-                          <Text className="text-base leading-7">{verse.text}</Text>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </CardContent>
-              </View>
+                    
+                    {/* Bible 2 */}
+                    <View className="gap-2">
+                      <Text className="text-xs font-semibold text-muted-foreground">
+                        {selectedBible2?.abbreviation}
+                      </Text>
+                      <Text className="text-base leading-7">{verse2.text}</Text>
+                    </View>
+                  </View>
+                );
+              })}
             </CardContent>
           </Card>
         )}
