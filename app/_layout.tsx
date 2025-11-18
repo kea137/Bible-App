@@ -26,8 +26,8 @@ export default function RootLayout() {
   const theme = NAV_THEME[colorScheme];
   const colors = theme.colors;
   const pathname = usePathname();
-  // Hide footer on auth pages (anything under /auth) and welcome screen.
-  const hideFooter = pathname.startsWith('/auth') || pathname === '/welcome';
+  // Hide footer on auth pages (anything under /auth), welcome screen, and onboarding.
+  const hideFooter = pathname.startsWith('/auth') || pathname === '/welcome' || pathname === '/onboarding';
   const [settingsOpen, setSettingsOpen] = React.useState(false);
 
   return (
@@ -53,6 +53,14 @@ export default function RootLayout() {
         }}
       >
         <Stack.Screen name="index" options={{ headerTitle: 'Bible App' }} />
+        <Stack.Screen
+          name="onboarding/index"
+          options={{
+            headerTitle: 'Setup',
+            headerBackVisible: false,
+            gestureEnabled: false,
+          }}
+        />
         <Stack.Screen
           name="dashboard"
           options={{

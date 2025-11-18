@@ -41,6 +41,12 @@ export interface User {
   email_verified_at: string | null;
   created_at: string;
   updated_at: string;
+  language?: string;
+  preferred_translations?: number[];
+  appearance_preferences?: {
+    theme?: 'light' | 'dark' | 'system';
+  };
+  onboarding_completed?: boolean;
 }
 
 export interface AuthResponse {

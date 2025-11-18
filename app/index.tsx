@@ -3,7 +3,7 @@ import { useAuth } from '@/lib/contexts/AuthContext';
 import { View, ActivityIndicator } from 'react-native';
 
 export default function HomeScreen() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   // Show loading indicator while checking authentication
   if (isLoading) {
@@ -16,6 +16,10 @@ export default function HomeScreen() {
 
   // Redirect based on authentication status
   if (isAuthenticated) {
+    // Check if user has completed onboarding
+    if (!user?.onboarding_completed) {
+      return <Redirect href="/onboarding" />;
+    }
     return <Redirect href="/dashboard" />;
   }
 
