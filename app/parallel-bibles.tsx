@@ -99,16 +99,36 @@ export default function ParallelBiblesScreen() {
   // Fetch chapter data when bible or chapter selection changes
   useEffect(() => {
     const fetchChapterData = async () => {
-      if (!selectedBible1 || !selectedBible2 || !selectedBook || !selectedChapterId) return;
+      if (!selectedBible1 || !selectedBible2 || !selectedBook || !selectedChapterId || !bibleData1 || !bibleData2) return;
 
       try {
         setLoadingChapters(true);
+        
+        // Find the corresponding book in Bible 2 based on book_number
+        const book2 = bibleData2.books.find(b => b.book_number === selectedBook.book_number);
+        if (!book2) {
+          console.error('Book not found in Bible 2:', selectedBook.book_number);
+          setError('Selected book not available in second translation');
+          setLoadingChapters(false);
+          return;
+        }
+        
+        // Find the corresponding chapter in Bible 2 based on chapter_number
+        const chapter2 = book2.chapters?.find(ch => ch.chapter_number === selectedChapter);
+        if (!chapter2) {
+          console.error('Chapter not found in Bible 2:', selectedChapter);
+          setError('Selected chapter not available in second translation');
+          setLoadingChapters(false);
+          return;
+        }
+        
         const [data1, data2] = await Promise.all([
           getChapterData(selectedBible1.id, selectedBook.id, selectedChapterId),
-          getChapterData(selectedBible2.id, selectedBook.id, selectedChapterId),
+          getChapterData(selectedBible2.id, book2.id, chapter2.id),
         ]);
         setChapter1Data(data1);
         setChapter2Data(data2);
+        setError(null);
       } catch (err: any) {
         console.error('Failed to fetch chapter data:', err);
         setError(err.message || 'Failed to load chapter data');
@@ -118,7 +138,7 @@ export default function ParallelBiblesScreen() {
     };
 
     fetchChapterData();
-  }, [selectedBible1, selectedBible2, selectedBook, selectedChapterId]);
+  }, [selectedBible1, selectedBible2, selectedBook, selectedChapterId, bibleData1, bibleData2, selectedChapter]);
 
   // Initialize with mock book data
   useEffect(() => {
