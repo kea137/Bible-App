@@ -14,7 +14,7 @@ export interface Lesson {
   title: string;
   description: string;
   language: string;
-  order?: number;
+  episode_number?: number;
   created_at: string;
   updated_at: string;
   series_id?: number;
@@ -23,29 +23,44 @@ export interface Lesson {
     title: string;
     description?: string;
   };
+  paragraphs?: LessonParagraph[];
+}
+
+export interface ScriptureReference {
+  book_code: string;
+  chapter: string;
+  verse: string;
+  text?: string;
+  verse_id?: number;
 }
 
 export interface LessonParagraph {
   id: number;
-  lesson_id: number;
   title: string;
   text: string;
-  created_at?: string;
-  updated_at?: string;
+  references?: ScriptureReference[];
+}
+
+export interface SeriesLesson {
+  id: number;
+  title: string;
+  episode_number: number;
+}
+
+export interface UserProgress {
+  id: number;
+  user_id: number;
+  lesson_id: number;
+  completed: boolean;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface LessonDetail {
   lesson: Lesson;
-  paragraphs: LessonParagraph[];
-  completed?: boolean;
-  next_lesson?: {
-    id: number;
-    title: string;
-  };
-  previous_lesson?: {
-    id: number;
-    title: string;
-  };
+  userProgress?: UserProgress | null;
+  seriesLessons?: SeriesLesson[];
 }
 
 export interface LessonProgress {
