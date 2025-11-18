@@ -133,7 +133,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
   );
 }
 
-export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, onHighlightChange}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string, onHighlightChange?: () => void}) {
+export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, highlightId, onHighlightChange}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string, highlightId?: number, onHighlightChange?: () => void}) {
   const router = useRouter();
   const pathname = usePathname();
   const [isNotesOpen, setIsNotesOpen] = React.useState(false);
@@ -172,9 +172,13 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, on
     }
   };
   
-  const removeHighlight = async (id: number) => {
+  const removeHighlight = async () => {
+    if (!highlightId) {
+      console.log('No highlight ID to remove');
+      return;
+    }
     try {
-      await deleteHighlight(id);
+      await deleteHighlight(highlightId);
       setCurrentHighlight(undefined);
       onHighlightChange?.();
     } catch (error) {
@@ -223,7 +227,7 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, on
               </View>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={()=>{
-              removeHighlight(verseId);
+              removeHighlight();
             }}>
               <Text>Remove Highlight</Text>
             </DropdownMenuItem>
@@ -335,21 +339,43 @@ export default function BibleDetailScreen() {
             setSelectedBook(fullBook);
             setSelectedChapter(data.initialChapter.chapter_number);
             setSelectedChapterId(data.initialChapter.id);
+            // Use initialChapter data first
             setChapterData({
               id: data.initialChapter.id,
               book: fullBook,
               chapter_number: data.initialChapter.chapter_number,
               verses: data.initialChapter.verses,
               bible: data.bible,
+              is_read: data.initialChapter.is_read,
             });
-            setLoadingChapter(false);
+            // If is_read is provided, apply immediately; otherwise fetch fresh chapter to obtain progress flag
+            if (typeof data.initialChapter.is_read !== 'undefined') {
+              setCompleted(!!data.initialChapter.is_read);
+              setLoadingChapter(false);
+            } else {
+              try {
+                const freshChapter = await getChapterData(Number(id), fullBook.id, data.initialChapter.id);
+                setChapterData({
+                  ...freshChapter,
+                  id: data.initialChapter.id,
+                  book: fullBook,
+                  is_read: freshChapter.is_read,
+                });
+                setCompleted(!!freshChapter.is_read);
+              } catch (e) {
+                console.warn('[INITIAL CHAPTER] Failed to fetch fresh chapter for is_read state:', e);
+                setCompleted(false);
+              } finally {
+                setLoadingChapter(false);
+              }
+            }
           } else if (data.books && data.books.length > 0) {
             setSelectedBook(data.books[0]);
           }
         }
         // If initialChapter is provided and no chapter_id param, use it
         else if (data.initialChapter) {
-          // Find the full book object from data.books which has the chapters array
+          // Use initialChapter directly when no chapter_id param
           const fullBook = data.books?.find(b => b.id === data.initialChapter.book.id) || data.initialChapter.book;
           setSelectedBook(fullBook);
           setSelectedChapter(data.initialChapter.chapter_number);
@@ -360,7 +386,11 @@ export default function BibleDetailScreen() {
             chapter_number: data.initialChapter.chapter_number,
             verses: data.initialChapter.verses,
             bible: data.bible,
+            is_read: data.initialChapter.is_read,
           });
+          if (typeof data.initialChapter.is_read !== 'undefined') {
+            setCompleted(!!data.initialChapter.is_read);
+          }
           setLoadingChapter(false);
         } else if (data.books && data.books.length > 0) {
           setSelectedBook(data.books[0]);
@@ -421,8 +451,10 @@ export default function BibleDetailScreen() {
 
       // Check if we already have this chapter data loaded
       if (chapterData && 
-          chapterData.id === selectedChapterId) {
+          chapterData.id === selectedChapterId && typeof chapterData.is_read !== 'undefined') {
         console.log('[CHAPTER] Using existing chapter data for chapter ID:', selectedChapterId);
+        // Sync completed from cached chapter if needed
+        setCompleted(!!chapterData.is_read);
         return;
       }
 
@@ -475,7 +507,10 @@ export default function BibleDetailScreen() {
         headerTitle: bibleData.bible.abbreviation,
       });
     }
-  }, [navigation, bibleData]);
+    if (chapterData && chapterData.is_read) {
+      setCompleted(true);
+    }
+  }, [navigation, bibleData, chapterData]);
 
   // Handler for marking chapter as read/unread
   const handleMarkComplete = async () => {
@@ -578,7 +613,6 @@ export default function BibleDetailScreen() {
   return (
     <GestureHandlerRootView className="flex-1">
       <PortalHost name="root" />
-      {/* <AlertSuccess open={alertSuccess} onOpenChange={setAlertSuccess}/> */}
       <GestureDetector gesture={composedGesture}>
         <ScrollView className="flex-1 bg-background">
           <View className="flex-1 gap-4 p-4">
@@ -743,6 +777,7 @@ export default function BibleDetailScreen() {
                             text={verse.text} 
                             verseId={verse.id} 
                             highlight={verse.highlight?.color} 
+                            highlightId={verse.highlight?.id}
                             verse={verse.verse_number.toString()} 
                             verseRef={`${selectedBook?.title} ${selectedChapter}:${verse.verse_number}`}
                             onHighlightChange={handleHighlightChange}

@@ -42,7 +42,7 @@ export const API_ENDPOINTS = {
   bibles: '/api/mobile/bibles',
   biblesParallel: '/api/mobile/bibles/parallel',
   apiBibles: '/api/mobile/api-bibles',
-  chapterProgress: '/api/mobile/chapter-progress',
+  markAsRead: '/api/mobile/bibles/mark_as_read',
   
   // Highlights
   verseHighlights: '/api/mobile/verse-highlights',

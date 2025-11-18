@@ -14,7 +14,7 @@ export interface Lesson {
   title: string;
   description: string;
   language: string;
-  order?: number;
+  episode_number?: number;
   created_at: string;
   updated_at: string;
   series_id?: number;
@@ -23,30 +23,44 @@ export interface Lesson {
     title: string;
     description?: string;
   };
+  paragraphs?: LessonParagraph[];
+}
+
+export interface ScriptureReference {
+  book_code: string;
+  chapter: string;
+  verse: string;
+  text?: string;
+  verse_id?: number;
 }
 
 export interface LessonParagraph {
   id: number;
-  lesson_id: number;
   title: string;
   text: string;
-  order: number;
-  created_at?: string;
-  updated_at?: string;
+  references?: ScriptureReference[];
+}
+
+export interface SeriesLesson {
+  id: number;
+  title: string;
+  episode_number: number;
+}
+
+export interface UserProgress {
+  id: number;
+  user_id: number;
+  lesson_id: number;
+  completed: boolean;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface LessonDetail {
   lesson: Lesson;
-  paragraphs: LessonParagraph[];
-  completed?: boolean;
-  next_lesson?: {
-    id: number;
-    title: string;
-  };
-  previous_lesson?: {
-    id: number;
-    title: string;
-  };
+  userProgress?: UserProgress | null;
+  seriesLessons?: SeriesLesson[];
 }
 
 export interface LessonProgress {
@@ -92,8 +106,10 @@ const parseApiError = (error: unknown): ApiError => {
  */
 export const getLessons = async (): Promise<Lesson[]> => {
   try {
-    const response = await apiClient.get<Lesson[]>(API_ENDPOINTS.lessons);
-    return response;
+    const response = await apiClient.get<{ data: Lesson[] }>(API_ENDPOINTS.lessons);
+    // Handle both wrapped and unwrapped response formats
+    const lessons = (response as any)?.data || response;
+    return Array.isArray(lessons) ? lessons : [];
   } catch (error) {
     throw parseApiError(error);
   }
@@ -104,8 +120,9 @@ export const getLessons = async (): Promise<Lesson[]> => {
  */
 export const getLessonDetail = async (lessonId: number): Promise<LessonDetail> => {
   try {
-    const response = await apiClient.get<LessonDetail>(`${API_ENDPOINTS.lessons}/${lessonId}`);
-    return response;
+    const response = await apiClient.get<{ data: LessonDetail }>(`${API_ENDPOINTS.lessons}/${lessonId}`);
+    // Handle both wrapped and unwrapped response formats
+    return (response as any)?.data || response;
   } catch (error) {
     throw parseApiError(error);
   }

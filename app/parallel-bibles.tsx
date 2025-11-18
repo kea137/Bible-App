@@ -1,5 +1,4 @@
 import { Text } from '@showcase/components/ui/text';
-import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import {
   Select,
@@ -15,6 +14,7 @@ import { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { getBibles, getBibleDetail, getChapterData, Bible, ChapterData, BibleDetail } from '@/lib/services/bibles.service';
 import { useColorScheme } from 'nativewind';
+import { PortalHost } from '@rn-primitives/portal';
 
 export default function ParallelBiblesScreen() {
   const { id } = useLocalSearchParams();
@@ -162,6 +162,7 @@ export default function ParallelBiblesScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background">
+      <PortalHost name="root" />
       <View className="flex-1 gap-4 p-4">
         {/* Error State */}
         {error && (
@@ -201,8 +202,8 @@ export default function ParallelBiblesScreen() {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="First Translation" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
+                <SelectContent portalHost="root">
+                   <SelectGroup className="h-80 w-[320px]">
                     {bibles.map((bible) => (
                       <SelectItem 
                         key={bible.id} 
@@ -231,8 +232,8 @@ export default function ParallelBiblesScreen() {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Second Translation" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
+                <SelectContent portalHost="root">
+                   <SelectGroup className="h-80 w-[320px]">
                     {bibles.map((bible) => (
                       <SelectItem 
                         key={bible.id} 
@@ -268,8 +269,8 @@ export default function ParallelBiblesScreen() {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select book" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
+                <SelectContent portalHost="root">
+                   <SelectGroup className="h-80 w-[320px]">
                     {bibleData1?.books && bibleData1.books.map((book) => (
                       <SelectItem 
                         key={book.id} 
@@ -302,8 +303,8 @@ export default function ParallelBiblesScreen() {
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Chapter" />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
+                <SelectContent portalHost="root">
+                  <SelectGroup className="h-80 w-[320px]">
                     {selectedBook?.chapters && selectedBook.chapters.length > 0 ? (
                       selectedBook.chapters.map((chapter) => (
                         <SelectItem 
