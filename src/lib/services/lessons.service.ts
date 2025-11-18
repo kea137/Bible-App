@@ -92,8 +92,10 @@ const parseApiError = (error: unknown): ApiError => {
  */
 export const getLessons = async (): Promise<Lesson[]> => {
   try {
-    const response = await apiClient.get<Lesson[]>(API_ENDPOINTS.lessons);
-    return response;
+    const response = await apiClient.get<{ data: Lesson[] }>(API_ENDPOINTS.lessons);
+    // Handle both wrapped and unwrapped response formats
+    const lessons = (response as any)?.data || response;
+    return Array.isArray(lessons) ? lessons : [];
   } catch (error) {
     throw parseApiError(error);
   }
@@ -104,8 +106,9 @@ export const getLessons = async (): Promise<Lesson[]> => {
  */
 export const getLessonDetail = async (lessonId: number): Promise<LessonDetail> => {
   try {
-    const response = await apiClient.get<LessonDetail>(`${API_ENDPOINTS.lessons}/${lessonId}`);
-    return response;
+    const response = await apiClient.get<{ data: LessonDetail }>(`${API_ENDPOINTS.lessons}/${lessonId}`);
+    // Handle both wrapped and unwrapped response formats
+    return (response as any)?.data || response;
   } catch (error) {
     throw parseApiError(error);
   }
