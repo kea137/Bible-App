@@ -17,6 +17,12 @@ export interface Lesson {
   order?: number;
   created_at: string;
   updated_at: string;
+  series_id?: number;
+  series?: {
+    id: number;
+    title: string;
+    description?: string;
+  };
 }
 
 export interface LessonParagraph {
@@ -33,6 +39,14 @@ export interface LessonDetail {
   lesson: Lesson;
   paragraphs: LessonParagraph[];
   completed?: boolean;
+  next_lesson?: {
+    id: number;
+    title: string;
+  };
+  previous_lesson?: {
+    id: number;
+    title: string;
+  };
 }
 
 export interface LessonProgress {

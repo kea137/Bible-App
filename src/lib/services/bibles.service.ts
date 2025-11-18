@@ -72,6 +72,22 @@ export interface ChapterData {
   book: Book;
   chapter_number: number;
   verses: Verse[];
+  is_read?: boolean;
+}
+
+export interface ChapterProgress {
+  id: number;
+  user_id: number;
+  chapter_id: number;
+  is_read: boolean;
+  completed_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MarkChapterProgressData {
+  chapter_id: number;
+  is_read: boolean;
 }
 
 export interface ApiError {
@@ -208,6 +224,18 @@ export const getParallelBibles = async (
       API_ENDPOINTS.biblesParallel,
       { bible_ids: bibleIds, book_id: bookId, chapter_number: chapterNumber }
     );
+    return response;
+  } catch (error) {
+    throw parseApiError(error);
+  }
+};
+
+/**
+ * Mark chapter as read/unread
+ */
+export const markChapterProgress = async (data: MarkChapterProgressData): Promise<ChapterProgress> => {
+  try {
+    const response = await apiClient.post<ChapterProgress>(API_ENDPOINTS.chapterProgress, data);
     return response;
   } catch (error) {
     throw parseApiError(error);

@@ -377,8 +377,8 @@ export default function VerseStudyScreen() {
         )}
 
         {/* Return to Bible Button */}
-        {!Loading && (
-        <Link href={`/bibles/${verseData?.verse.bible.id}`} asChild>
+        {!Loading && verseData && (
+        <Link href={`/bibles/${verseData.verse.bible.id}?chapter_id=${verseData.verse.chapter_id}`} asChild>
           <Button
             variant='outline'
             className='w-full justify-center'

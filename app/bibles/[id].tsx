@@ -40,7 +40,7 @@ import {
   AlertDialogTrigger,
 } from '@showcase/components/ui/alert-dialog';
 import { Textarea } from '@showcase/components/ui/textarea';
-import { getBibleDetail, getChapterData, BibleDetail, ChapterData } from '@/lib/services/bibles.service';
+import { getBibleDetail, getChapterData, BibleDetail, ChapterData, markChapterProgress } from '@/lib/services/bibles.service';
 import { createNote, CreateNoteData } from '@/lib/services/notes.service';
 import { createHighlight, deleteHighlight } from '@/lib/services/highlights.service';
 import { PortalHost } from '@rn-primitives/portal';
@@ -133,14 +133,20 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
   );
 }
 
-export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string}) {
+export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, onHighlightChange}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string, onHighlightChange?: () => void}) {
   const router = useRouter();
   const pathname = usePathname();
   const [isNotesOpen, setIsNotesOpen] = React.useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = React.useState(false);
-  const bgClass = highlight === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
-  const bgColor = highlight === 'yellow' ? '#FEF08A1F' : '#86EFAC1F'; 
+  const [currentHighlight, setCurrentHighlight] = React.useState(highlight);
+  const bgClass = currentHighlight === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
+  const bgColor = currentHighlight === 'yellow' ? '#FEF08A1F' : '#86EFAC1F'; 
   const { colorScheme } = useColorScheme();
+
+  // Update current highlight when prop changes
+  React.useEffect(() => {
+    setCurrentHighlight(highlight);
+  }, [highlight]);
 
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
@@ -159,20 +165,20 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {
         verse_id: verseId, 
         color: color,
       });
+      setCurrentHighlight(color);
+      onHighlightChange?.();
     } catch (error) {
       console.log('Failed to create highlight:', error);
-    } finally {
-        router.push(pathname);
     }
   };
   
   const removeHighlight = async (id: number) => {
     try {
       await deleteHighlight(id);
+      setCurrentHighlight(undefined);
+      onHighlightChange?.();
     } catch (error) {
       console.log('Failed to remove highlight:', error);
-    } finally {
-        router.push(pathname);
     }
   };
 
@@ -180,7 +186,7 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight}: {
     <>
       <DropdownMenu>
         {
-          (highlight != null && highlight !== '') ? (
+          (currentHighlight != null && currentHighlight !== '') ? (
             <DropdownMenuTrigger asChild={true} className={`rounded-r py-2 pl-3 ${bgClass}`}
               style={{  
                 backgroundColor: bgColor // More transparent tint (hex alpha 20 ≈ 12% opacity)
@@ -276,7 +282,7 @@ export function AlertSuccess({ open, onOpenChange }: { open: boolean; onOpenChan
 }
 
 export default function BibleDetailScreen() {
-  const { id } = useLocalSearchParams();
+  const { id, chapter_id } = useLocalSearchParams();
   const navigation = useNavigation();
   const [completed, setCompleted] = useState(false);
   const [bibleData, setBibleData] = useState<BibleDetail | null>(null);
@@ -303,8 +309,46 @@ export default function BibleDetailScreen() {
         const data = await getBibleDetail(Number(id));
         setBibleData(data);
         
-        // If initialChapter is provided, use it
-        if (data.initialChapter) {
+        // If chapter_id query param is provided, use it to navigate to that chapter
+        if (chapter_id && typeof chapter_id === 'string') {
+          const targetChapterId = Number(chapter_id);
+          // Find the chapter in the data
+          let foundChapter = null;
+          let foundBook = null;
+          
+          for (const book of data.books || []) {
+            const chapter = book.chapters?.find(ch => ch.id === targetChapterId);
+            if (chapter) {
+              foundChapter = chapter;
+              foundBook = book;
+              break;
+            }
+          }
+          
+          if (foundChapter && foundBook) {
+            setSelectedBook(foundBook);
+            setSelectedChapter(foundChapter.chapter_number);
+            setSelectedChapterId(foundChapter.id);
+          } else if (data.initialChapter) {
+            // Fallback to initialChapter if chapter_id not found
+            const fullBook = data.books?.find(b => b.id === data.initialChapter.book.id) || data.initialChapter.book;
+            setSelectedBook(fullBook);
+            setSelectedChapter(data.initialChapter.chapter_number);
+            setSelectedChapterId(data.initialChapter.id);
+            setChapterData({
+              id: data.initialChapter.id,
+              book: fullBook,
+              chapter_number: data.initialChapter.chapter_number,
+              verses: data.initialChapter.verses,
+              bible: data.bible,
+            });
+            setLoadingChapter(false);
+          } else if (data.books && data.books.length > 0) {
+            setSelectedBook(data.books[0]);
+          }
+        }
+        // If initialChapter is provided and no chapter_id param, use it
+        else if (data.initialChapter) {
           // Find the full book object from data.books which has the chapters array
           const fullBook = data.books?.find(b => b.id === data.initialChapter.book.id) || data.initialChapter.book;
           setSelectedBook(fullBook);
@@ -360,7 +404,7 @@ export default function BibleDetailScreen() {
     if (id) {
       fetchBibleDetail();
     }
-  }, [id]);
+  }, [id, chapter_id]);
 
   // Fetch chapter data when book or chapter changes
   useEffect(() => {
@@ -390,13 +434,15 @@ export default function BibleDetailScreen() {
           hasBook: !!data.book,
           versesCount: data.verses?.length,
           chapterNumber: data.chapter_number,
-          chapterId: data.id
+          chapterId: data.id,
+          isRead: data.is_read
         });
-        // Ensure the chapter data has the id field
+        // Ensure the chapter data has the id field and update is_read state
         setChapterData({
           ...data,
           id: selectedChapterId
         });
+        setCompleted(data.is_read || false);
       } catch (err: any) {
         console.error('Failed to fetch chapter data:', err);
         // Use mock verses as fallback
@@ -430,6 +476,47 @@ export default function BibleDetailScreen() {
       });
     }
   }, [navigation, bibleData]);
+
+  // Handler for marking chapter as read/unread
+  const handleMarkComplete = async () => {
+    if (!selectedChapterId) {
+      console.warn('No chapter ID available to mark progress');
+      return;
+    }
+
+    const newCompletedState = !completed;
+    setCompleted(newCompletedState);
+
+    try {
+      await markChapterProgress({
+        chapter_id: selectedChapterId,
+        is_read: newCompletedState,
+      });
+      console.log(`Chapter ${selectedChapterId} marked as ${newCompletedState ? 'read' : 'unread'}`);
+    } catch (err: any) {
+      console.error('Failed to mark chapter progress:', err);
+      // Revert on error
+      setCompleted(!newCompletedState);
+    }
+  };
+
+  // Handler to refresh chapter data after highlight changes
+  const handleHighlightChange = async () => {
+    if (!selectedChapterId || !bibleData || !selectedBook) {
+      return;
+    }
+    
+    try {
+      console.log('[HIGHLIGHT] Refreshing chapter data after highlight change');
+      const data = await getChapterData(Number(id), selectedBook.id, selectedChapterId);
+      setChapterData({
+        ...data,
+        id: selectedChapterId
+      });
+    } catch (err: any) {
+      console.error('Failed to refresh chapter data:', err);
+    }
+  };
 
   console.log('[CHAPTER AND BOOK DATA]', selectedChapter);
   // Swipe gesture handler
@@ -622,7 +709,7 @@ export default function BibleDetailScreen() {
             <View className="flex-col gap-2">
               <Button 
                 variant={completed ? "default" : "outline"}
-                onPress={() => setCompleted(!completed)}
+                onPress={handleMarkComplete}
               >
                 <CheckCircle size={16} color={primaryIconColor} />
                 <Text className="ml-2">
@@ -652,7 +739,14 @@ export default function BibleDetailScreen() {
                     <TouchableOpacity key={verse.id} activeOpacity={0.7}>
                       <View className="flex-row w-80 items-start pr-4">
                         <View className="flex-1 w-full">
-                          <VerseDropdownMenu text={verse.text} verseId={verse.id} highlight={verse.highlight?.color} verse={verse.verse_number.toString()} verseRef={`${selectedBook?.title} ${selectedChapter}:${verse.verse_number}`}/>
+                          <VerseDropdownMenu 
+                            text={verse.text} 
+                            verseId={verse.id} 
+                            highlight={verse.highlight?.color} 
+                            verse={verse.verse_number.toString()} 
+                            verseRef={`${selectedBook?.title} ${selectedChapter}:${verse.verse_number}`}
+                            onHighlightChange={handleHighlightChange}
+                          />
                         </View>
                       </View>
                     </TouchableOpacity>

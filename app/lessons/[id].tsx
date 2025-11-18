@@ -1,18 +1,24 @@
 import { Text } from '@showcase/components/ui/text';
 import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { getLessonDetail, LessonDetail, markLessonProgress } from '@/lib/services/lessons.service';
+import { useColorScheme } from 'nativewind';
 
 export default function LessonDetailScreen() {
   const { id } = useLocalSearchParams();
+  const router = useRouter();
+  const { colorScheme } = useColorScheme();
   const [lessonData, setLessonData] = useState<LessonDetail | null>(null);
   const [completed, setCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch lesson detail on mount
   useEffect(() => {
@@ -101,6 +107,14 @@ export default function LessonDetailScreen() {
     }
   };
 
+  const handleNavigateToLesson = (lessonId: number) => {
+    router.push(`/lessons/${lessonId}`);
+  };
+
+  const isSeriesLesson = lessonData?.lesson.series_id != null || 
+                         lessonData?.next_lesson != null || 
+                         lessonData?.previous_lesson != null;
+
   return (
     <ScrollView className="flex-1 bg-background">
       <View className="flex-1 gap-4 p-4">
@@ -133,38 +147,48 @@ export default function LessonDetailScreen() {
             <Card>
               <CardHeader>
                 <CardTitle className="flex-row items-center gap-2">
-                  <BookOpen size={20} className="text-primary" />
+                  <BookOpen size={20} color={primaryIconColor} />
                   <Text>{lessonData.lesson.title}</Text>
                 </CardTitle>
                 <CardDescription>{lessonData.lesson.description}</CardDescription>
+                {lessonData.lesson.series && (
+                  <CardDescription className="mt-1">
+                    Series: {lessonData.lesson.series.title}
+                  </CardDescription>
+                )}
               </CardHeader>
               <CardContent className="gap-3">
-                <View className="flex-row gap-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    disabled
-                    className="flex-1"
-                  >
-                    <ChevronLeft size={16} />
-                    <Text className="ml-1">Previous</Text>
-                  </Button>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    disabled
-                    className="flex-1"
-                  >
-                    <Text className="mr-1">Next</Text>
-                    <ChevronRight size={16} />
-                  </Button>
-                </View>
+                {/* Show navigation buttons only for series lessons */}
+                {isSeriesLesson && (
+                  <View className="flex-row gap-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      disabled={!lessonData.previous_lesson}
+                      className="flex-1"
+                      onPress={() => lessonData.previous_lesson && handleNavigateToLesson(lessonData.previous_lesson.id)}
+                    >
+                      <ChevronLeft size={16} color={primaryIconColor} />
+                      <Text className="ml-1">Previous</Text>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      disabled={!lessonData.next_lesson}
+                      className="flex-1"
+                      onPress={() => lessonData.next_lesson && handleNavigateToLesson(lessonData.next_lesson.id)}
+                    >
+                      <Text className="mr-1">Next</Text>
+                      <ChevronRight size={16} color={primaryIconColor} />
+                    </Button>
+                  </View>
+                )}
 
                 <Button 
                   variant={completed ? "default" : "outline"}
                   onPress={handleMarkComplete}
                 >
-                  <CheckCircle size={16} />
+                  <CheckCircle size={16} color={primaryIconColor} />
                   <Text className="ml-2">
                     {completed ? 'Completed' : 'Mark as Complete'}
                   </Text>
@@ -198,7 +222,7 @@ export default function LessonDetailScreen() {
                   variant={completed ? "default" : "outline"}
                   onPress={handleMarkComplete}
                 >
-                  <CheckCircle size={16} />
+                  <CheckCircle size={16} color={primaryIconColor} />
                   <Text className="ml-2">
                     {completed ? 'Lesson Completed' : 'Mark as Complete'}
                   </Text>
