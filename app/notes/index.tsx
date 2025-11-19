@@ -343,26 +343,6 @@ export default function NotesScreen() {
           onUpdate={handleNoteUpdate}
         />
 
-        {/* Quick Links */}
-        <View className="gap-3">
-          <Text className="text-lg font-semibold">Quick Actions</Text>
-          <View className="flex-row gap-3">
-            <Link href="/bibles" asChild className="flex-1">
-              <Card className="flex-1">
-                <CardContent className="items-center justify-center gap-2 py-4">
-                  <Text className="text-center text-sm font-medium">Browse Bibles</Text>
-                </CardContent>
-              </Card>
-            </Link>
-            <Link href="/highlights" asChild className="flex-1">
-              <Card className="flex-1">
-                <CardContent className="items-center justify-center gap-2 py-4">
-                  <Text className="text-center text-sm font-medium">View Highlights</Text>
-                </CardContent>
-              </Card>
-            </Link>
-          </View>
-        </View>
       </View>
     </ScrollView>
   );

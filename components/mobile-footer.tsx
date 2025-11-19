@@ -10,7 +10,7 @@ const FOOTER_ITEMS = [
   { name: 'Bibles', path: '/bibles', icon: BookOpen },
   { name: 'Parallel', path: '/parallel-bibles', icon: BookCopy },
   { name: 'Lessons', path: '/lessons', icon: PencilRuler },
-  { name: 'Notes', path: '/notes', icon: StickyNote },
+  { name: 'Plan', path: '/reading-plan', icon: Target },
 ];
 
 export function MobileFooter() {
