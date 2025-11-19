@@ -1,10 +1,9 @@
 import { Text } from '@showcase/components/ui/text';
-import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Input } from '@showcase/components/ui/input';
-import { Link } from 'expo-router';
-import { NotebookPen, Search, Plus } from 'lucide-react-native';
-import { View, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
+import { useNavigation } from 'expo-router';
+import { NotebookPen, Search } from 'lucide-react-native';
+import { View, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import {
   AlertDialog,
@@ -15,7 +14,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@showcase/components/ui/alert-dialog';
 import * as React from 'react';
 import { Textarea } from '@showcase/components/ui/textarea';
@@ -155,9 +153,14 @@ export default function NotesScreen() {
   const [error, setError] = useState<string | null>(null);
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
-
+  const navigation = useNavigation();
   // Fetch notes on mount
   useEffect(() => {
+
+    navigation.setOptions({
+      headerTitle: 'Notes',
+    })
+
     fetchNotes();
   }, []);
 

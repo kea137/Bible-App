@@ -1,19 +1,24 @@
 import { Text } from '@showcase/components/ui/text';
-import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Progress } from '@showcase/components/ui/progress';
 import { Calendar, CheckCircle, BookOpen, TrendingUp, BookMarked, Target } from 'lucide-react-native';
 import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { getReadingPlan, type ReadingPlanData } from '@/lib/services/reading-plan.service';
+import { useNavigation } from 'expo-router';
 
 export default function ReadingPlanScreen() {
   const [planData, setPlanData] = useState<ReadingPlanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const navigation = useNavigation();
   // Fetch reading plan on mount
   useEffect(() => {
+
+    navigation.setOptions({
+      headerTitle: 'Reading Plan',
+    })
+
     const fetchReadingPlan = async () => {
       try {
         setLoading(true);

@@ -2,7 +2,7 @@ import { Text } from '@showcase/components/ui/text';
 import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Input } from '@showcase/components/ui/input';
-import { Link } from 'expo-router';
+import { Link, useNavigation } from 'expo-router';
 import { Library, LibraryBig, Search } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
@@ -13,9 +13,15 @@ export default function LessonsScreen() {
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const navigation = useNavigation();
+  
   // Fetch lessons on mount
   useEffect(() => {
+
+    navigation.setOptions({
+      headerTitle: 'Lessons',
+    })
+
     const fetchLessons = async () => {
       try {
         setLoading(true);

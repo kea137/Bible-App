@@ -2,9 +2,9 @@ import { Text } from '@showcase/components/ui/text';
 import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { ScriptureText } from '@showcase/components/ui/scripture-text';
-import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import { BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { getLessonDetail, LessonDetail, markLessonProgress } from '@/lib/services/lessons.service';
 import { useColorScheme } from 'nativewind';
@@ -17,12 +17,20 @@ export default function LessonDetailScreen() {
   const [completed, setCompleted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation();
 
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch lesson detail on mount
   useEffect(() => {
+
+    if (lessonData?.lesson?.title) {
+      navigation.setOptions({
+      headerTitle: lessonData.lesson.title,
+      });
+    }
+
     const fetchLessonDetail = async () => {
       try {
         setLoading(true);

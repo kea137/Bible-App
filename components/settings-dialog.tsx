@@ -17,6 +17,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { LogOut } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { getUserData } from '@showcase/src/lib/storage/auth-storage';
+import { Link } from 'expo-router';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -76,6 +77,19 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               </Text>
             </View>
             <ThemeToggle />
+          </View>
+
+          <View className="flex-row items-center justify-between">
+            <View className="flex-1">
+              <Text className="text-sm font-medium">Reading Plan</Text>
+              <Link href="/reading-plan" onPress={()=>{
+                onOpenChange(false)
+              }} asChild>
+              <Button variant="outline" className="ml-4 mt-2">
+                <Text>Reading Plan</Text>
+              </Button>
+            </Link>
+            </View>
           </View>
 
         {/* User Info Section */}
