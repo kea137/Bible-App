@@ -13,7 +13,7 @@ import { Card, CardContent } from '@showcase/components/ui/card';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
 import { parseTextWithReferences, ParsedText, ParsedReference } from '@/lib/utils/scripture-parser';
 import { ScriptureReference } from '@/lib/services/lessons.service';
-
+import { PortalHost } from '@rn-primitives/portal';
 interface ScriptureTextProps {
   text: string;
   references?: ScriptureReference[];
@@ -35,9 +35,10 @@ function findVerseText(
   const match = references.find(ref => {
     const bookMatches = ref.book_code.toLowerCase().replace(/\s+/g, '') === 
                        parsedRef.book.toLowerCase().replace(/\s+/g, '');
-    const chapterMatches = ref.chapter === parsedRef.chapter;
-    const verseMatches = ref.verse === parsedRef.verse || 
-                        ref.verse.startsWith(parsedRef.verse);
+    const chapterMatches = String(ref.chapter) === String(parsedRef.chapter);
+    const refVerseStr = String(ref.verse ?? '');
+    const verseMatches = refVerseStr === parsedRef.verse || 
+                        refVerseStr.startsWith(parsedRef.verse);
     
     return bookMatches && chapterMatches && verseMatches;
   });
@@ -62,8 +63,8 @@ function RenderSingleQuote({
   
   return (
     <HoverCard>
-      <HoverCardTrigger>
-        <Text className="text-primary font-medium underline decoration-dotted">
+      <HoverCardTrigger asChild>
+        <Text className="text-primary font-medium underline decoration-dotted cursor-help">
           '{content}'
         </Text>
       </HoverCardTrigger>
