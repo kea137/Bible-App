@@ -1,6 +1,7 @@
 import { Text } from '@showcase/components/ui/text';
 import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
+import { ScriptureText } from '@showcase/components/ui/scripture-text';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { BookOpen, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
@@ -214,28 +215,10 @@ export default function LessonDetailScreen() {
                     <CardTitle className="text-lg">{paragraph.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <Text className="text-base leading-7 text-foreground">
-                      {paragraph.text}
-                    </Text>
-                    {paragraph.references && paragraph.references.length > 0 && (
-                      <View className="mt-4 gap-2">
-                        <Text className="text-sm font-semibold text-muted-foreground">
-                          Scripture References:
-                        </Text>
-                        {paragraph.references.map((ref, index) => (
-                          <View key={index} className="rounded-lg border border-border bg-muted/30 p-3">
-                            <Text className="text-sm font-medium text-primary mb-1">
-                              {ref.book_code} {ref.chapter}:{ref.verse}
-                            </Text>
-                            {ref.text && (
-                              <Text className="text-sm text-muted-foreground italic">
-                                "{ref.text}"
-                              </Text>
-                            )}
-                          </View>
-                        ))}
-                      </View>
-                    )}
+                    <ScriptureText 
+                      text={paragraph.text}
+                      references={paragraph.references}
+                    />
                   </CardContent>
                 </Card>
               ))}
