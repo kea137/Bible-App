@@ -10,9 +10,11 @@ import { getHighlightedVerses, VerseHighlight } from '@/lib/services/highlights.
 import { useColorScheme } from 'nativewind';
 import { Link } from 'expo-router';
 import { Button } from '@showcase/components/ui/button';
+import { useTranslation } from 'react-i18next';
 
 export default function HighlightsScreen() {
   const { colorScheme } = useColorScheme();
+  const { t } = useTranslation();
   const [highlights, setHighlights] = useState<VerseHighlight[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,7 +32,7 @@ export default function HighlightsScreen() {
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch highlights:', err);
-        setError(err.message || 'Failed to load highlights');
+        setError(err.message || t('Failed to load highlights') || 'Failed to load highlights');
         // Use mock data as fallback
         setHighlights([
           {
@@ -107,7 +109,7 @@ export default function HighlightsScreen() {
         {loading && (
           <View className="flex-1 items-center justify-center py-12">
             <ActivityIndicator size="large" />
-            <Text className="mt-4 text-muted-foreground">Loading highlights...</Text>
+            <Text className="mt-4 text-muted-foreground">{t('Loading highlights...') || 'Loading highlights...'}</Text>
           </View>
         )}
 
@@ -119,7 +121,7 @@ export default function HighlightsScreen() {
                 {error}
               </Text>
               <Text className="text-muted-foreground text-center text-sm mt-2">
-                Showing cached data
+                {t('Showing cached data') || 'Showing cached data'}
               </Text>
             </CardContent>
           </Card>
@@ -131,10 +133,10 @@ export default function HighlightsScreen() {
             <CardHeader>
               <CardTitle className="flex-row items-center gap-2">
                 <Highlighter size={20} color={primaryIconColor} />
-                <Text>Your Highlighted Verses</Text>
+                <Text>{t('Your Highlighted Verses') || 'Your Highlighted Verses'}</Text>
               </CardTitle>
               <CardDescription>
-                Recent verses you've marked
+                {t("Recent verses you've marked") || "Recent verses you've marked"}
               </CardDescription>
             </CardHeader>
             <CardContent className="gap-3">
@@ -161,7 +163,7 @@ export default function HighlightsScreen() {
                   </Text> */}
                   {highlight.note && (
                     <Text className="mt-1 text-xs italic text-muted-foreground">
-                      Note: {highlight.note}
+                      {t('Note')}: {highlight.note}
                     </Text>
                   )}
                 </View>
@@ -176,9 +178,9 @@ export default function HighlightsScreen() {
           <Card>
             <CardContent className="items-center justify-center py-12">
               <Highlighter size={48} className="mb-4 text-muted-foreground" />
-              <Text className="mb-2 text-lg font-semibold">No highlights yet</Text>
+              <Text className="mb-2 text-lg font-semibold">{t('No highlights yet') || 'No highlights yet'}</Text>
               <Text className="text-center text-sm text-muted-foreground">
-                Start highlighting verses to remember your favorite passages
+                {t('Start highlighting verses to remember your favorite passages') || 'Start highlighting verses to remember your favorite passages'}
               </Text>
             </CardContent>
           </Card>

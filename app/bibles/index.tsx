@@ -7,8 +7,10 @@ import { BookOpen, Search } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { getBibles, Bible } from '@/lib/services/bibles.service';
+import { useTranslation } from 'react-i18next';
 
 export default function BiblesScreen() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [bibles, setBibles] = useState<Bible[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export default function BiblesScreen() {
   useEffect(() => {
 
     navigation.setOptions({
-      headerTitle: 'Bibles'
+      headerTitle: t('Bibles') || 'Bibles'
     })
 
     const fetchBibles = async () => {
@@ -30,7 +32,7 @@ export default function BiblesScreen() {
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch bibles:', err);
-        setError(err.message || 'Failed to load bibles');
+        setError(err.message || t('Failed to load bibles') || 'Failed to load bibles');
         // Use mock data as fallback
         setBibles([
           {
@@ -82,9 +84,9 @@ export default function BiblesScreen() {
               <View className="flex-1">
                 <CardTitle className="flex-row items-center gap-2">
                   <BookOpen size={20} className="text-primary" />
-                  <Text>Bibles</Text>
+                  <Text>{t('Bibles') || 'Bibles'}</Text>
                 </CardTitle>
-                <CardDescription>Available Bible translations</CardDescription>
+                <CardDescription>{t('Available Bible translations') || 'Available Bible translations'}</CardDescription>
               </View>
             </View>
           </CardHeader>
@@ -92,7 +94,7 @@ export default function BiblesScreen() {
             <View className="flex-row items-center gap-2 rounded-lg border border-border bg-background px-3">
               <Search size={20} className="text-muted-foreground" />
               <Input
-                placeholder="Search bibles..."
+                placeholder={t('Search bibles...') || 'Search bibles...'}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 className="flex-1 border-0"
@@ -104,7 +106,7 @@ export default function BiblesScreen() {
           {loading && (
             <View className="flex-1 items-center justify-center py-12">
               <ActivityIndicator size="large" />
-              <Text className="mt-4 text-muted-foreground">Loading bibles...</Text>
+              <Text className="mt-4 text-muted-foreground">{t('Loading bibles...') || 'Loading bibles...'}</Text>
             </View>
           )}
 
@@ -116,7 +118,7 @@ export default function BiblesScreen() {
                   {error}
                 </Text>
                 <Text className="text-muted-foreground text-center text-sm mt-2">
-                  Showing cached data
+                  {t('Showing cached data') || 'Showing cached data'}
                 </Text>
               </View>
             </CardContent>
@@ -157,7 +159,7 @@ export default function BiblesScreen() {
               ) : (
                 <Card>
                   <CardContent className="items-center justify-center py-12">
-                    <Text className="text-muted-foreground">No bibles found</Text>
+                    <Text className="text-muted-foreground">{t('No bibles found') || 'No bibles found'}</Text>
                   </CardContent>
                 </Card>
               )}

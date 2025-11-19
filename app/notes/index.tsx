@@ -20,6 +20,7 @@ import { Textarea } from '@showcase/components/ui/textarea';
 import { getNotes, Note, updateNote } from '@/lib/services/notes.service';
 import { PortalHost } from '@rn-primitives/portal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { useTranslation } from 'react-i18next';
 
 export function NoteDetailAlertDialog({ 
   note, 
@@ -32,6 +33,7 @@ export function NoteDetailAlertDialog({
   onOpenChange: (open: boolean) => void;
   onUpdate?: () => void;
 }) {
+  const { t } = useTranslation();
   const [noteContent, setNoteContent] = React.useState('');
   const [noteTitle, setNoteTitle] = React.useState('');
   const [saving, setSaving] = React.useState(false);
@@ -80,9 +82,9 @@ export function NoteDetailAlertDialog({
         <KeyboardAwareScrollView
         >
           <AlertDialogHeader className="items-center justify-center">
-            <AlertDialogTitle className="text-center">Note Details</AlertDialogTitle>
+            <AlertDialogTitle className="text-center">{t('Note Details') || 'Note Details'}</AlertDialogTitle>
             <AlertDialogDescription className="text-center mb-4">
-              {note.verse?.reference || 'Note'}
+              {note.verse?.reference || t('Note') || 'Note'}
             </AlertDialogDescription>
             {note.verse && (
               <AlertDialogDescription>
@@ -94,9 +96,9 @@ export function NoteDetailAlertDialog({
           </AlertDialogHeader>
 
           <View className="gap-2">
-            <Text className="text-sm font-medium">Title (Optional)</Text>
+            <Text className="text-sm font-medium">{t('Title (Optional)') || 'Title (Optional)'}</Text>
             <Input
-              placeholder="Enter a title for your note"
+              placeholder={t('Enter a title for your note') || 'Enter a title for your note'}
               value={noteTitle}
               onChangeText={setNoteTitle}
               editable={isEditing}
@@ -104,9 +106,9 @@ export function NoteDetailAlertDialog({
           </View>
 
           <View className="gap-2">
-            <Text className="text-sm font-medium">Notes</Text>
+            <Text className="text-sm font-medium">{t('Notes') || 'Notes'}</Text>
             <Textarea
-              placeholder="Write your thoughts, insights and reflections..."
+              placeholder={t('Write your thoughts, insights and reflections...') || 'Write your thoughts, insights and reflections...'}
               value={noteContent}
               onChangeText={setNoteContent}
               className="min-h-32"
@@ -118,10 +120,10 @@ export function NoteDetailAlertDialog({
             {!isEditing ? (
               <>
                 <AlertDialogCancel>
-                  <Text>Close</Text>
+                  <Text>{t('Close') || 'Close'}</Text>
                 </AlertDialogCancel>
                 <AlertDialogAction onPress={() => setIsEditing(true)}>
-                  <Text>Edit</Text>
+                  <Text>{t('Edit') || 'Edit'}</Text>
                 </AlertDialogAction>
               </>
             ) : (

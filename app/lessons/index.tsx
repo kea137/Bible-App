@@ -7,8 +7,10 @@ import { Library, LibraryBig, Search } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { getLessons, Lesson } from '@/lib/services/lessons.service';
+import { useTranslation } from 'react-i18next';
 
 export default function LessonsScreen() {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +21,7 @@ export default function LessonsScreen() {
   useEffect(() => {
 
     navigation.setOptions({
-      headerTitle: 'Lessons',
+      headerTitle: t('Lessons') || 'Lessons',
     })
 
     const fetchLessons = async () => {
@@ -30,7 +32,7 @@ export default function LessonsScreen() {
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch lessons:', err);
-        setError(err.message || 'Failed to load lessons');
+        setError(err.message || t('Failed to load lessons') || 'Failed to load lessons');
         // Use mock data as fallback
         setLessons([
           {
