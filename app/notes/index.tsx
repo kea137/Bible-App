@@ -19,56 +19,127 @@ import {
 } from '@showcase/components/ui/alert-dialog';
 import * as React from 'react';
 import { Textarea } from '@showcase/components/ui/textarea';
-import { getNotes, Note } from '@/lib/services/notes.service';
+import { getNotes, Note, updateNote } from '@/lib/services/notes.service';
 
-export function NotesAlertDialog() {
-    const [notes, setNotes] = React.useState('');
-    const [title, setTags] = React.useState('');
+export function NoteDetailAlertDialog({ 
+  note, 
+  isOpen, 
+  onOpenChange,
+  onUpdate 
+}: { 
+  note: Note | null; 
+  isOpen: boolean; 
+  onOpenChange: (open: boolean) => void;
+  onUpdate?: () => void;
+}) {
+  const [noteContent, setNoteContent] = React.useState('');
+  const [noteTitle, setNoteTitle] = React.useState('');
+  const [saving, setSaving] = React.useState(false);
+  const [isEditing, setIsEditing] = React.useState(false);
+
+  // Update local state when note changes
+  React.useEffect(() => {
+    if (note) {
+      setNoteContent(note.content);
+      setNoteTitle(note.title || '');
+      setIsEditing(false);
+    }
+  }, [note]);
+
+  const handleSaveNote = async () => {
+    if (!note || !noteContent.trim()) {
+      console.warn('Note content is empty');
+      return;
+    }
+
+    try {
+      setSaving(true);
+      await updateNote(note.id, {
+        title: noteTitle || undefined,
+        content: noteContent,
+      });
+      console.log('Note updated successfully');
+      setIsEditing(false);
+      setSaving(false);
+      onUpdate?.();
+      // Close dialog after a brief delay
+      setTimeout(() => {
+        onOpenChange(false);
+      }, 100);
+    } catch (error) {
+      console.error('Failed to update note:', error);
+      setSaving(false);
+    }
+  };
+
+  if (!note) return null;
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <Button variant="outline">
-          <Text>Show Alert Dialog</Text>
-        </Button>
-      </AlertDialogTrigger>
+    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1 }}
         >
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your account and remove your
-              data from our servers.
+          <AlertDialogHeader className="items-center justify-center">
+            <AlertDialogTitle className="text-center">Note Details</AlertDialogTitle>
+            <AlertDialogDescription className="text-center mb-4">
+              {note.verse?.reference || 'Note'}
             </AlertDialogDescription>
+            {note.verse && (
+              <AlertDialogDescription>
+                <View className="rounded-lg border bg-muted/50 p-3 items-center">
+                  <Text className="text-sm italic text-center">{note.verse.text}</Text>
+                </View>
+              </AlertDialogDescription>
+            )}
           </AlertDialogHeader>
+
           <View className="gap-2">
-              <Text className="text-sm font-medium">Title (Optional)</Text>
-              <Input
-                  placeholder="Add title (comma separated)"
-                  value={title}
-                  onChangeText={setTags}
-              />
+            <Text className="text-sm font-medium">Title (Optional)</Text>
+            <Input
+              placeholder="Enter a title for your note"
+              value={noteTitle}
+              onChangeText={setNoteTitle}
+              editable={isEditing}
+            />
           </View>
 
           <View className="gap-2">
-              <Text className="text-sm font-medium">Notes</Text>
-              <Textarea
-                  placeholder="Write your thoughts about this verse..."
-                  value={notes}
-                  onChangeText={setNotes}
-                  className="min-h-32"
-              />
+            <Text className="text-sm font-medium">Notes</Text>
+            <Textarea
+              placeholder="Write your thoughts, insights and reflections..."
+              value={noteContent}
+              onChangeText={setNoteContent}
+              className="min-h-32"
+              editable={isEditing}
+            />
           </View>
+
           <AlertDialogFooter>
-            <AlertDialogCancel>
-              <Text>Cancel</Text>
-            </AlertDialogCancel>
-            <AlertDialogAction>
-              <Text>Continue</Text>
-            </AlertDialogAction>
+            {!isEditing ? (
+              <>
+                <AlertDialogCancel>
+                  <Text>Close</Text>
+                </AlertDialogCancel>
+                <AlertDialogAction onPress={() => setIsEditing(true)}>
+                  <Text>Edit</Text>
+                </AlertDialogAction>
+              </>
+            ) : (
+              <>
+                <AlertDialogCancel onPress={() => {
+                  setIsEditing(false);
+                  setNoteContent(note.content);
+                  setNoteTitle(note.title || '');
+                }}>
+                  <Text>Cancel</Text>
+                </AlertDialogCancel>
+                <AlertDialogAction onPress={handleSaveNote} disabled={saving}>
+                  <Text>{saving ? 'Saving...' : 'Save'}</Text>
+                </AlertDialogAction>
+              </>
+            )}
           </AlertDialogFooter>
         </KeyboardAvoidingView>
       </AlertDialogContent>
@@ -82,75 +153,87 @@ export default function NotesScreen() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedNote, setSelectedNote] = useState<Note | null>(null);
+  const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
 
   // Fetch notes on mount
   useEffect(() => {
-    const fetchNotes = async () => {
-      try {
-        setLoading(true);
-        const data = await getNotes();
-        setNotes(data);
-        setError(null);
-      } catch (err: any) {
-        console.error('Failed to fetch notes:', err);
-        setError(err.message || 'Failed to load notes');
-        // Use mock data as fallback
-        setNotes([
-          {
-            id: 1,
-            user_id: 1,
-            verse_id: 1,
-            title: 'Reflections on John 3:16',
-            content: 'For God so loved the world that he gave his one and only Son...',
-            verse: {
-              id: 1,
-              text: 'For God so loved the world...',
-              reference: 'John 3:16',
-              chapter_number: 3,
-              verse_number: 16,
-            },
-            created_at: '2024-11-10',
-            updated_at: '2024-11-10',
-          },
-          {
-            id: 2,
-            user_id: 1,
-            verse_id: 2,
-            title: 'Prayer Points from Psalms',
-            content: 'The Lord is my shepherd, I lack nothing...',
-            verse: {
-              id: 2,
-              text: 'The Lord is my shepherd...',
-              reference: 'Psalm 23:1-6',
-              chapter_number: 23,
-              verse_number: 1,
-            },
-            created_at: '2024-11-09',
-            updated_at: '2024-11-09',
-          },
-          {
-            id: 3,
-            user_id: 1,
-            title: 'Faith and Works',
-            content: 'Faith without works is dead...',
-            verse: {
-              id: 3,
-              text: 'Faith without works is dead...',
-              reference: 'James 2:14-26',
-              chapter_number: 2,
-              verse_number: 14,
-            },
-            created_at: '2024-11-08',
-            updated_at: '2024-11-08',
-          },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchNotes();
   }, []);
+
+  const fetchNotes = async () => {
+    try {
+      setLoading(true);
+      const data = await getNotes();
+      setNotes(data);
+      setError(null);
+    } catch (err: any) {
+      console.error('Failed to fetch notes:', err);
+      setError(err.message || 'Failed to load notes');
+      // Use mock data as fallback
+      setNotes([
+        {
+          id: 1,
+          user_id: 1,
+          verse_id: 1,
+          title: 'Reflections on John 3:16',
+          content: 'For God so loved the world that he gave his one and only Son...',
+          verse: {
+            id: 1,
+            text: 'For God so loved the world...',
+            reference: 'John 3:16',
+            chapter_number: 3,
+            verse_number: 16,
+          },
+          created_at: '2024-11-10',
+          updated_at: '2024-11-10',
+        },
+        {
+          id: 2,
+          user_id: 1,
+          verse_id: 2,
+          title: 'Prayer Points from Psalms',
+          content: 'The Lord is my shepherd, I lack nothing...',
+          verse: {
+            id: 2,
+            text: 'The Lord is my shepherd...',
+            reference: 'Psalm 23:1-6',
+            chapter_number: 23,
+            verse_number: 1,
+          },
+          created_at: '2024-11-09',
+          updated_at: '2024-11-09',
+        },
+        {
+          id: 3,
+          user_id: 1,
+          title: 'Faith and Works',
+          content: 'Faith without works is dead...',
+          verse: {
+            id: 3,
+            text: 'Faith without works is dead...',
+            reference: 'James 2:14-26',
+            chapter_number: 2,
+            verse_number: 14,
+          },
+          created_at: '2024-11-08',
+          updated_at: '2024-11-08',
+        },
+      ]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleNoteClick = (note: Note) => {
+    setSelectedNote(note);
+    setIsDetailDialogOpen(true);
+  };
+
+  const handleNoteUpdate = () => {
+    // Refresh notes list after update
+    fetchNotes();
+  };
 
   const filteredNotes = notes.filter(
     (note) =>
@@ -171,7 +254,6 @@ export default function NotesScreen() {
                 Personal reflections and study notes
               </Text>
             </View>
-            <NotesAlertDialog />
           </View>
         </View>
 
@@ -230,7 +312,11 @@ export default function NotesScreen() {
                   <Text className="text-base leading-6" numberOfLines={3}>
                     {note.content}
                   </Text>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onPress={() => handleNoteClick(note)}
+                  >
                     <Text>View Full Note</Text>
                   </Button>
                 </CardContent>
@@ -248,6 +334,14 @@ export default function NotesScreen() {
             </Text>
           </View>
         ) : null}
+
+        {/* Note Detail Dialog */}
+        <NoteDetailAlertDialog
+          note={selectedNote}
+          isOpen={isDetailDialogOpen}
+          onOpenChange={setIsDetailDialogOpen}
+          onUpdate={handleNoteUpdate}
+        />
 
         {/* Quick Links */}
         <View className="gap-3">
