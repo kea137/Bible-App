@@ -66,8 +66,9 @@ const parseApiError = (error: unknown): ApiError => {
  */
 export const getNotes = async (): Promise<Note[]> => {
   try {
-    const response = await apiClient.get<Note[]>(API_ENDPOINTS.notes);
-    return response;
+    const response = await apiClient.get<any>(API_ENDPOINTS.notes);
+    const items = (response as any)?.data ?? response;
+    return Array.isArray(items) ? items : [];
   } catch (error) {
     throw parseApiError(error);
   }
@@ -78,8 +79,8 @@ export const getNotes = async (): Promise<Note[]> => {
  */
 export const getNote = async (noteId: number): Promise<Note> => {
   try {
-    const response = await apiClient.get<Note>(`${API_ENDPOINTS.notes}/${noteId}`);
-    return response;
+    const response = await apiClient.get<any>(`${API_ENDPOINTS.notes}/${noteId}`);
+    return (response as any)?.data ?? response;
   } catch (error) {
     throw parseApiError(error);
   }
@@ -90,9 +91,10 @@ export const getNote = async (noteId: number): Promise<Note> => {
  */
 export const createNote = async (data: CreateNoteData): Promise<Note> => {
   try {
-    const response = await apiClient.post<Note>(API_ENDPOINTS.notes, data);
-    console.log(response);
-    return response;
+    const response = await apiClient.post<any>(API_ENDPOINTS.notes, data);
+    const note = (response as any)?.data ?? response;
+    console.log(note);
+    return note;
   } catch (error) {
     throw parseApiError(error);
   }
@@ -103,8 +105,8 @@ export const createNote = async (data: CreateNoteData): Promise<Note> => {
  */
 export const updateNote = async (noteId: number, data: UpdateNoteData): Promise<Note> => {
   try {
-    const response = await apiClient.put<Note>(`${API_ENDPOINTS.notes}/${noteId}`, data);
-    return response;
+    const response = await apiClient.put<any>(`${API_ENDPOINTS.notes}/${noteId}`, data);
+    return (response as any)?.data ?? response;
   } catch (error) {
     throw parseApiError(error);
   }
