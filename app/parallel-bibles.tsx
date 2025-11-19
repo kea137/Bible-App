@@ -15,8 +15,10 @@ import { useLocalSearchParams } from 'expo-router';
 import { getBibles, getBibleDetail, getChapterData, Bible, ChapterData, BibleDetail } from '@/lib/services/bibles.service';
 import { useColorScheme } from 'nativewind';
 import { PortalHost } from '@rn-primitives/portal';
+import { useTranslation } from 'react-i18next';
 
 export default function ParallelBiblesScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams();
   const { colorScheme } = useColorScheme();
   const [completed, setCompleted] = useState(false);

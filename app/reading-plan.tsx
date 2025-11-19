@@ -6,8 +6,10 @@ import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { getReadingPlan, type ReadingPlanData } from '@/lib/services/reading-plan.service';
 import { useNavigation } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 export default function ReadingPlanScreen() {
+  const { t } = useTranslation();
   const [planData, setPlanData] = useState<ReadingPlanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -16,7 +18,7 @@ export default function ReadingPlanScreen() {
   useEffect(() => {
 
     navigation.setOptions({
-      headerTitle: 'Reading Plan',
+      headerTitle: t('Reading Plan') || 'Reading Plan',
     })
 
     const fetchReadingPlan = async () => {
@@ -27,7 +29,7 @@ export default function ReadingPlanScreen() {
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch reading plan:', err);
-        setError(err.message || 'Failed to load reading plan');
+        setError(err.message || t('Failed to load reading plan') || 'Failed to load reading plan');
         // Use mock data as fallback
         setPlanData({
           totalChapters: 1189,
@@ -93,7 +95,7 @@ export default function ReadingPlanScreen() {
         {loading && (
           <View className="flex-1 items-center justify-center py-12">
             <ActivityIndicator size="large" />
-            <Text className="mt-4 text-muted-foreground">Loading reading plan...</Text>
+            <Text className="mt-4 text-muted-foreground">{t('Loading reading plan...') || 'Loading reading plan...'}</Text>
           </View>
         )}
 

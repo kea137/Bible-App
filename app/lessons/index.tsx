@@ -99,9 +99,9 @@ export default function LessonsScreen() {
               <View className="flex-1">
                 <CardTitle className="flex-row items-center gap-2">
                   <Library size={20} className="text-primary" />
-                  <Text>Lessons</Text>
+                  <Text>{t('Lessons') || 'Lessons'}</Text>
                 </CardTitle>
-                <CardDescription>Available Lessons</CardDescription>
+                <CardDescription>{t('Available Lessons') || 'Available Lessons'}</CardDescription>
               </View>
             </View>
           </CardHeader>
@@ -109,7 +109,7 @@ export default function LessonsScreen() {
             <View className="flex-row items-center gap-2 rounded-lg border border-border bg-background px-3">
               <Search size={20} className="text-muted-foreground" />
               <Input
-                placeholder="Search lessons..."
+                placeholder={t('Search lessons...') || 'Search lessons...'}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
                 className="flex-1 border-0"
@@ -121,7 +121,7 @@ export default function LessonsScreen() {
           {loading && (
             <View className="flex-1 items-center justify-center py-12">
               <ActivityIndicator size="large" />
-              <Text className="mt-4 text-muted-foreground">Loading lessons...</Text>
+              <Text className="mt-4 text-muted-foreground">{t('Loading lessons...') || 'Loading lessons...'}</Text>
             </View>
           )}
 
@@ -133,7 +133,7 @@ export default function LessonsScreen() {
                   {error}
                 </Text>
                 <Text className="text-muted-foreground text-center text-sm mt-2">
-                  Showing cached data
+                  {t('Showing cached data') || 'Showing cached data'}
                 </Text>
               </View>
             </CardContent>
@@ -174,7 +174,7 @@ export default function LessonsScreen() {
               ) : (
                 <Card>
                   <CardContent className="items-center justify-center py-12">
-                    <Text className="text-muted-foreground">No lessons found</Text>
+                    <Text className="text-muted-foreground">{t('No lessons found') || 'No lessons found'}</Text>
                   </CardContent>
                 </Card>
               )}
