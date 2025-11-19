@@ -13,7 +13,7 @@ import { Card, CardContent } from '@showcase/components/ui/card';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
 import { parseTextWithReferences, ParsedText, ParsedReference } from '@/lib/utils/scripture-parser';
 import { ScriptureReference } from '@/lib/services/lessons.service';
-import { PortalHost } from '@rn-primitives/portal';
+
 interface ScriptureTextProps {
   text: string;
   references?: ScriptureReference[];

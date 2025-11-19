@@ -8,6 +8,7 @@ import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-nat
 import { useState, useEffect } from 'react';
 import { getLessonDetail, LessonDetail, markLessonProgress } from '@/lib/services/lessons.service';
 import { useColorScheme } from 'nativewind';
+import { PortalHost } from '@rn-primitives/portal';
 
 export default function LessonDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -279,6 +280,7 @@ export default function LessonDetailScreen() {
           </>
         )}
       </View>
+      <PortalHost name="lesson-detail" />
     </ScrollView>
   );
 }
