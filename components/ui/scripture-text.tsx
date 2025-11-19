@@ -2,15 +2,14 @@
  * Scripture Text Component
  * 
  * Renders paragraph text with inline scripture references:
- * - Single quotes: 'Romans 3:23' -> HoverCard on hover (inline)
- * - Triple quotes: '''Romans 3:23''' -> Inline Card (breaks text flow)
+ * - Single quotes: 'Romans 3:23' -> Inline Card with secondary background
+ * - Triple quotes: '''Romans 3:23''' -> Inline Card with primary background
  */
 
 import React from 'react';
 import { View } from 'react-native';
 import { Text } from '@showcase/components/ui/text';
 import { Card, CardContent } from '@showcase/components/ui/card';
-import { HoverCard, HoverCardContent, HoverCardTrigger } from '@showcase/components/ui/hover-card';
 import { parseTextWithReferences, ParsedText, ParsedReference } from '@/lib/utils/scripture-parser';
 import { ScriptureReference } from '@/lib/services/lessons.service';
 
@@ -47,7 +46,7 @@ function findVerseText(
 }
 
 /**
- * Render a single-quoted reference as a HoverCard (inline)
+ * Render a single-quoted reference as an inline Card with secondary background
  */
 function RenderSingleQuote({ 
   content, 
@@ -62,19 +61,16 @@ function RenderSingleQuote({
   }
   
   return (
-    <HoverCard>
-      <HoverCardTrigger asChild>
-        <Text className="text-primary font-medium underline decoration-dotted cursor-help">
-          '{content}'
+    <Card className="my-2 border-secondary/20 bg-secondary/5">
+      <CardContent className="py-3 px-4">
+        <Text className="text-sm font-semibold text-secondary-foreground mb-1">
+          {content}
         </Text>
-      </HoverCardTrigger>
-      <HoverCardContent>
-        <View className="gap-2">
-          <Text className="text-sm font-semibold">{content}</Text>
-          <Text className="text-sm italic">"{verseText}"</Text>
-        </View>
-      </HoverCardContent>
-    </HoverCard>
+        <Text className="text-sm italic text-foreground">
+          "{verseText}"
+        </Text>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -110,21 +106,26 @@ function RenderTripleQuote({
 /**
  * Group consecutive text segments for better rendering
  */
-function groupSegments(segments: ParsedText[]): Array<{ type: 'text-block' | 'triple-card'; segments: ParsedText[] }> {
-  const groups: Array<{ type: 'text-block' | 'triple-card'; segments: ParsedText[] }> = [];
+function groupSegments(segments: ParsedText[]): Array<{ type: 'text-block' | 'single-card' | 'triple-card'; segments: ParsedText[] }> {
+  const groups: Array<{ type: 'text-block' | 'single-card' | 'triple-card'; segments: ParsedText[] }> = [];
   let currentTextBlock: ParsedText[] = [];
   
   for (const segment of segments) {
-    if (segment.type === 'reference' && segment.reference?.type === 'triple') {
+    if (segment.type === 'reference') {
       // Flush any accumulated text
       if (currentTextBlock.length > 0) {
         groups.push({ type: 'text-block', segments: [...currentTextBlock] });
         currentTextBlock = [];
       }
-      // Add triple quote as its own group
-      groups.push({ type: 'triple-card', segments: [segment] });
+      
+      // Add reference as its own card group
+      if (segment.reference?.type === 'triple') {
+        groups.push({ type: 'triple-card', segments: [segment] });
+      } else if (segment.reference?.type === 'single') {
+        groups.push({ type: 'single-card', segments: [segment] });
+      }
     } else {
-      // Accumulate text and single-quote references
+      // Accumulate plain text segments
       currentTextBlock.push(segment);
     }
   }
@@ -147,6 +148,21 @@ export function ScriptureText({ text, references, className }: ScriptureTextProp
   return (
     <View className={className}>
       {groups.map((group, groupIndex) => {
+        if (group.type === 'single-card') {
+          const segment = group.segments[0];
+          const verseText = segment.reference 
+            ? findVerseText(segment.reference, references)
+            : null;
+          
+          return (
+            <RenderSingleQuote
+              key={`group-${groupIndex}`}
+              content={segment.content}
+              verseText={verseText}
+            />
+          );
+        }
+        
         if (group.type === 'triple-card') {
           const segment = group.segments[0];
           const verseText = segment.reference 
@@ -162,27 +178,12 @@ export function ScriptureText({ text, references, className }: ScriptureTextProp
           );
         }
         
-        // Render text block with inline single-quote references
+        // Render text block (plain text only)
         return (
           <Text key={`group-${groupIndex}`} className="text-base leading-7 text-foreground">
-            {group.segments.map((segment, segmentIndex) => {
-              if (segment.type === 'text') {
-                return <Text key={segmentIndex}>{segment.content}</Text>;
-              }
-              
-              // Single-quote reference
-              const verseText = segment.reference 
-                ? findVerseText(segment.reference, references)
-                : null;
-              
-              return (
-                <RenderSingleQuote 
-                  key={segmentIndex}
-                  content={segment.content}
-                  verseText={verseText}
-                />
-              );
-            })}
+            {group.segments.map((segment, segmentIndex) => (
+              <Text key={segmentIndex}>{segment.content}</Text>
+            ))}
           </Text>
         );
       })}
