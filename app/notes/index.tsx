@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@show
 import { Input } from '@showcase/components/ui/input';
 import { Link } from 'expo-router';
 import { NotebookPen, Search, Plus } from 'lucide-react-native';
-import { View, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, ScrollView, ActivityIndicator, KeyboardAvoidingView, Platform, TouchableOpacity } from 'react-native';
 import { useState, useEffect } from 'react';
 import {
   AlertDialog,
@@ -294,33 +294,32 @@ export default function NotesScreen() {
         {!loading && filteredNotes.length > 0 ? (
           <View className="gap-4">
             {filteredNotes.map((note) => (
-              <Card key={note.id}>
-                <CardHeader>
-                  <View className="flex-row items-start justify-between">
-                    <View className="flex-1 gap-1">
-                      <CardTitle className="flex-row items-center gap-2">
-                        <NotebookPen size={18} className="text-primary" />
-                        <Text className="flex-1">{note.title || 'Untitled Note'}</Text>
-                      </CardTitle>
-                      <CardDescription>
-                        {note.verse?.reference} • {new Date(note.created_at).toLocaleDateString()}
-                      </CardDescription>
+              <TouchableOpacity 
+                key={note.id}
+                activeOpacity={0.7}
+                onPress={() => handleNoteClick(note)}
+              >
+                <Card>
+                  <CardHeader>
+                    <View className="flex-row items-start justify-between">
+                      <View className="flex-1 gap-1">
+                        <CardTitle className="flex-row items-center gap-2">
+                          <NotebookPen size={18} className="text-primary" />
+                          <Text className="flex-1">{note.title || 'Untitled Note'}</Text>
+                        </CardTitle>
+                        <CardDescription>
+                          {note.verse?.reference} • {new Date(note.created_at).toLocaleDateString()}
+                        </CardDescription>
+                      </View>
                     </View>
-                  </View>
-                </CardHeader>
-                <CardContent className="gap-3">
-                  <Text className="text-base leading-6" numberOfLines={3}>
-                    {note.content}
-                  </Text>
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onPress={() => handleNoteClick(note)}
-                  >
-                    <Text>View Full Note</Text>
-                  </Button>
-                </CardContent>
-              </Card>
+                  </CardHeader>
+                  <CardContent className="gap-3">
+                    <Text className="text-base leading-6" numberOfLines={3}>
+                      {note.content}
+                    </Text>
+                  </CardContent>
+                </Card>
+              </TouchableOpacity>
             ))}
           </View>
         ) : !loading ? (
