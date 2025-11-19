@@ -14,47 +14,49 @@ import {
 import { View, ScrollView, Image } from 'react-native';
 import { useColorScheme } from 'nativewind';
 import { useAuth } from '@/lib/contexts/AuthContext';
-
-const features = [
-  {
-    icon: BookOpen,
-    title: 'Multiple Bible Translations',
-  },
-  {
-    icon: SplitSquareHorizontal,
-    title: 'Parallel Bible Reading',
-  },
-  {
-    icon: Highlighter,
-    title: 'Highlight & Bookmark',
-  },
-  {
-    icon: NotebookPen,
-    title: 'Personal Notes',
-  },
-  {
-    icon: Calendar,
-    title: 'Reading Plans',
-  },
-  {
-    icon: Link2,
-    title: 'Cross References',
-  },
-  {
-    icon: Library,
-    title: 'Verse Study Tools',
-  },
-  {
-    icon: Moon,
-    title: 'Dark Mode',
-  },
-];
+import { useTranslation } from 'react-i18next';
 
 export default function WelcomeScreen() {
   const { colorScheme } = useColorScheme();
   const { user, isAuthenticated } = useAuth();
+  const { t } = useTranslation();
 
   console.log(user, isAuthenticated);
+
+  const features = [
+    {
+      icon: BookOpen,
+      title: t('Multiple Bible Translations') || 'Multiple Bible Translations',
+    },
+    {
+      icon: SplitSquareHorizontal,
+      title: t('Parallel Bible Reading') || 'Parallel Bible Reading',
+    },
+    {
+      icon: Highlighter,
+      title: t('Highlight & Bookmark') || 'Highlight & Bookmark',
+    },
+    {
+      icon: NotebookPen,
+      title: t('Personal Notes') || 'Personal Notes',
+    },
+    {
+      icon: Calendar,
+      title: t('Reading Plans') || 'Reading Plans',
+    },
+    {
+      icon: Link2,
+      title: t('Cross References') || 'Cross References',
+    },
+    {
+      icon: Library,
+      title: t('Verse Study Tools') || 'Verse Study Tools',
+    },
+    {
+      icon: Moon,
+      title: t('Dark Mode') || 'Dark Mode',
+    },
+  ];
 
   return (
     <ScrollView className="flex-1 bg-[#FDFDFC] dark:bg-[#0a0a0a]">
@@ -68,7 +70,7 @@ export default function WelcomeScreen() {
                 size="sm"
                 className="border-transparent dark:border-transparent"
               >
-                <Text>Log in</Text>
+                <Text>{t('Log in') || 'Log in'}</Text>
               </Button>
             </Link>
             <Link href="/auth/register" asChild>
@@ -77,7 +79,7 @@ export default function WelcomeScreen() {
                 size="sm"
                 className="border-[#19140035] dark:border-[#3E3E3A]"
               >
-                <Text>Register</Text>
+                <Text>{t('Register') || 'Register'}</Text>
               </Button>
             </Link>
           </View>
@@ -99,16 +101,16 @@ export default function WelcomeScreen() {
           {/* Content Section */}
           <View className="rounded-b-lg bg-white p-6 pb-12 shadow-lg dark:bg-[#161615]">
             <Text className="mb-2 text-2xl font-semibold text-[#1b1b18] dark:text-[#EDEDEC]">
-              Welcome to Bible App
+              {t('Welcome to Bible App') || 'Welcome to Bible App'}
             </Text>
             <Text className="mb-6 text-[13px] leading-5 text-[#706f6c] dark:text-[#A1A09A]">
-              A comprehensive platform for studying God's Word with powerful tools.
+              {t("A comprehensive platform for studying God's Word with powerful tools.") || "A comprehensive platform for studying God's Word with powerful tools."}
             </Text>
 
             {/* Features Section */}
             <View className="mb-6">
               <Text className="mb-4 text-sm font-semibold uppercase tracking-wide text-[#706f6c] dark:text-[#A1A09A]">
-                Features
+                {t('Features') || 'Features'}
               </Text>
               <View className="gap-4">
                 {features.map((feature, index) => {
@@ -138,7 +140,7 @@ export default function WelcomeScreen() {
               <Button 
                 className="w-full bg-[#1b1b18] dark:bg-[#eeeeec]"
               >
-                <Text className="text-white dark:text-[#1C1C1A]">Get Started</Text>
+                <Text className="text-white dark:text-[#1C1C1A]">{t('Get Started') || 'Get Started'}</Text>
               </Button>
             </Link>
           </View>
