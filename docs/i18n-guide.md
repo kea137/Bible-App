@@ -48,6 +48,13 @@ Users can change the language through Settings:
 2. Select Language from the dropdown
 3. Language preference is saved locally and synced to backend if authenticated
 
+### Language Synchronization
+
+- **On Login**: The app automatically loads the user's language preference from the backend
+- **On Language Change**: When authenticated, changes are synced to the backend
+- **Offline Support**: Language preference is stored locally for offline use
+- **Fallback**: If no saved preference exists, the app uses the device's system language
+
 ## For Developers
 
 ### Adding New Translation Keys

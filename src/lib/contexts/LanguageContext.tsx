@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateLocalePreference } from '../services/preferences.service';
 import { useAuth } from './AuthContext';
+import { getUserData } from '../storage/auth-storage';
 
 const LANGUAGE_STORAGE_KEY = 'app_language';
 
@@ -26,10 +27,26 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [currentLanguage, setCurrentLanguage] = useState<string>(i18n.language);
   const [isChangingLanguage, setIsChangingLanguage] = useState<boolean>(false);
 
-  // Load saved language on mount
+  // Load saved language on mount and when authentication changes
   useEffect(() => {
     const loadSavedLanguage = async () => {
       try {
+        // If authenticated, try to get user's language preference from backend
+        if (isAuthenticated) {
+          const userData = await getUserData();
+          if (userData?.data?.user?.language) {
+            const userLanguage = userData.data.user.language;
+            if (userLanguage !== i18n.language) {
+              await i18n.changeLanguage(userLanguage);
+              setCurrentLanguage(userLanguage);
+              // Also save to local storage for offline use
+              await AsyncStorage.setItem(LANGUAGE_STORAGE_KEY, userLanguage);
+              return;
+            }
+          }
+        }
+        
+        // Fall back to local storage if not authenticated or no user language
         const savedLanguage = await AsyncStorage.getItem(LANGUAGE_STORAGE_KEY);
         if (savedLanguage && savedLanguage !== i18n.language) {
           await i18n.changeLanguage(savedLanguage);
@@ -41,7 +58,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     loadSavedLanguage();
-  }, []);
+  }, [isAuthenticated]);
 
   const changeLanguage = async (languageCode: string) => {
     try {
