@@ -1,5 +1,5 @@
 import { Link, usePathname } from 'expo-router';
-import { BookOpen, PencilRuler, Target, BookCopy, LayoutGrid } from 'lucide-react-native';
+import { BookOpen, PencilRuler, Target, BookCopy, LayoutGrid, StickyNote } from 'lucide-react-native';
 import { View, Platform, Pressable } from 'react-native';
 import { Text } from '@showcase/components/ui/text';
 import { useColorScheme } from 'nativewind';
@@ -10,7 +10,7 @@ const FOOTER_ITEMS = [
   { name: 'Bibles', path: '/bibles', icon: BookOpen },
   { name: 'Parallel', path: '/parallel-bibles', icon: BookCopy },
   { name: 'Lessons', path: '/lessons', icon: PencilRuler },
-  { name: 'Plan', path: '/reading-plan', icon: Target },
+  { name: 'Notes', path: '/notes', icon: StickyNote },
 ];
 
 export function MobileFooter() {

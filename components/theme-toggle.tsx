@@ -4,6 +4,7 @@ import { useColorScheme } from 'nativewind';
 import { Image, type ImageStyle } from 'react-native';
 import { updateThemePreference } from '@/lib/services/preferences.service';
 import { useAuth } from '@/lib/contexts/AuthContext';
+import { MoonIcon, SunIcon } from 'lucide-react-native';
 
 const THEME_TOGGLE_IMAGES = {
   light: require('@showcase/assets/images/theme-toggle-light.png'),
@@ -43,7 +44,11 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       className="web:mr-5 size-9 rounded-full">
-      <Image source={THEME_TOGGLE_IMAGES[colorScheme]} style={IMAGE_STYLE} />
+      {colorScheme === 'dark' ? (
+        <SunIcon size={22} className='text-primary'/>
+      ) : (
+        <MoonIcon size={22} className='text-primary'/>
+      )}
     </Button>
   );
 }
