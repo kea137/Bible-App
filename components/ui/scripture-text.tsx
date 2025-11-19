@@ -2,8 +2,8 @@
  * Scripture Text Component
  * 
  * Renders paragraph text with inline scripture references:
- * - Single quotes: 'Romans 3:23' -> Inline Card with secondary background
- * - Triple quotes: '''Romans 3:23''' -> Inline Card with primary background
+ * - Single quotes: 'Romans 3:23' -> Inline Card with secondary background (always rendered)
+ * - Triple quotes: '''Romans 3:23''' -> Inline Card with primary background (always rendered)
  */
 
 import React from 'react';
@@ -55,20 +55,15 @@ function RenderSingleQuote({
   content: string; 
   verseText: string | null;
 }) {
-  if (!verseText) {
-    // If no verse text found, just render as plain text with quotes
-    return <Text className="text-primary font-medium">'{content}'</Text>;
-  }
-  
   return (
     <Card className="my-2 border-secondary/20 bg-secondary/5">
       <CardContent className="py-3 px-4">
         <Text className="text-sm font-semibold text-secondary-foreground mb-1">
           {content}
         </Text>
-        <Text className="text-sm italic text-foreground">
-          "{verseText}"
-        </Text>
+        {typeof verseText === 'string' && verseText.trim().length > 0 ? (
+          <Text className="text-sm italic text-foreground">"{verseText}"</Text>
+        ) : null}
       </CardContent>
     </Card>
   );
@@ -84,20 +79,15 @@ function RenderTripleQuote({
   content: string; 
   verseText: string | null;
 }) {
-  if (!verseText) {
-    // If no verse text found, just render as plain text with quotes
-    return <Text className="text-primary font-medium">'''{content}'''</Text>;
-  }
-  
   return (
     <Card className="my-2 border-primary/20 bg-primary/5">
       <CardContent className="py-3 px-4">
         <Text className="text-sm font-semibold text-primary mb-1">
           {content}
         </Text>
-        <Text className="text-sm italic text-foreground">
-          "{verseText}"
-        </Text>
+        {typeof verseText === 'string' && verseText.trim().length > 0 ? (
+          <Text className="text-sm italic text-foreground">"{verseText}"</Text>
+        ) : null}
       </CardContent>
     </Card>
   );
@@ -143,6 +133,12 @@ function groupSegments(segments: ParsedText[]): Array<{ type: 'text-block' | 'si
  */
 export function ScriptureText({ text, references, className }: ScriptureTextProps) {
   const segments = parseTextWithReferences(text);
+  // Debug logging to inspect how scripture references are parsed from raw text
+  try {
+    console.log('[SCRIPTURE_TEXT] raw text:', JSON.stringify(text));
+    console.log('[SCRIPTURE_TEXT] segments:', segments);
+  } catch {}
+
   const groups = groupSegments(segments);
   
   return (

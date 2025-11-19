@@ -250,9 +250,10 @@ export default function LessonDetailScreen() {
                     <CardTitle className="text-lg">{paragraph.title}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <ScriptureText 
+                    <ScriptureText
                       text={paragraph.text}
                       references={paragraph.references}
+                      className="text-base leading-7 text-foreground"
                     />
                   </CardContent>
                 </Card>

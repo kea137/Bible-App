@@ -27,19 +27,35 @@ export interface ParsedText {
  * Returns { book, chapter, verse } or null if invalid
  */
 export function parseScriptureReference(ref: string): { book: string; chapter: string; verse: string } | null {
-  // Match patterns like "Romans 3:23", "1 John 2:15", "John 3:16-17", etc.
-  // Allow for book names with numbers and spaces
-  const match = ref.trim().match(/^((?:\d\s)?[A-Za-z\s]+?)\s+(\d+):(\d+(?:-\d+)?)$/);
-  
-  if (!match) {
-    return null;
+  const raw = ref.trim();
+
+  // Accept patterns like "Gen 1:1", "GEN 1:1", "1 John 2:15", with optional ranges/lists.
+  const strict = raw.match(/^((?:\d{1,2}\s)?[A-Za-z]+(?:\s[A-Za-z]+)*\.?)[\s]+(\d+):(\d+(?:[-–]\d+)?(?:\s*,\s*\d+(?:[-–]\d+)?)*)$/i);
+  if (strict) {
+    try {
+      console.log('[SCRIPTURE_PARSER] strict match for ref:', raw, '=>', strict);
+    } catch {}
+    return {
+      book: strict[1].replace(/\.$/, '').trim(),
+      chapter: strict[2],
+      verse: strict[3].trim(),
+    };
   }
-  
-  return {
-    book: match[1].trim(),
-    chapter: match[2],
-    verse: match[3],
-  };
+
+  // Fallback: very permissive, e.g. "GEN 1:1" or abbreviations with extra suffix
+  const generic = raw.match(/^([^:]+?)\s+(\d+):(\S.+)$/i);
+  if (generic) {
+    try {
+      console.log('[SCRIPTURE_PARSER] generic match for ref:', raw, '=>', generic);
+    } catch {}
+    return {
+      book: generic[1].replace(/\.$/, '').trim(),
+      chapter: generic[2],
+      verse: generic[3].trim(),
+    };
+  }
+
+  return null;
 }
 
 /**
@@ -58,6 +74,9 @@ export function extractReferences(text: string): ParsedReference[] {
     const parsed = parseScriptureReference(reference);
     
     if (parsed) {
+      try {
+        console.log('[SCRIPTURE_PARSER] triple reference parsed:', reference, '=>', parsed);
+      } catch {}
       references.push({
         type: 'triple',
         reference,
@@ -71,6 +90,7 @@ export function extractReferences(text: string): ParsedReference[] {
   }
   
   // Then, find single-quoted references (avoid those within triple quotes)
+  // Very permissive: anything between straight single quotes
   const singleQuoteRegex = /'([^']+?)'/g;
   
   while ((match = singleQuoteRegex.exec(text)) !== null) {
@@ -86,6 +106,9 @@ export function extractReferences(text: string): ParsedReference[] {
       const parsed = parseScriptureReference(reference);
       
       if (parsed) {
+        try {
+          console.log('[SCRIPTURE_PARSER] single reference parsed:', reference, '=>', parsed);
+        } catch {}
         references.push({
           type: 'single',
           reference,
