@@ -20,6 +20,8 @@ import {
 import * as React from 'react';
 import { Textarea } from '@showcase/components/ui/textarea';
 import { getNotes, Note, updateNote } from '@/lib/services/notes.service';
+import { PortalHost } from '@rn-primitives/portal';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 
 export function NoteDetailAlertDialog({ 
   note, 
@@ -76,10 +78,8 @@ export function NoteDetailAlertDialog({
 
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
-      <AlertDialogContent>
-        <KeyboardAvoidingView
-          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={{ flex: 1 }}
+      <AlertDialogContent portalHost='root'>
+        <KeyboardAwareScrollView
         >
           <AlertDialogHeader className="items-center justify-center">
             <AlertDialogTitle className="text-center">Note Details</AlertDialogTitle>
@@ -141,7 +141,7 @@ export function NoteDetailAlertDialog({
               </>
             )}
           </AlertDialogFooter>
-        </KeyboardAvoidingView>
+        </KeyboardAwareScrollView>
       </AlertDialogContent>
     </AlertDialog>
   );
@@ -244,6 +244,7 @@ export default function NotesScreen() {
 
   return (
     <ScrollView className="flex-1 bg-background">
+      <PortalHost name="root" />
       <View className="flex-1 gap-6 p-4">
         {/* Header */}
         <View className="gap-2">
