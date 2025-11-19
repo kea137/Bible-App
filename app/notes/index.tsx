@@ -133,10 +133,10 @@ export function NoteDetailAlertDialog({
                   setNoteContent(note.content);
                   setNoteTitle(note.title || '');
                 }}>
-                  <Text>Cancel</Text>
+                  <Text>{t('Cancel') || 'Cancel'}</Text>
                 </AlertDialogCancel>
                 <AlertDialogAction onPress={handleSaveNote} disabled={saving}>
-                  <Text>{saving ? 'Saving...' : 'Save'}</Text>
+                  <Text>{saving ? t('Saving...') || 'Saving...' : t('Save') || 'Save'}</Text>
                 </AlertDialogAction>
               </>
             )}
@@ -156,11 +156,12 @@ export default function NotesScreen() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const navigation = useNavigation();
+  const { t } = useTranslation();
   // Fetch notes on mount
   useEffect(() => {
 
     navigation.setOptions({
-      headerTitle: 'Notes',
+      headerTitle: (t('Notes') || 'Notes'),
     })
 
     fetchNotes();
@@ -255,9 +256,9 @@ export default function NotesScreen() {
         <View className="gap-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
-              <Text className="text-3xl font-bold">My Notes</Text>
+              <Text className="text-3xl font-bold">{t('My Notes')}</Text>
               <Text className="text-base text-muted-foreground">
-                Personal reflections and study notes
+                {t('Personal reflections and study notes')}
               </Text>
             </View>
           </View>
@@ -267,7 +268,7 @@ export default function NotesScreen() {
         <View className="flex-row items-center gap-2 rounded-lg border border-border bg-card px-3">
           <Search size={20} className="text-muted-foreground" />
           <Input
-            placeholder="Search notes..."
+            placeholder={t('Search notes...') || 'Search notes...'}
             value={searchQuery}
             onChangeText={setSearchQuery}
             className="flex-1 border-0"
@@ -278,7 +279,7 @@ export default function NotesScreen() {
         {loading && (
           <View className="flex-1 items-center justify-center py-12">
             <ActivityIndicator size="large" />
-            <Text className="mt-4 text-muted-foreground">Loading notes...</Text>
+            <Text className="mt-4 text-muted-foreground">{t('Loading notes...') || 'Loading notes...'}</Text>
           </View>
         )}
 
@@ -290,7 +291,7 @@ export default function NotesScreen() {
                 {error}
               </Text>
               <Text className="text-muted-foreground text-center text-sm mt-2">
-                Showing cached data
+                {t('Showing cached data') || 'Showing cached data'}
               </Text>
             </CardContent>
           </Card>
@@ -331,11 +332,11 @@ export default function NotesScreen() {
         ) : !loading ? (
           <View className="flex-1 items-center justify-center py-12">
             <NotebookPen size={48} className="mb-4 text-muted-foreground" />
-            <Text className="mb-2 text-lg font-semibold">No notes found</Text>
+            <Text className="mb-2 text-lg font-semibold">{t('No notes found') || 'No notes found'}</Text>
             <Text className="text-center text-sm text-muted-foreground">
               {searchQuery
-                ? 'Try a different search term'
-                : 'Start creating notes to remember your insights'}
+                ? t('Try a different search term')
+                : t('Start creating notes to remember your insights')}
             </Text>
           </View>
         ) : null}

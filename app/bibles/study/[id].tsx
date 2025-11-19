@@ -24,6 +24,7 @@ import { useState, useEffect } from 'react';
 import { useLocalSearchParams } from 'expo-router';
 import { createNote, CreateNoteData } from '@/lib/services/notes.service';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { useTranslation } from 'react-i18next';
 
 export function NotesAlertDialog({
   verseRef,
@@ -44,6 +45,7 @@ export function NotesAlertDialog({
   const [title, settitle] = React.useState(''); 
   const { colorScheme } = useColorScheme();
   const [saving, setSaving] = React.useState(false);
+  const { t } = useTranslation();
 
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
@@ -81,13 +83,13 @@ export function NotesAlertDialog({
           onPress={() => onOpenChange(true)}
         >
           <StickyNote className="mr-2 h-4 w-4" color={primaryIconColor} />
-          <Text>Put Notes on this Verse</Text>
+          <Text>{t('Put Notes on this Verse')}</Text>
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent portalHost='root'>
         <KeyboardAwareScrollView>
         <AlertDialogHeader className="items-center justify-center">
-          <AlertDialogTitle className="text-center">Add Note to Verse</AlertDialogTitle>
+          <AlertDialogTitle className="text-center">{t('Add Note to Verse')}</AlertDialogTitle>
           <AlertDialogDescription className="text-center mb-4">
             {verseRef}
           </AlertDialogDescription>
@@ -98,18 +100,18 @@ export function NotesAlertDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <View className="gap-2">
-            <Text className="text-sm font-medium">Title (Optional)</Text>
+            <Text className="text-sm font-medium">{t('Title (Optional)')}</Text>
             <Input
-                placeholder="Enter a title for your note"
+                placeholder={t('Enter a title for your note')}
                 value={title}
                 onChangeText={settitle}
             />
         </View>
 
         <View className="gap-2">
-            <Text className="text-sm font-medium">Notes</Text>
+            <Text className="text-sm font-medium">{t('Notes')}</Text>
             <Textarea
-                placeholder="Write your thoughts, insights and reflections..."
+                placeholder={t('Write your thoughts, insights and reflections...')}
                 value={notes}
                 onChangeText={setNotes}
                 className="min-h-32"
@@ -117,10 +119,10 @@ export function NotesAlertDialog({
         </View>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Text>Cancel</Text>
+            <Text>{t('Cancel')}</Text>
           </AlertDialogCancel>
           <AlertDialogAction onPress={handleSave}>
-            <Text>Save Note</Text>
+            <Text>{t('Save Note')}</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
         </KeyboardAwareScrollView>
@@ -130,19 +132,20 @@ export function NotesAlertDialog({
 }
 
 export function AlertSuccess({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
+  const { t } = useTranslation();
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent portalHost="root">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-primary">Success</AlertDialogTitle>
+          <AlertDialogTitle className="text-primary">{t('Success')}</AlertDialogTitle>
           <AlertDialogDescription>
-            Your note was saved successfully!
+            {t('Your note was saved successfully!')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Text>Cancel</Text>
+            <Text>{t('OK')}</Text>
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -164,6 +167,7 @@ export default function VerseStudyScreen() {
   const text = verseData?.verse.text || '';
   const verseId = verseData?.verse.id || 0;
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   const handleNoteSaveSuccess = () => {
     setShowSuccessAlert(true);
@@ -175,7 +179,7 @@ export default function VerseStudyScreen() {
   useEffect(()=>{
 
     navigation.setOptions({
-      headerTitle: 'Verse Study'
+      headerTitle: t('Verse Study')
     })
 
     const fetchVerseWithReferences = async () =>{
@@ -265,7 +269,7 @@ export default function VerseStudyScreen() {
         {Loading && (
           <View className="flex-1 items-center justify-center py-12">
             <ActivityIndicator size="large" />
-            <Text className="mt-4 text-muted-foreground">Loading...</Text>
+            <Text className="mt-4 text-muted-foreground">{t('Loading...')}</Text>
           </View>
         )}
 
@@ -277,7 +281,7 @@ export default function VerseStudyScreen() {
                 {error}
               </Text>
               <Text className="text-muted-foreground text-center text-sm mt-2">
-                Showing cached data
+                {t('Showing cached data')}
               </Text>
             </CardContent>
           </Card>
@@ -306,7 +310,7 @@ export default function VerseStudyScreen() {
                 className='w-full justify-center'
               >
                 <Share2 className="mr-2 h-4 w-4 text-primary" color={primaryIconColor}/>
-                <Text>Share Verse</Text>
+                <Text>{t('Share Verse')}</Text>
               </Button>
             </Link>
 
@@ -328,9 +332,9 @@ export default function VerseStudyScreen() {
           <CardHeader>
             <CardTitle className="flex-row items-center gap-2">
               <Link2 size={20} className="text-primary" />
-              <Text>Cross References</Text>
+              <Text>{t('Cross References')}</Text>
             </CardTitle>
-            <CardDescription>Related verses</CardDescription>
+            <CardDescription>{t('Related verses')}</CardDescription>
           </CardHeader>
           <CardContent className="gap-3">
             <ScrollView showsHorizontalScrollIndicator={false} className=" h-80">
@@ -357,9 +361,9 @@ export default function VerseStudyScreen() {
           <CardHeader>
             <CardTitle className="flex-row items-center gap-2">
               <Link2 size={20} color={primaryIconColor} />
-              <Text>Other Translations</Text>
+              <Text>{t('Other Translations')}</Text>
             </CardTitle>
-            <CardDescription>Same verse in different versions</CardDescription>
+            <CardDescription>{t('Same verse in different versions')}</CardDescription>
           </CardHeader>
           <CardContent className="gap-3">
             {translations.map((translation) => (
@@ -384,7 +388,7 @@ export default function VerseStudyScreen() {
             className='w-full justify-center'
           >
             <BookOpen className="mr-2 h-4 w-4 text-primary" />
-            <Text>Return to Bible</Text>
+            <Text>{t('Return to Bible')}</Text>
           </Button>
         </Link>
         )}

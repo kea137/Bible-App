@@ -11,7 +11,7 @@ import {
 import { SplitSquareHorizontal, BookOpen, CheckCircle } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { getBibles, getBibleDetail, getChapterData, Bible, ChapterData, BibleDetail } from '@/lib/services/bibles.service';
 import { useColorScheme } from 'nativewind';
 import { PortalHost } from '@rn-primitives/portal';
@@ -33,16 +33,21 @@ export default function ParallelBiblesScreen() {
   const [loadingBibleDetails, setLoadingBibleDetails] = useState(false);
   const [loadingChapters, setLoadingChapters] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
   const [selectedBook, setSelectedBook] = useState<any>(null);
   const [selectedChapter, setSelectedChapter] = useState(1);
   const [selectedChapterId, setSelectedChapterId] = useState<number | null>(null);
-  
+  const navigation = useNavigation();
+
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch all bibles on mount
   useEffect(() => {
+
+    navigation.setOptions({
+      headerTitle: t('Parallel Bibles') || 'Parallel Bibles',
+    });
+
     const fetchBibles = async () => {
       try {
         setLoading(true);
@@ -100,6 +105,7 @@ export default function ParallelBiblesScreen() {
 
   // Fetch chapter data when bible or chapter selection changes
   useEffect(() => {
+
     const fetchChapterData = async () => {
       if (!selectedBible1 || !selectedBible2 || !selectedBook || !selectedChapterId || !bibleData1 || !bibleData2) return;
 
@@ -157,7 +163,7 @@ export default function ParallelBiblesScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" />
-        <Text className="mt-4 text-muted-foreground">Loading bibles...</Text>
+        <Text className="mt-4 text-muted-foreground">{t('Loading bibles...')}</Text>
       </View>
     );
   }
@@ -174,7 +180,7 @@ export default function ParallelBiblesScreen() {
                 {error}
               </Text>
               <Text className="text-muted-foreground text-center text-sm mt-2">
-                Showing cached data
+                {t('Showing cached data')}
               </Text>
             </CardContent>
           </Card>
@@ -185,9 +191,9 @@ export default function ParallelBiblesScreen() {
           <CardHeader>
             <CardTitle className="flex-row items-center gap-2">
               <SplitSquareHorizontal size={20} color={primaryIconColor} />
-              <Text>Parallel Bibles</Text>
+              <Text>{t('Parallel Bibles')}</Text>
             </CardTitle>
-            <CardDescription>Compare two Bible translations side by side</CardDescription>
+            <CardDescription>{t('Compare two Bible translations side by side')}</CardDescription>
           </CardHeader>
           <CardContent className="gap-3">
             {/* First Translation Selector */}
@@ -202,10 +208,11 @@ export default function ParallelBiblesScreen() {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="First Translation" />
+                  <SelectValue placeholder={t('First Translation')} />
                 </SelectTrigger>
                 <SelectContent portalHost="root">
                    <SelectGroup className="h-80 w-[320px]">
+                    <ScrollView className="h-100 w-full">
                     {bibles.map((bible) => (
                       <SelectItem 
                         key={bible.id} 
@@ -215,6 +222,7 @@ export default function ParallelBiblesScreen() {
                         {bible.abbreviation}
                       </SelectItem>
                     ))}
+                    </ScrollView>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -232,10 +240,11 @@ export default function ParallelBiblesScreen() {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Second Translation" />
+                  <SelectValue placeholder={t('Second Translation')} />
                 </SelectTrigger>
                 <SelectContent portalHost="root">
                    <SelectGroup className="h-80 w-[320px]">
+                    <ScrollView className="h-100 w-full">
                     {bibles.map((bible) => (
                       <SelectItem 
                         key={bible.id} 
@@ -245,6 +254,7 @@ export default function ParallelBiblesScreen() {
                         {bible.abbreviation}
                       </SelectItem>
                     ))}
+                    </ScrollView>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -269,10 +279,11 @@ export default function ParallelBiblesScreen() {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select book" />
+                  <SelectValue placeholder={t('Select book')} />
                 </SelectTrigger>
                 <SelectContent portalHost="root">
                    <SelectGroup className="h-80 w-[320px]">
+                     <ScrollView className="h-100 w-full">
                     {bibleData1?.books && bibleData1.books.map((book) => (
                       <SelectItem 
                         key={book.id} 
@@ -282,6 +293,7 @@ export default function ParallelBiblesScreen() {
                         {book.title}
                       </SelectItem>
                     ))}
+                    </ScrollView>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -290,7 +302,7 @@ export default function ParallelBiblesScreen() {
             {/* Chapter Selector */}
             <View className="w-full">
               <Select
-                value={{ value: selectedChapter.toString(), label: `Chapter ${selectedChapter}` }}
+                value={{ value: selectedChapter.toString(), label: `${t('Chapter')} ${selectedChapter}` }}
                 onValueChange={(option) => {
                   const v = (option as any)?.value as string | undefined;
                   if (v && selectedBook) {
@@ -303,18 +315,19 @@ export default function ParallelBiblesScreen() {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Chapter" />
+                  <SelectValue placeholder={t('Chapter')} />
                 </SelectTrigger>
                 <SelectContent portalHost="root">
                   <SelectGroup className="h-80 w-[320px]">
+                    <ScrollView className="h-100 w-full">
                     {selectedBook?.chapters && selectedBook.chapters.length > 0 ? (
                       selectedBook.chapters.map((chapter) => (
                         <SelectItem 
                           key={chapter.id} 
                           value={chapter.chapter_number.toString()}
-                          label={`Chapter ${chapter.chapter_number}`}
+                          label={`${t('Chapter')} ${chapter.chapter_number}`}
                         >
-                          Chapter {chapter.chapter_number}
+                          {t('Chapter')} {chapter.chapter_number}
                         </SelectItem>
                       ))
                     ) : (
@@ -325,10 +338,11 @@ export default function ParallelBiblesScreen() {
                           value={ch.toString()}
                           label={`Chapter ${ch}`}
                         >
-                          Chapter {ch}
+                          {t('Chapter')} {ch}
                         </SelectItem>
                       ))
                     )}
+                    </ScrollView>
                   </SelectGroup>
                 </SelectContent>
               </Select>
@@ -341,7 +355,7 @@ export default function ParallelBiblesScreen() {
         {loadingChapters && (
           <View className="flex-1 items-center justify-center py-8">
             <ActivityIndicator size="large" />
-            <Text className="mt-4 text-muted-foreground">Loading verses...</Text>
+            <Text className="mt-4 text-muted-foreground">{t('Loading verses...')}</Text>
           </View>
         )}
 

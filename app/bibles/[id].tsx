@@ -45,11 +45,13 @@ import { createNote, CreateNoteData } from '@/lib/services/notes.service';
 import { createHighlight, deleteHighlight } from '@/lib/services/highlights.service';
 import { PortalHost } from '@rn-primitives/portal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
+import { useTranslation } from 'react-i18next';
 
 export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId, onSaveSuccess}: {text: string, verseRef: string, isOpen: boolean, onOpenChange: (open: boolean) => void, verseId: number, onSaveSuccess?: () => void}) {
   const [notes, setNotes] = React.useState('');
   const [title, setTitle] = React.useState('');
   const [saving, setSaving] = React.useState(false);
+  const { t } = useTranslation();
 
   const handleSaveNote = async () => {
     if (!notes.trim()) {
@@ -91,7 +93,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
       <AlertDialogContent portalHost="root">
         <KeyboardAwareScrollView>
         <AlertDialogHeader className="items-center justify-center">
-          <AlertDialogTitle className="text-center">Add Note to Verse</AlertDialogTitle>
+            <AlertDialogTitle className="text-center">{t('Add Note to Verse')}</AlertDialogTitle>
           <AlertDialogDescription className="text-center mb-4">
             {verseRef}
           </AlertDialogDescription>
@@ -102,18 +104,17 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
           </AlertDialogDescription>
         </AlertDialogHeader>
         <View className="gap-2">
-            <Text className="text-sm font-medium">Title (Optional)</Text>
+            <Text className="text-sm font-medium">{t('Title (Optional)')}</Text>
             <Input
-                placeholder="Enter a title for your note"
+                placeholder={t('Enter a title for your note')}
                 value={title}
                 onChangeText={setTitle}
             />
         </View>
-
         <View className="gap-2">
-            <Text className="text-sm font-medium">Notes</Text>
+            <Text className="text-sm font-medium">{t('Notes')}</Text>
             <Textarea
-                placeholder="Write your thoughts, insights and reflections..."
+                placeholder={t('Write your thoughts, insights and reflections...')}
                 value={notes}
                 onChangeText={setNotes}
                 className="min-h-32"
@@ -124,7 +125,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
             <Text>Cancel</Text>
           </AlertDialogCancel>
           <AlertDialogAction onPress={handleSaveNote} disabled={saving}>
-            <Text>{saving ? 'Saving...' : 'Save Note'}</Text>
+            <Text>{saving ? t('Saving...') : t('Save Note')}</Text>
           </AlertDialogAction>
         </AlertDialogFooter>
         </KeyboardAwareScrollView>
@@ -142,7 +143,7 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, hi
   const bgClass = currentHighlight === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
   const bgColor = currentHighlight === 'yellow' ? '#FEF08A1F' : '#86EFAC1F'; 
   const { colorScheme } = useColorScheme();
-
+  const { t } = useTranslation();
   // Update current highlight when prop changes
   React.useEffect(() => {
     setCurrentHighlight(highlight);
@@ -206,7 +207,7 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, hi
         
         <DropdownMenuContent className="w-60" portalHost="root">
           <DropdownMenuLabel>
-            <Text>Highlight</Text>
+            <Text>{t('Highlight')}</Text>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
@@ -215,7 +216,7 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, hi
             }}>
               <View className="flex-row items-center gap-2">
                 <View className="h-4 w-4 rounded bg-yellow-300" />
-                <Text>Highlight - Yellow</Text>
+                <Text>{t('Highlight - Yellow')}</Text>
               </View>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={()=>{
@@ -223,36 +224,36 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, hi
             }}>
               <View className="flex-row items-center gap-2">
                 <View className="h-4 w-4 rounded bg-green-300" />
-                <Text>Highlight - Green</Text>
+                <Text>{t('Highlight - Green')}</Text>
               </View>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={()=>{
               removeHighlight();
             }}>
-              <Text>Remove Highlight</Text>
+              <Text>{t('Remove Highlight')}</Text>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuLabel>
-            <Text>Learn More</Text>
+            <Text>{t('Learn More')}</Text>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem onPress={() => router.push(`bibles/study/${verseId}`)}>
-              <Text>Study this Verse</Text>
+              <Text>{t('Study this Verse')}</Text>
             </DropdownMenuItem>
             <DropdownMenuItem onPress={() => setIsNotesOpen(true)}>
-              <Text>Put Notes on this Verse</Text>
+              <Text>{t('Put Notes on this Verse')}</Text>
             </DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuLabel>
-            <Text>Share</Text>
+            <Text>{t('Share')}</Text>
           </DropdownMenuLabel>
           <DropdownMenuSeparator/>
           <DropdownMenuGroup>
             <DropdownMenuItem onPress={() => router.push(`bibles/share/${verseId}`)}>
               <View className="flex-row items-center gap-2">
                 <Share2 color={primaryIconColor} size={16} />
-                <Text>Share this Verse</Text>
+                <Text>{t('Share this Verse')}</Text>
               </View>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -265,19 +266,19 @@ export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, hi
 }
 
 export function AlertSuccess({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-
+  const { t } = useTranslation();
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent portalHost="root">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-primary">Success</AlertDialogTitle>
+          <AlertDialogTitle className="text-primary">{t('Success')}</AlertDialogTitle>
           <AlertDialogDescription>
-            Your note was saved successfully!
+            {t('Your note was saved successfully!')}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Text>Cancel</Text>
+            <Text>{t('OK')}</Text>
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -301,6 +302,7 @@ export default function BibleDetailScreen() {
   const [chapterSelectOpen, setChapterSelectOpen] = useState(false);
   const isAnySelectOpen = bookSelectOpen || chapterSelectOpen;
   const { colorScheme } = useColorScheme();
+  const { t } = useTranslation();
 
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
@@ -605,7 +607,7 @@ export default function BibleDetailScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background p-4">
         <ActivityIndicator size="large" />
-        <Text className="mt-4 text-muted-foreground text-center">Loading Bible...</Text>
+        <Text className="mt-4 text-muted-foreground text-center">{t('Loading Bible...')}</Text>
       </View>
     );
   }
@@ -624,7 +626,7 @@ export default function BibleDetailScreen() {
                   {error}
                 </Text>
                 <Text className="text-muted-foreground text-center text-sm mt-2">
-                  Showing cached data
+                  {t('Showing cached data')}
                 </Text>
               </CardContent>
             </Card>
@@ -662,7 +664,7 @@ export default function BibleDetailScreen() {
                   }}
                 >
                   <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select book" />
+                    <SelectValue placeholder={t('Select book')} />
                   </SelectTrigger>
                   <SelectContent portalHost="root" className="h-100">
                     <SelectGroup className='h-80 w-[320px]'>
@@ -687,7 +689,7 @@ export default function BibleDetailScreen() {
 
             <View className="w-full">
               <Select
-                value={{ value: String(selectedChapter), label: `Chapter ${selectedChapter}` }}
+                value={{ value: String(selectedChapter), label: `${t('Chapter')} ${selectedChapter}` }}
                 onOpenChange={(open) => {
                   console.log('[CHAPTER SELECT] Open changed:', open);
                   setChapterSelectOpen(!!open);
@@ -706,7 +708,7 @@ export default function BibleDetailScreen() {
                 }}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Chapter" />
+                  <SelectValue placeholder={t('Chapter')} />
                 </SelectTrigger>
                 <SelectContent portalHost="root">
                   <SelectGroup className='h-80 w-[320px]'>
@@ -716,9 +718,9 @@ export default function BibleDetailScreen() {
                         <SelectItem 
                           key={chapter.id} 
                           value={chapter.chapter_number.toString()}
-                          label={`Chapter ${chapter.chapter_number}`}
+                          label={`${t('Chapter')} ${chapter.chapter_number}`}
                         >
-                          Chapter {chapter.chapter_number}
+                          {t('Chapter')} {chapter.chapter_number}
                         </SelectItem>
                       ))
                     ) : (
@@ -747,7 +749,7 @@ export default function BibleDetailScreen() {
               >
                 <CheckCircle size={16} color={primaryIconColor} />
                 <Text className="ml-2">
-                  {completed ? 'Completed' : 'Mark as Complete'}
+                  {completed ? t('Completed') : t('Mark as Complete')}
                 </Text>
               </Button>
               
@@ -764,7 +766,7 @@ export default function BibleDetailScreen() {
                   {loadingChapter && (
                     <View className="flex-1 items-center justify-center py-8">
                       <ActivityIndicator />
-                      <Text className="mt-2 text-muted-foreground text-sm">Loading chapter...</Text>
+                      <Text className="mt-2 text-muted-foreground text-sm">{t('Loading chapter...')}</Text>
                     </View>
                   )}
                   
@@ -789,10 +791,10 @@ export default function BibleDetailScreen() {
                   
                   {/* Debug info */}
                   {!loadingChapter && !chapterData && (
-                    <Text className="text-muted-foreground text-center">No chapter data</Text>
+                    <Text className="text-muted-foreground text-center">{t('No chapter data')}</Text>
                   )}
                   {!loadingChapter && chapterData && (!chapterData.verses || !Array.isArray(chapterData.verses) || chapterData.verses.length === 0) && (
-                    <Text className="text-muted-foreground text-center">No verses found</Text>
+                    <Text className="text-muted-foreground text-center">{t('No verses found')}</Text>
                   )}
                 </CardContent>
               </View>

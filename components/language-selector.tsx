@@ -74,7 +74,7 @@ export function LanguageSelector() {
             <SelectTrigger className="w-40">
               <SelectValue placeholder={t('Select Language') || 'Select Language'} />
             </SelectTrigger>
-            <SelectContent className="w-40">
+            <SelectContent className="w-40" portalHost="root">
               <ScrollView style={{ maxHeight: 300 }}>
                 <SelectGroup>
                   {LANGUAGES.map((language) => (

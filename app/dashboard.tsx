@@ -3,7 +3,7 @@ import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Input } from '@showcase/components/ui/input';
 import { Text } from '@showcase/components/ui/text';
-import { Link } from 'expo-router';
+import { Link, useNavigation } from 'expo-router';
 import {
   BookOpen,
   Highlighter,
@@ -24,12 +24,18 @@ export default function DashboardScreen() {
   const [dashboardData, setDashboardData] = useState<DashData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  const navigation = useNavigation();
+  
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch dashboard data on mount
   useEffect(() => {
+
+    navigation.setOptions({
+      headerTitle: (t('Dashboard') || 'Dashboard'),
+    });
+
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
@@ -302,11 +308,11 @@ export default function DashboardScreen() {
                 <CardHeader>
                   <CardTitle className="flex-row items-center gap-2">
                     <Highlighter size={20} color={primaryIconColor} />
-                    <Text>Your Highlighted Verses</Text>
+                    <Text>{t('Your Highlighted Verses') || 'Your Highlighted Verses'}</Text>
                   </CardTitle>
-                  <CardDescription>
-                    Recent verses you've marked
-                  </CardDescription>
+                    <CardDescription>
+                    {t("Recent verses you've marked") || "Recent verses you've marked"}
+                    </CardDescription>
                 </CardHeader>
                 <CardContent className="gap-3">
                   {dashboardData.data?.highlightedVerses.map((highlight) =>{
@@ -340,7 +346,7 @@ export default function DashboardScreen() {
                   
                   <Link href="/highlights" asChild>
                     <Button variant="outline" className="mt-4 w-full">
-                      <Text>View All Highlights</Text>
+                        <Text>{t('View All Highlights') || 'View All Highlights'}</Text>
                     </Button>
                   </Link>
                 </CardContent>

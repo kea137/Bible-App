@@ -23,6 +23,7 @@ import { PortalHost } from '@rn-primitives/portal';
 import { Label } from '@showcase/components/ui/label';
 import { Switch } from '@showcase/components/ui/switch';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTranslation } from 'react-i18next';
 
 export default function ShareScreen() {
   const { id } = useLocalSearchParams();
@@ -30,7 +31,7 @@ export default function ShareScreen() {
   const router = useRouter();
   const { colorScheme } = useColorScheme();
   const viewShotRef = useRef<ViewShot>(null);
-  
+  const { t } = useTranslation();
   // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -64,11 +65,11 @@ export default function ShareScreen() {
 
   // Font size options matching web app
   const fontSizeOptions = [
-    { value: 16, label: 'Medium (16px)' },
-    { value: 18, label: 'Large (18px)' },
-    { value: 20, label: 'Extra Large (20px)' },
-    { value: 22, label: 'Huge (22px)' },
-    { value: 24, label: 'Massive (24px)' },
+    { value: 16, label: t('Medium (16px)') },
+    { value: 18, label: t('Large (18px)') },
+    { value: 20, label: t('Extra Large (20px)') },
+    { value: 22, label: t('Huge (22px)') },
+    { value: 24, label: t('Massive (24px)') },
   ];
 
   // Beautiful background gradients matching web app
@@ -96,6 +97,7 @@ export default function ShareScreen() {
 
   // Fetch verse data on mount
   useEffect(() => {
+
     const fetchVerseData = async () => {
       if (!id) {
         setError('No verse ID provided');
@@ -123,7 +125,7 @@ export default function ShareScreen() {
   useEffect(() => {
     setSelectedFontSize(24);
     navigation.setOptions({
-      headerTitle: 'Share Verse',
+      headerTitle: t('Share Verse'),
     });
   }, []);
 
@@ -214,7 +216,7 @@ export default function ShareScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-background">
         <ActivityIndicator size="large" />
-        <Text className="mt-4 text-muted-foreground">Loading verse...</Text>
+        <Text className="mt-4 text-muted-foreground">{t('Loading verse...')}</Text>
       </View>
     );
   }
@@ -224,7 +226,7 @@ export default function ShareScreen() {
       <View className="flex-1 items-center justify-center bg-background p-4">
         <Text className="text-destructive mb-4 text-center">{error || 'Failed to load verse'}</Text>
         <Button onPress={() => router.back()}>
-          <Text>Go Back</Text>
+          <Text>{t('Go Back')}</Text>
         </Button>
       </View>
     );
@@ -238,9 +240,9 @@ export default function ShareScreen() {
           <CardHeader>
             <CardTitle className="flex-row items-center gap-2">
               <Share2 size={20} color={primaryIconColor} />
-              <Text>Share Verse</Text>
+              <Text>{t('Share Verse')}</Text>
             </CardTitle>
-            <CardDescription>Create a beautiful verse image to share</CardDescription>
+            <CardDescription>{t('Create a beautiful verse image to share')}</CardDescription>
           </CardHeader>
           
           {/* Preview Card */}
@@ -410,7 +412,7 @@ export default function ShareScreen() {
           <Card className="mx-4 mt-4 rounded-lg border pt-4 px-4">
             <View className="mb-3 flex flex-row items-center gap-2">
               <ImageIcon color={primaryIconColor} size={24}/>
-              <Text className="font-semibold">Background Type</Text>
+              <Text className="font-semibold">{t('Background Type')}</Text>
             </View>
             
             {/* Background Type Toggle */}
@@ -421,7 +423,7 @@ export default function ShareScreen() {
                 className="flex-1"
               >
                 <Palette size={16} color={backgroundType === 'gradient' ? '#fff' : primaryIconColor} />
-                <Text className="ml-2">Gradient</Text>
+                <Text className="ml-2">{t('Gradient')}</Text>
               </Button>
               <Button
                 onPress={() => setBackgroundType('image')}
@@ -430,14 +432,14 @@ export default function ShareScreen() {
                 disabled={!shareData?.backgroundImages || shareData.backgroundImages.length === 0}
               >
                 <ImageIcon size={16} color={backgroundType === 'image' ? '#fff' : primaryIconColor} />
-                <Text className="ml-2">Image</Text>
+                <Text className="ml-2">{t('Image')}</Text>
               </Button>
             </View>
 
             {backgroundType === 'gradient' ? (
               <>
                 <Text className="mb-2 text-sm text-muted-foreground">
-                  Current Style: <Text className="font-semibold">{currentBackground.name}</Text>
+                  {t('Current Style')}: <Text className="font-semibold">{currentBackground.name}</Text>
                 </Text>
                 
                 <Button 
@@ -446,12 +448,12 @@ export default function ShareScreen() {
                   onPress={handleChangeBackground}
                   disabled={isGenerating || useCustomColors}
                 >
-                  <Text>Change Background Style</Text>
+                  <Text>{t('Change Background Style')}</Text>
                 </Button>
 
                 {/* Custom Colors Toggle */}
                 <View className="mt-4 flex-row items-center justify-between">
-                  <Label>Use custom colors</Label>
+                  <Label>{t('Use custom colors')}</Label>
                   <Switch
                     checked={useCustomColors}
                     onCheckedChange={setUseCustomColors}
@@ -462,11 +464,11 @@ export default function ShareScreen() {
                 {useCustomColors && (
                   Platform.OS === 'web' ? (
                   <View className="mt-4 gap-3">
-                    <Text className="text-sm font-semibold">Custom Gradient Colors</Text>
+                    <Text className="text-sm font-semibold">{t('Custom Gradient Colors')}</Text>
                     <View className="gap-3">
                       {/* Color 1 */}
                       <View className="flex-row items-center gap-3">
-                        <Text className="w-20 text-sm">Color 1:</Text>
+                        <Text className="w-20 text-sm">{t('Color 1')}:</Text>
                         <View className="flex-1 flex-row items-center gap-2">
                           <View 
                             style={{
@@ -495,7 +497,7 @@ export default function ShareScreen() {
 
                       {/* Color 2 */}
                       <View className="flex-row items-center gap-3">
-                        <Text className="w-20 text-sm">Color 2:</Text>
+                        <Text className="w-20 text-sm">{t('Color 2')}:</Text>
                         <View className="flex-1 flex-row items-center gap-2">
                           <View 
                             style={{
@@ -524,7 +526,7 @@ export default function ShareScreen() {
 
                       {/* Color 3 */}
                       <View className="flex-row items-center gap-3">
-                        <Text className="w-20 text-sm">Color 3:</Text>
+                        <Text className="w-20 text-sm">{t('Color 3')}:</Text>
                         <View className="flex-1 flex-row items-center gap-2">
                           <View 
                             style={{
@@ -554,7 +556,7 @@ export default function ShareScreen() {
 
                     {/* Preview of custom gradient */}
                     <View className="mt-2">
-                      <Text className="mb-2 text-xs text-muted-foreground">Preview:</Text>
+                      <Text className="mb-2 text-xs text-muted-foreground">{t('Preview')}:</Text>
                       <View 
                         style={{
                           height: 60,
@@ -576,8 +578,8 @@ export default function ShareScreen() {
                   </View>
                   ) : (
                     <View className="mt-4 gap-2">
-                      <Text className="text-sm text-muted-foreground">Custom color pickers are available on web.</Text>
-                      <Text className="text-sm text-muted-foreground">For mobile, use the preset gradients above.</Text>
+                      <Text className="text-sm text-muted-foreground">{t('Custom color pickers are available on web.')}</Text>
+                      <Text className="text-sm text-muted-foreground">{t('For mobile, use the preset gradients above.')}</Text>
                     </View>
                   )
                 )}
@@ -596,12 +598,12 @@ export default function ShareScreen() {
                       onPress={handleChangeImage}
                       disabled={isGenerating}
                     >
-                      <Text>Change Image</Text>
+                      <Text>{t('Change Image')}</Text>
                     </Button>
                   </>
                 ) : (
                   <Text className="text-sm text-yellow-600 dark:text-yellow-400">
-                    No background images available, for now.
+                    {t('No background images available, for now.')}
                   </Text>
                 )}
               </>
@@ -612,12 +614,12 @@ export default function ShareScreen() {
           <Card className="mx-4 rounded-lg border p-4">
             <View className="mb-3 flex-row items-center gap-2">
               <Type color={primaryIconColor} size={24}/>
-              <Text className="font-semibold">Text Style</Text>
+              <Text className="font-semibold">{t('Text Style')}</Text>
             </View>
             
             {/* Font Selection */}
             <View className=" gap-2">
-              <Label className="text-sm">Font Family</Label>
+              <Label className="text-sm">{t('Font Family')}</Label>
               <Select
                 value={{ value: selectedFont, label: fonts.find(f => f.value === selectedFont)?.label || '' }}
                 onValueChange={(option) => {
@@ -627,7 +629,7 @@ export default function ShareScreen() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select font" />
+                  <SelectValue placeholder={t('Select font')} />
                 </SelectTrigger>
                 <SelectContent portalHost="root">
                   <SelectGroup>
@@ -643,7 +645,7 @@ export default function ShareScreen() {
 
             {/* Font Size Selection */}
             <View className=" gap-2">
-              <Label className="text-sm">Font Size</Label>
+              <Label className="text-sm">{t('Font Size')}</Label>
               <Select
                 value={{ value: selectedFontSize.toString(), label: fontSizeOptions.find(f => f.value === selectedFontSize)?.label || '' }}
                 onValueChange={(option) => {
@@ -653,7 +655,7 @@ export default function ShareScreen() {
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select size" />
+                  <SelectValue placeholder={t('Select size')} />
                 </SelectTrigger>
                 <SelectContent portalHost="root">
                   <SelectGroup>
@@ -669,7 +671,7 @@ export default function ShareScreen() {
 
             {/* Bold Toggle */}
             <View className="flex-row items-center justify-between">
-              <Label>Use bold text</Label>
+              <Label>{t('Use bold text')}</Label>
               <Switch
                 checked={isBoldText}
                 onCheckedChange={setIsBoldText}
@@ -686,7 +688,7 @@ export default function ShareScreen() {
             ) : (
               <>
                 <Share2 size={16} color="#fff" />
-                <Text className="ml-2">Share Image</Text>
+                <Text className="ml-2">{t('Share Image')}</Text>
               </>
             )}
           </Button>
@@ -697,7 +699,7 @@ export default function ShareScreen() {
             ) : (
               <>
                 <Download size={16} color={primaryIconColor} />
-                <Text className="ml-2">Download Image</Text>
+                <Text className="ml-2">{t('Download Image')}</Text>
               </>
             )}
           </Button>
@@ -707,15 +709,15 @@ export default function ShareScreen() {
         {/* Verse Details */}
         <Card>
           <CardHeader>
-            <CardTitle>Verse Details</CardTitle>
+            <CardTitle>{t('Verse Details')}</CardTitle>
           </CardHeader>
           <CardContent className="gap-2">
             <View>
-              <Text className="font-semibold">Reference:</Text>
+              <Text className="font-semibold">{t('Reference:')}</Text>
               <Text className="text-muted-foreground">{shareData.verseReference}</Text>
             </View>
             <View>
-              <Text className="font-semibold">Text:</Text>
+              <Text className="font-semibold">{t('Text:')}</Text>
               <Text className="text-muted-foreground italic">{shareData.verseText}</Text>
             </View>
           </CardContent>
@@ -730,7 +732,7 @@ export default function ShareScreen() {
             }}
           >
             <BookMarked size={16} color={primaryIconColor} />
-            <Text className="ml-2">Back to Bible</Text>
+            <Text className="ml-2">{t('Back to Bible')}</Text>
           </Button>
         </Card>
       </View>

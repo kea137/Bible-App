@@ -8,6 +8,7 @@ import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
 import { getLessonDetail, LessonDetail, markLessonProgress } from '@/lib/services/lessons.service';
 import { useColorScheme } from 'nativewind';
+import { useTranslation } from 'react-i18next';
 
 export default function LessonDetailScreen() {
   const { id } = useLocalSearchParams();
@@ -18,6 +19,7 @@ export default function LessonDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   // Theme-aware icon color
   const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
@@ -176,7 +178,7 @@ export default function LessonDetailScreen() {
         {loading && (
           <View className="flex-1 items-center justify-center py-12">
             <ActivityIndicator size="large" />
-            <Text className="mt-4 text-muted-foreground">Loading lesson...</Text>
+            <Text className="mt-4 text-muted-foreground">{t('Loading lesson...')}</Text>
           </View>
         )}
 
@@ -188,7 +190,7 @@ export default function LessonDetailScreen() {
                 {error}
               </Text>
               <Text className="text-muted-foreground text-center text-sm mt-2">
-                Showing cached data
+                {t('Showing cached data')}
               </Text>
             </CardContent>
           </Card>
@@ -207,7 +209,7 @@ export default function LessonDetailScreen() {
                 <CardDescription>{lessonData.lesson.description}</CardDescription>
                 {lessonData.lesson.series && (
                   <CardDescription className="mt-1">
-                    Series: {lessonData.lesson.series.title}
+                    {t('Series:')} {lessonData.lesson.series.title}
                   </CardDescription>
                 )}
               </CardHeader>
@@ -223,7 +225,7 @@ export default function LessonDetailScreen() {
                       onPress={() => previousLesson && handleNavigateToLesson(previousLesson.id)}
                     >
                       <ChevronLeft size={16} color={primaryIconColor} />
-                      <Text className="ml-1">Previous</Text>
+                      <Text className="ml-1">{t('Previous')}</Text>
                     </Button>
                     <Button 
                       variant="outline" 
@@ -232,7 +234,7 @@ export default function LessonDetailScreen() {
                       className="flex-1"
                       onPress={() => nextLesson && handleNavigateToLesson(nextLesson.id)}
                     >
-                      <Text className="mr-1">Next</Text>
+                      <Text className="mr-1">{t('Next')}</Text>
                       <ChevronRight size={16} color={primaryIconColor} />
                     </Button>
                   </View>
@@ -244,7 +246,7 @@ export default function LessonDetailScreen() {
                 >
                   <CheckCircle size={16} color={primaryIconColor} />
                   <Text className="ml-2">
-                    {completed ? 'Completed' : 'Mark as Complete'}
+                    {completed ? t('Completed') : t('Mark as Complete')}
                   </Text>
                 </Button>
               </CardContent>
@@ -268,23 +270,6 @@ export default function LessonDetailScreen() {
               ))}
             </View>
 
-            {/* Footer Actions */}
-            <Card>
-              <CardContent className="gap-3 py-4">
-                <Text className="text-center text-sm text-muted-foreground">
-                  Lesson {lessonData.lesson.id} - {lessonData.lesson.language}
-                </Text>
-                <Button 
-                  variant={completed ? "default" : "outline"}
-                  onPress={handleMarkComplete}
-                >
-                  <CheckCircle size={16} color={primaryIconColor} />
-                  <Text className="ml-2">
-                    {completed ? 'Lesson Completed' : 'Mark as Complete'}
-                  </Text>
-                </Button>
-              </CardContent>
-            </Card>
           </>
         )}
       </View>

@@ -63,28 +63,28 @@ export default function ReadingPlanScreen() {
   const remainingChapters = planData ? planData.totalChapters - planData.completedChapters : 0;
   const readingPlans = planData ? [
     {
-      name: 'Intensive Plan',
+      name: t('Intensive Plan'),
       chaptersPerDay: 10,
       days: Math.ceil(remainingChapters / 10),
-      description: 'Complete the Bible in about 4 months',
+      description: t('Complete the Bible in about 4 months'),
     },
     {
-      name: 'Standard Plan',
+      name: t('Standard Plan'),
       chaptersPerDay: 4,
       days: Math.ceil(remainingChapters / 4),
-      description: 'Complete the Bible in about 10 months',
+      description: t('Complete the Bible in about 10 months'),
     },
     {
-      name: 'Leisurely Plan',
+      name: t('Leisurely Plan'),
       chaptersPerDay: 2,
       days: Math.ceil(remainingChapters / 2),
-      description: 'Complete the Bible in about 20 months',
+      description: t('Complete the Bible in about 20 months'),
     },
     {
-      name: 'Year Plan',
+      name: t('Year Plan'),
       chaptersPerDay: 3,
       days: Math.ceil(remainingChapters / 3),
-      description: 'Complete the Bible in about one year',
+      description: t('Complete the Bible in about one year'),
     },
   ] : [];
 
@@ -107,7 +107,7 @@ export default function ReadingPlanScreen() {
                 {error}
               </Text>
               <Text className="text-muted-foreground text-center text-sm mt-2">
-                Showing cached data
+                {t('Showing cached data')}
               </Text>
             </CardContent>
           </Card>
@@ -119,10 +119,10 @@ export default function ReadingPlanScreen() {
             {/* Welcome Message */}
             <View className="gap-2 mb-2">
               <Text className="text-2xl font-bold text-foreground">
-                Your Bible Reading Journey
+                {t('Your Bible Reading Journey')}
               </Text>
               <Text className="text-base text-muted-foreground">
-                Track your progress and stay motivated as you read through the Bible
+                {t('Track your progress and stay motivated as you read through the Bible')}
               </Text>
             </View>
 
@@ -131,9 +131,9 @@ export default function ReadingPlanScreen() {
               <CardHeader>
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1">
-                    <CardTitle>Overall Progress</CardTitle>
+                    <CardTitle>{t('Overall Progress')}</CardTitle>
                     <CardDescription>
-                      {planData.completedChapters} of {planData.totalChapters} chapters completed
+                      {planData.completedChapters} {t('of')} {planData.totalChapters} {t('chapters completed')}
                     </CardDescription>
                   </View>
                   <TrendingUp size={24} className="text-primary" />
@@ -156,7 +156,7 @@ export default function ReadingPlanScreen() {
               <Card>
                 <CardHeader>
                   <View className="flex-row items-center justify-between">
-                    <CardTitle>Today</CardTitle>
+                    <CardTitle>{t('Today')}</CardTitle>
                     <Calendar size={20} className="text-muted-foreground" />
                   </View>
                 </CardHeader>
@@ -164,7 +164,7 @@ export default function ReadingPlanScreen() {
                   <Text className="text-3xl font-bold">
                     {planData.chaptersReadToday}
                   </Text>
-                  <Text className="text-xs text-muted-foreground mt-1">Chapters read</Text>
+                  <Text className="text-xs text-muted-foreground mt-1">{t('Chapters read')}</Text>
                 </CardContent>
               </Card>
 
@@ -172,13 +172,13 @@ export default function ReadingPlanScreen() {
               <Card>
                 <CardHeader>
                   <View className="flex-row items-center justify-between">
-                    <CardTitle>Completed</CardTitle>
+                    <CardTitle>{t('Completed')}</CardTitle>
                     <CheckCircle size={20} className="text-muted-foreground" />
                   </View>
                 </CardHeader>
                 <CardContent>
                   <Text className="text-3xl font-bold">{planData.completedChapters}</Text>
-                  <Text className="text-xs text-muted-foreground mt-1">Chapters done</Text>
+                  <Text className="text-xs text-muted-foreground mt-1">{t('Chapters done')}</Text>
                 </CardContent>
               </Card>
 
@@ -186,7 +186,7 @@ export default function ReadingPlanScreen() {
               <Card>
                 <CardHeader>
                   <View className="flex-row items-center justify-between">
-                    <CardTitle>Remaining</CardTitle>
+                    <CardTitle>{t('Remaining')}</CardTitle>
                     <BookMarked size={20} className="text-muted-foreground" />
                   </View>
                 </CardHeader>
@@ -194,7 +194,7 @@ export default function ReadingPlanScreen() {
                   <Text className="text-3xl font-bold">
                     {remainingChapters}
                   </Text>
-                  <Text className="text-xs text-muted-foreground mt-1">Chapters left</Text>
+                  <Text className="text-xs text-muted-foreground mt-1">{t('Chapters left')}</Text>
                 </CardContent>
               </Card>
 
@@ -202,13 +202,13 @@ export default function ReadingPlanScreen() {
               <Card>
                 <CardHeader>
                   <View className="flex-row items-center justify-between">
-                    <CardTitle>Total</CardTitle>
+                    <CardTitle>{t('Total')}</CardTitle>
                     <BookOpen size={20} className="text-muted-foreground" />
                   </View>
                 </CardHeader>
                 <CardContent>
                   <Text className="text-3xl font-bold">{planData.totalChapters}</Text>
-                  <Text className="text-xs text-muted-foreground mt-1">Total chapters</Text>
+                  <Text className="text-xs text-muted-foreground mt-1">{t('Total chapters')}</Text>
                 </CardContent>
               </Card>
             </View>
@@ -218,9 +218,9 @@ export default function ReadingPlanScreen() {
               <CardHeader>
                 <View className="flex-row items-center gap-2">
                   <Target size={20} className="text-primary" />
-                  <CardTitle>Suggested Reading Plans</CardTitle>
+                  <CardTitle>{t('Suggested Reading Plans')}</CardTitle>
                 </View>
-                <CardDescription>Choose a pace that works for you</CardDescription>
+                <CardDescription>{t('Choose a pace that works for you')}</CardDescription>
               </CardHeader>
               <CardContent className="gap-3">
                 {readingPlans.map((plan) => (
@@ -235,11 +235,11 @@ export default function ReadingPlanScreen() {
                     <View className="flex-row items-center gap-4 mt-2">
                       <View>
                         <Text className="font-medium">{plan.chaptersPerDay}</Text>
-                        <Text className="text-xs text-muted-foreground">chapters/day</Text>
+                        <Text className="text-xs text-muted-foreground">{t('chapters/day')}</Text>
                       </View>
                       <View>
                         <Text className="font-medium">~{plan.days}</Text>
-                        <Text className="text-xs text-muted-foreground">days</Text>
+                        <Text className="text-xs text-muted-foreground">{t('days')}</Text>
                       </View>
                     </View>
                   </View>
@@ -253,9 +253,9 @@ export default function ReadingPlanScreen() {
                 <CardHeader>
                   <View className="flex-row items-center gap-2">
                     <BookOpen size={20} className="text-primary" />
-                    <CardTitle>Lesson Progress</CardTitle>
+                    <CardTitle>{t('Lesson Progress')}</CardTitle>
                   </View>
-                  <CardDescription>Track your completed lessons and series</CardDescription>
+                  <CardDescription>{t('Track your completed lessons and series')}</CardDescription>
                 </CardHeader>
                 <CardContent className="gap-4">
                   {/* Stats */}
@@ -266,7 +266,7 @@ export default function ReadingPlanScreen() {
                           {planData.completedLessons.length}
                         </Text>
                         <Text className="text-xs text-muted-foreground">
-                          Total Lessons Completed
+                          {t('Total Lessons Completed')}
                         </Text>
                       </CardContent>
                     </Card>
@@ -276,7 +276,7 @@ export default function ReadingPlanScreen() {
                           {planData.lessonsReadToday || 0}
                         </Text>
                         <Text className="text-xs text-muted-foreground">
-                          Lessons Completed Today
+                          {t('Lessons Completed Today')}
                         </Text>
                       </CardContent>
                     </Card>
@@ -284,7 +284,7 @@ export default function ReadingPlanScreen() {
 
                   {/* Recently Completed Lessons */}
                   <View className="gap-2">
-                    <Text className="text-sm font-semibold">Recently Completed</Text>
+                    <Text className="text-sm font-semibold">{t('Recently Completed')}</Text>
                     {planData.completedLessons.slice(0, 5).map((progress) => (
                       <View
                         key={progress.id}
@@ -314,9 +314,9 @@ export default function ReadingPlanScreen() {
             {/* Reading Guidelines */}
             <Card>
               <CardHeader>
-                <CardTitle>How to Use Reading Progress Tracking</CardTitle>
+                <CardTitle>{t('How to Use Reading Progress Tracking')}</CardTitle>
                 <CardDescription>
-                  Simple steps to track your Bible reading journey
+                  {t('Simple steps to track your Bible reading journey')}
                 </CardDescription>
               </CardHeader>
               <CardContent className="gap-4">
@@ -325,9 +325,9 @@ export default function ReadingPlanScreen() {
                     <Text className="text-sm font-bold text-primary-foreground">1</Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="font-medium">Open Any Bible Chapter</Text>
+                    <Text className="font-medium">{t('Open Any Bible Chapter')}</Text>
                     <Text className="text-sm text-muted-foreground mt-1">
-                      Navigate to the Bible you want to read and select a book and chapter.
+                      {t('Navigate to the Bible you want to read and select a book and chapter.')}
                     </Text>
                   </View>
                 </View>
@@ -336,9 +336,9 @@ export default function ReadingPlanScreen() {
                     <Text className="text-sm font-bold text-primary-foreground">2</Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="font-medium">Read Through the Chapter</Text>
+                    <Text className="font-medium">{t('Read Through the Chapter')}</Text>
                     <Text className="text-sm text-muted-foreground mt-1">
-                      Take your time to read and meditate on God's Word.
+                      {t("Take your time to read and meditate on God's Word.")}
                     </Text>
                   </View>
                 </View>
@@ -347,9 +347,9 @@ export default function ReadingPlanScreen() {
                     <Text className="text-sm font-bold text-primary-foreground">3</Text>
                   </View>
                   <View className="flex-1">
-                    <Text className="font-medium">Mark as Complete</Text>
+                    <Text className="font-medium">{t('Mark as Complete')}</Text>
                     <Text className="text-sm text-muted-foreground mt-1">
-                      When finished, mark the chapter as read to track your progress.
+                     {t('When finished, mark the chapter as read to track your progress.')}
                     </Text>
                   </View>
                 </View>
