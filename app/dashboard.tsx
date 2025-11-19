@@ -15,9 +15,11 @@ import {
 import { useColorScheme } from 'nativewind';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, View } from 'react-native';
+import { useTranslation } from 'react-i18next';
 
 export default function DashboardScreen() {
   const { colorScheme } = useColorScheme();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [dashboardData, setDashboardData] = useState<DashData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -36,7 +38,7 @@ export default function DashboardScreen() {
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch dashboard data:', err);
-        setError(err.message || 'Failed to load dashboard data');
+        setError(err.message || t('Failed to load dashboard data') || 'Failed to load dashboard data');
         // Use mock data as fallback
         setDashboardData({
           data: {
@@ -133,9 +135,9 @@ export default function DashboardScreen() {
 
         {/* Header */}
         <View className="gap-2">
-          <Text className="text-3xl font-bold">Welcome back! {dashboardData?.data?.userName}</Text>
+          <Text className="text-3xl font-bold">{t('Welcome back,') || 'Welcome back,'} {dashboardData?.data?.userName}</Text>
           <Text className="text-base text-muted-foreground">
-            Continue your journey through God's Word
+            {t("Continue your journey through God's Word") || "Continue your journey through God's Word"}
           </Text>
         </View>
 
@@ -143,7 +145,7 @@ export default function DashboardScreen() {
         <View className="flex-row items-center gap-2 rounded-lg border border-border bg-card px-3">
           <Search size={20} color={primaryIconColor} />
           <Input
-            placeholder="Search verses, highlights, or bibles..."
+            placeholder={t('Search verses, highlights, or bibles...') || 'Search verses, highlights, or bibles...'}
             value={searchQuery}
             onChangeText={setSearchQuery}
             className="flex-1 border-0"
@@ -154,7 +156,7 @@ export default function DashboardScreen() {
         {loading && (
           <View className="flex-1 items-center justify-center py-12">
             <ActivityIndicator size="large" />
-            <Text className="mt-4 text-muted-foreground">Loading dashboard...</Text>
+            <Text className="mt-4 text-muted-foreground">{t('Loading dashboard...') || 'Loading dashboard...'}</Text>
           </View>
         )}
 
@@ -166,7 +168,7 @@ export default function DashboardScreen() {
                 {error}
               </Text>
               <Text className="text-muted-foreground text-center text-sm mt-2">
-                Showing cached data
+                {t('Showing cached data') || 'Showing cached data'}
               </Text>
             </CardContent>
           </Card>
@@ -181,22 +183,22 @@ export default function DashboardScreen() {
                 <CardHeader>
                   <CardTitle className="flex-row items-center gap-2">
                     <TrendingUp size={20} color={primaryIconColor} />
-                    <Text>Reading Progress</Text>
+                    <Text>{t('Reading Progress') || 'Reading Progress'}</Text>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="gap-4">
                   <View className="flex-row justify-between">
                     <View className="items-center">
                       <Text className="text-2xl font-bold">{readingStats.total_bibles}</Text>
-                      <Text className="text-xs text-muted-foreground">Total Bibles</Text>
+                      <Text className="text-xs text-muted-foreground">{t('Total Bibles') || 'Total Bibles'}</Text>
                     </View>
                     <View className="items-center">
                       <Text className="text-2xl font-bold">{readingStats.verses_read_today}</Text>
-                      <Text className="text-xs text-muted-foreground">Verses Today</Text>
+                      <Text className="text-xs text-muted-foreground">{t('Verses Today') || 'Verses Today'}</Text>
                     </View>
                     <View className="items-center">
                       <Text className="text-2xl font-bold">{readingStats.chapters_completed}</Text>
-                      <Text className="text-xs text-muted-foreground">Chapters Done</Text>
+                      <Text className="text-xs text-muted-foreground">{t('Chapters Done') || 'Chapters Done'}</Text>
                     </View>
                   </View>
                 </CardContent>
@@ -209,7 +211,7 @@ export default function DashboardScreen() {
                 <CardHeader>
                   <CardTitle className="flex-row items-center gap-2">
                     <Quote size={20} color={primaryIconColor} />
-                    <Text>Verse of the Day</Text>
+                    <Text>{t('Verse of the Day') || 'Verse of the Day'}</Text>
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="gap-3">
@@ -225,9 +227,9 @@ export default function DashboardScreen() {
             {lastReading && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Continue Reading</CardTitle>
+                  <CardTitle>{t('Continue Reading') || 'Continue Reading'}</CardTitle>
                   <CardDescription>
-                    Pick up where you left off
+                    {t('Pick up where you left off') || 'Pick up where you left off'}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -235,11 +237,11 @@ export default function DashboardScreen() {
                     {lastReading.bible_name}
                   </CardTitle>
                   <CardDescription className="mb-4">
-                    {lastReading.book_title} Chapter {lastReading.chapter_number}
+                    {lastReading.book_title} {t('Chapter') || 'Chapter'} {lastReading.chapter_number}
                   </CardDescription>
                   <Link href={`/bibles/${lastReading.bible_id}`} asChild>
                     <Button>
-                      <Text>Continue Reading</Text>
+                      <Text>{t('Continue Reading') || 'Continue Reading'}</Text>
                     </Button>
                   </Link>
                 </CardContent>
@@ -248,9 +250,9 @@ export default function DashboardScreen() {
 
             <Card>
               <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
+                <CardTitle>{t('Quick Actions') || 'Quick Actions'}</CardTitle>
                 <CardDescription>
-                  Start your study Session
+                  {t('Start your study Session') || 'Start your study Session'}
                 </CardDescription>
               </CardHeader>
               <CardContent className="gap-3">
@@ -260,7 +262,7 @@ export default function DashboardScreen() {
                     className='w-full justify-start'
                   >
                     <BookOpen className="mr-2 h-4 w-4" color={primaryIconColor} />
-                    <Text>Browse Bibles</Text>
+                    <Text>{t('Browse Bibles') || 'Browse Bibles'}</Text>
                   </Button>
                 </Link>
                 <Link href="/bibles/1" asChild>
@@ -269,7 +271,7 @@ export default function DashboardScreen() {
                     className='w-full justify-start'
                   >
                     <Library className="mr-2 h-4 w-4" color={primaryIconColor} />
-                    <Text>Compare Translations</Text>
+                    <Text>{t('Compare Translations') || 'Compare Translations'}</Text>
                   </Button>
                 </Link>
               </CardContent>
@@ -281,10 +283,10 @@ export default function DashboardScreen() {
                 <CardContent className="pt-2">
                   
                             <CardTitle className="mb-1 text-sm font-semibold sm:text-base">
-                              Make Reading a Habit
+                              {t('Make Reading a Habit') || 'Make Reading a Habit'}
                             </CardTitle>
                             <CardDescription className="text-xs sm:text-sm">
-                              Set aside time each day to read and reflect on the Word
+                              {t('Set aside time each day to read and reflect on the Word') || 'Set aside time each day to read and reflect on the Word'}
                             </CardDescription>
                         <BookOpen
                             className="h-6 w-6 mt-2 sm:h-8 sm:w-8"

@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { registerSchema, RegisterFormData } from '@/lib/validation/auth.validation';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 
 export default function RegisterScreen() {
   const [name, setName] = useState('');
@@ -18,6 +19,7 @@ export default function RegisterScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { register } = useAuth();
+  const { t } = useTranslation();
 
   const handleRegister = async () => {
     try {
@@ -46,8 +48,8 @@ export default function RegisterScreen() {
       // Show success message
       Toast.show({
         type: 'success',
-        text1: 'Registration successful',
-        text2: 'Welcome to Bible App!',
+        text1: t('Registration successful') || 'Registration successful',
+        text2: t('Welcome to Bible App!') || 'Welcome to Bible App!',
       });
       
       // Navigate to index (which will redirect to onboarding or dashboard)
@@ -73,8 +75,8 @@ export default function RegisterScreen() {
         // General error
         Toast.show({
           type: 'error',
-          text1: 'Registration failed',
-          text2: error.message || 'An error occurred during registration',
+          text1: t('Registration failed') || 'Registration failed',
+          text2: error.message || t('An error occurred during registration') || 'An error occurred during registration',
         });
       }
     } finally {
@@ -88,9 +90,9 @@ export default function RegisterScreen() {
         <View className="w-full max-w-md gap-6">
           {/* Header */}
           <View className="gap-2">
-            <Text className="text-2xl font-semibold">Create an account</Text>
+            <Text className="text-2xl font-semibold">{t('Create an account') || 'Create an account'}</Text>
             <Text className="text-sm text-muted-foreground">
-              Enter your details below to create your account
+              {t('Enter your details below to create your account') || 'Enter your details below to create your account'}
             </Text>
           </View>
 
@@ -98,9 +100,9 @@ export default function RegisterScreen() {
           <View className="gap-6">
             {/* Name Field */}
             <View className="gap-2">
-              <Label nativeID="name">Name</Label>
+              <Label nativeID="name">{t('Name') || 'Name'}</Label>
               <Input
-                placeholder="Full name"
+                placeholder={t('Full name') || 'Full name'}
                 value={name}
                 onChangeText={setName}
                 autoCapitalize="words"
@@ -114,9 +116,9 @@ export default function RegisterScreen() {
 
             {/* Email Field */}
             <View className="gap-2">
-              <Label nativeID="email">Email address</Label>
+              <Label nativeID="email">{t('Email address') || 'Email address'}</Label>
               <Input
-                placeholder="email@example.com"
+                placeholder={t('email@example.com') || 'email@example.com'}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -131,9 +133,9 @@ export default function RegisterScreen() {
 
             {/* Password Field */}
             <View className="gap-2">
-              <Label nativeID="password">Password</Label>
+              <Label nativeID="password">{t('Password') || 'Password'}</Label>
               <Input
-                placeholder="Password"
+                placeholder={t('Password') || 'Password'}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -148,9 +150,9 @@ export default function RegisterScreen() {
 
             {/* Confirm Password Field */}
             <View className="gap-2">
-              <Label nativeID="confirmPassword">Confirm password</Label>
+              <Label nativeID="confirmPassword">{t('Confirm password') || 'Confirm password'}</Label>
               <Input
-                placeholder="Confirm password"
+                placeholder={t('Confirm password') || 'Confirm password'}
                 value={confirmPassword}
                 onChangeText={setConfirmPassword}
                 secureTextEntry
@@ -172,7 +174,7 @@ export default function RegisterScreen() {
               {isSubmitting ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text>Create account</Text>
+                <Text>{t('Create account') || 'Create account'}</Text>
               )}
             </Button>
           </View>
@@ -180,10 +182,10 @@ export default function RegisterScreen() {
           {/* Footer */}
           <View className="flex-row items-center justify-center gap-1">
             <Text className="text-sm text-muted-foreground">
-              Already have an account?
+              {t('Already have an account?') || 'Already have an account?'}
             </Text>
             <Link href="/auth/login" asChild>
-              <Text className="text-sm text-primary underline">Log in</Text>
+              <Text className="text-sm text-primary underline">{t('Log in') || 'Log in'}</Text>
             </Link>
           </View>
         </View>

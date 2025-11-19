@@ -20,6 +20,7 @@ import {
 } from '@showcase/components/ui/alert-dialog';
 import * as React from 'react';
 import { PortalHost } from '@rn-primitives/portal';
+import { useTranslation } from 'react-i18next';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -32,19 +33,20 @@ export const unstable_settings = {
 };
 
 export function Alert({ message, open, onOpenChange }: { message: string; open: boolean; onOpenChange: (open: boolean) => void }) {
-
+  const { t } = useTranslation();
+  
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent portalHost="root">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-destructive">Error</AlertDialogTitle>
+          <AlertDialogTitle className="text-destructive">{t('Error') || 'Error'}</AlertDialogTitle>
           <AlertDialogDescription>
             {message}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Text>Cancel</Text>
+            <Text>{t('Cancel') || 'Cancel'}</Text>
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -53,19 +55,20 @@ export function Alert({ message, open, onOpenChange }: { message: string; open: 
 }
 
 export function AlertSuccess({ message, open, onOpenChange }: { message: string; open: boolean; onOpenChange: (open: boolean) => void }) {
-
+  const { t } = useTranslation();
+  
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent portalHost="root">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-primary">Success</AlertDialogTitle>
+          <AlertDialogTitle className="text-primary">{t('Success') || 'Success'}</AlertDialogTitle>
           <AlertDialogDescription>
             {message}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Text>Cancel</Text>
+            <Text>{t('Cancel') || 'Cancel'}</Text>
           </AlertDialogCancel>
         </AlertDialogFooter>
       </AlertDialogContent>
@@ -84,6 +87,7 @@ export default function LoginScreen() {
   const [alertMessage, setAlertMessage] = useState('');
   const router = useRouter();
   const { login } = useAuth();
+  const { t } = useTranslation();
 
   const handleLogin = async () => {
     try {
@@ -96,7 +100,7 @@ export default function LoginScreen() {
         password: validated.password,
         remember: validated.remember,
       });
-      setAlertMessage('Login successful!');
+      setAlertMessage(t('Login successful!') || 'Login successful!');
       setCheckerSuccess(true);
       router.replace('/');
     } catch (error: any) {
@@ -116,10 +120,10 @@ export default function LoginScreen() {
           fieldErrors[key] = error.errors[key][0];
         });
         setErrors(fieldErrors);
-        setAlertMessage(error.message || 'Validation error');
+        setAlertMessage(error.message || t('Validation error') || 'Validation error');
         setChecker(true);
       } else {
-        setAlertMessage(error.message || 'Login failed. Please try again.');
+        setAlertMessage(error.message || t('Login failed. Please try again.') || 'Login failed. Please try again.');
         setChecker(true);
       }
     } finally {
@@ -136,9 +140,9 @@ export default function LoginScreen() {
         <View className="w-full max-w-md gap-6">
           {/* Header */}
           <View className="gap-2">
-            <Text className="text-2xl font-semibold">Log in to your account</Text>
+            <Text className="text-2xl font-semibold">{t('Log in to your account') || 'Log in to your account'}</Text>
             <Text className="text-sm text-muted-foreground">
-              Enter your email and password below to log in
+              {t('Enter your email and password below to log in') || 'Enter your email and password below to log in'}
             </Text>
           </View>
 
@@ -146,9 +150,9 @@ export default function LoginScreen() {
           <View className="gap-6">
             {/* Email Field */}
             <View className="gap-2">
-              <Label nativeID="email">Email address</Label>
+              <Label nativeID="email">{t('Email address') || 'Email address'}</Label>
               <Input
-                placeholder="email@example.com"
+                placeholder={t('email@example.com') || 'email@example.com'}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -164,13 +168,13 @@ export default function LoginScreen() {
             {/* Password Field */}
             <View className="gap-2">
               <View className="flex-row items-center justify-between">
-                <Label nativeID="password">Password</Label>
+                <Label nativeID="password">{t('Password') || 'Password'}</Label>
                 <Link href="/auth/forgot-password" asChild>
-                  <Text className="text-sm text-primary">Forgot password?</Text>
+                  <Text className="text-sm text-primary">{t('Forgot password?') || 'Forgot password?'}</Text>
                 </Link>
               </View>
               <Input
-                placeholder="Password"
+                placeholder={t('Password') || 'Password'}
                 value={password}
                 onChangeText={setPassword}
                 secureTextEntry
@@ -191,7 +195,7 @@ export default function LoginScreen() {
                 aria-labelledby="remember-label"
                 disabled={isSubmitting}
               />
-              <Label nativeID="remember-label">Remember me</Label>
+              <Label nativeID="remember-label">{t('Remember me') || 'Remember me'}</Label>
             </View>
 
             {/* Submit Button */}
@@ -203,7 +207,7 @@ export default function LoginScreen() {
               {isSubmitting ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text>Log in</Text>
+                <Text>{t('Log in') || 'Log in'}</Text>
               )}
             </Button>
           </View>
@@ -211,10 +215,10 @@ export default function LoginScreen() {
           {/* Footer */}
           <View className="flex-row items-center justify-center gap-1">
             <Text className="text-sm text-muted-foreground">
-              Don't have an account?
+              {t("Don't have an account?") || "Don't have an account?"}
             </Text>
             <Link href="/auth/register" asChild>
-              <Text className="text-sm text-primary underline">Sign up</Text>
+              <Text className="text-sm text-primary underline">{t('Sign up') || 'Sign up'}</Text>
             </Link>
           </View>
         </View>

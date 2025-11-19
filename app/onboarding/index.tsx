@@ -14,6 +14,7 @@ import { getOnboardingData, storeOnboardingPreferences, Bible } from '@/lib/serv
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { Checkbox } from '@showcase/components/ui/checkbox';
 import * as Haptics from 'expo-haptics';
+import { useTranslation } from 'react-i18next';
 
 const languages = [
   { value: 'en', label: 'English' },
@@ -30,16 +31,11 @@ const languages = [
   { value: 'ko', label: '한국어' },
 ] as const;
 
-const themes = [
-  { value: 'light', label: 'Light', icon: '☀️' },
-  { value: 'dark', label: 'Dark', icon: '🌙' },
-  { value: 'system', label: 'System', icon: '💻' },
-] as const;
-
 export default function OnboardingScreen() {
   const { colorScheme, setColorScheme } = useColorScheme();
   const router = useRouter();
   const { user, refreshUser } = useAuth();
+  const { t } = useTranslation();
   
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -54,6 +50,12 @@ export default function OnboardingScreen() {
   );
 
   const totalSteps = 3;
+
+  const themes = [
+    { value: 'light' as const, label: t('Light') || 'Light', icon: '☀️' },
+    { value: 'dark' as const, label: t('Dark') || 'Dark', icon: '🌙' },
+    { value: 'system' as const, label: t('System') || 'System', icon: '💻' },
+  ];
 
   useEffect(() => {
     loadOnboardingData();
@@ -71,7 +73,7 @@ export default function OnboardingScreen() {
       }
     } catch (error) {
       console.error('Failed to load onboarding data:', error);
-      Alert.alert('Error', 'Failed to load onboarding data. Please try again.');
+      Alert.alert(t('Error') || 'Error', t('Failed to load onboarding data. Please try again.') || 'Failed to load onboarding data. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +141,7 @@ export default function OnboardingScreen() {
       router.replace('/dashboard');
     } catch (error) {
       console.error('Failed to save onboarding preferences:', error);
-      Alert.alert('Error', 'Failed to save preferences. Please try again.');
+      Alert.alert(t('Error') || 'Error', t('Failed to save preferences. Please try again.') || 'Failed to save preferences. Please try again.');
     } finally {
       setIsSaving(false);
     }
@@ -166,13 +168,13 @@ export default function OnboardingScreen() {
             <BookOpen size={32} color={colorScheme === 'dark' ? '#FF4433' : '#f53003'} />
           </View>
           <Text className="mb-2 text-center text-2xl font-semibold text-[#1b1b18] dark:text-[#EDEDEC]">
-            Welcome! Let's get you started
+            {t("Welcome! Let's get you started") || "Welcome! Let's get you started"}
           </Text>
           <Text className="mb-4 text-center text-[13px] leading-5 text-[#706f6c] dark:text-[#A1A09A]">
-            Let's personalize your Bible experience
+            {t("Let's personalize your Bible experience") || "Let's personalize your Bible experience"}
           </Text>
           <Text className="text-center text-sm text-[#706f6c] dark:text-[#A1A09A]">
-            Step {currentStep} of {totalSteps}
+            {t('Step')} {currentStep} {t('of')} {totalSteps}
           </Text>
         </View>
 
@@ -186,11 +188,11 @@ export default function OnboardingScreen() {
                 <View className="flex-row items-center gap-2">
                   <Languages size={20} color={colorScheme === 'dark' ? '#FF4433' : '#f53003'} />
                   <Text className="text-lg font-semibold text-[#1b1b18] dark:text-[#EDEDEC]">
-                    Choose your preferred language
+                    {t('Choose your preferred language') || 'Choose your preferred language'}
                   </Text>
                 </View>
                 <Text className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                  Select the language you want to use for the app interface
+                  {t('Select the language you want to use for the app interface') || 'Select the language you want to use for the app interface'}
                 </Text>
 
                 <View className="mt-2 gap-3">
@@ -223,14 +225,14 @@ export default function OnboardingScreen() {
                 <View className="flex-row items-center gap-2">
                   <BookOpen size={20} color={colorScheme === 'dark' ? '#FF4433' : '#f53003'} />
                   <Text className="text-lg font-semibold text-[#1b1b18] dark:text-[#EDEDEC]">
-                    Select Your Preferred Bible Translations
+                    {t('Select Your Preferred Bible Translations') || 'Select Your Preferred Bible Translations'}
                   </Text>
                 </View>
                 <Text className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                  Choose the Bible translations you'd like to use for parallel reading and study
+                  {t("Choose the Bible translations you'd like to use for parallel reading and study") || "Choose the Bible translations you'd like to use for parallel reading and study"}
                 </Text>
                 <Text className="text-xs italic text-[#706f6c] dark:text-[#A1A09A]">
-                  You can select multiple translations
+                  {t('You can select multiple translations') || 'You can select multiple translations'}
                 </Text>
 
                 <ScrollView className="max-h-[400px] rounded-md border border-[#e5e5e5] p-4 dark:border-[#333]">
@@ -259,7 +261,7 @@ export default function OnboardingScreen() {
                   ) : (
                     <View className="flex items-center justify-center py-8">
                       <Text className="text-[#706f6c] dark:text-[#A1A09A]">
-                        No translations available
+                        {t('No translations available') || 'No translations available'}
                       </Text>
                     </View>
                   )}
@@ -267,7 +269,7 @@ export default function OnboardingScreen() {
 
                 {!canProceed() && (
                   <Text className="text-sm text-red-600 dark:text-red-400">
-                    Select at least one Bible translation
+                    {t('Select at least one Bible translation') || 'Select at least one Bible translation'}
                   </Text>
                 )}
               </View>
@@ -279,11 +281,11 @@ export default function OnboardingScreen() {
                 <View className="flex-row items-center gap-2">
                   <Palette size={20} color={colorScheme === 'dark' ? '#FF4433' : '#f53003'} />
                   <Text className="text-lg font-semibold text-[#1b1b18] dark:text-[#EDEDEC]">
-                    Customize Your Reading Experience
+                    {t('Customize Your Reading Experience') || 'Customize Your Reading Experience'}
                   </Text>
                 </View>
                 <Text className="text-sm text-[#706f6c] dark:text-[#A1A09A]">
-                  Choose your preferred theme for reading
+                  {t('Choose your preferred theme for reading') || 'Choose your preferred theme for reading'}
                 </Text>
 
                 <View className="mt-2 flex-row gap-2">
@@ -315,11 +317,11 @@ export default function OnboardingScreen() {
             <View className="mt-6 flex-row items-center justify-between gap-4 border-t border-[#e5e5e5] pt-6 dark:border-[#333]">
               {currentStep > 1 ? (
                 <Button variant="outline" onPress={previousStep}>
-                  <Text>Previous</Text>
+                  <Text>{t('Previous') || 'Previous'}</Text>
                 </Button>
               ) : (
                 <Button variant="ghost" onPress={skipOnboarding}>
-                  <Text>Skip for now</Text>
+                  <Text>{t('Skip for now') || 'Skip for now'}</Text>
                 </Button>
               )}
 
@@ -329,7 +331,7 @@ export default function OnboardingScreen() {
                   disabled={!canProceed()}
                   className="bg-[#1b1b18] dark:bg-[#eeeeec]"
                 >
-                  <Text className="text-white dark:text-[#1C1C1A]">Next</Text>
+                  <Text className="text-white dark:text-[#1C1C1A]">{t('Next') || 'Next'}</Text>
                 </Button>
               ) : (
                 <Button 
@@ -338,7 +340,7 @@ export default function OnboardingScreen() {
                   className="bg-[#1b1b18] dark:bg-[#eeeeec]"
                 >
                   <Text className="text-white dark:text-[#1C1C1A]">
-                    {isSaving ? 'Saving...' : 'Complete Setup'}
+                    {isSaving ? t('Saving...') || 'Saving...' : t('Complete Setup') || 'Complete Setup'}
                   </Text>
                 </Button>
               )}

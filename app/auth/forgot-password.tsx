@@ -8,6 +8,7 @@ import { useState } from 'react';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { forgotPasswordSchema, ForgotPasswordFormData } from '@/lib/validation/auth.validation';
 import Toast from 'react-native-toast-message';
+import { useTranslation } from 'react-i18next';
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState('');
@@ -15,6 +16,7 @@ export default function ForgotPasswordScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const { forgotPassword } = useAuth();
+  const { t } = useTranslation();
 
   const handleForgotPassword = async () => {
     try {
@@ -37,8 +39,8 @@ export default function ForgotPasswordScreen() {
       // Show success message
       Toast.show({
         type: 'success',
-        text1: 'Email sent',
-        text2: response.message || 'Password reset link has been sent to your email',
+        text1: t('Email sent') || 'Email sent',
+        text2: response.message || t('Password reset link has been sent to your email') || 'Password reset link has been sent to your email',
       });
       
       // Navigate back to login
@@ -64,8 +66,8 @@ export default function ForgotPasswordScreen() {
         // General error
         Toast.show({
           type: 'error',
-          text1: 'Error',
-          text2: error.message || 'Failed to send reset link',
+          text1: t('Error') || 'Error',
+          text2: error.message || t('Failed to send reset link') || 'Failed to send reset link',
         });
       }
     } finally {
@@ -79,9 +81,9 @@ export default function ForgotPasswordScreen() {
         <View className="w-full max-w-md gap-6">
           {/* Header */}
           <View className="gap-2">
-            <Text className="text-2xl font-semibold">Forgot your password?</Text>
+            <Text className="text-2xl font-semibold">{t('Forgot your password?') || 'Forgot your password?'}</Text>
             <Text className="text-sm text-muted-foreground">
-              Enter your email address and we'll send you a link to reset your password
+              {t("Enter your email address and we'll send you a link to reset your password") || "Enter your email address and we'll send you a link to reset your password"}
             </Text>
           </View>
 
@@ -89,9 +91,9 @@ export default function ForgotPasswordScreen() {
           <View className="gap-6">
             {/* Email Field */}
             <View className="gap-2">
-              <Label nativeID="email">Email address</Label>
+              <Label nativeID="email">{t('Email address') || 'Email address'}</Label>
               <Input
-                placeholder="email@example.com"
+                placeholder={t('email@example.com') || 'email@example.com'}
                 value={email}
                 onChangeText={setEmail}
                 keyboardType="email-address"
@@ -113,7 +115,7 @@ export default function ForgotPasswordScreen() {
               {isSubmitting ? (
                 <ActivityIndicator color="white" />
               ) : (
-                <Text>Send Reset Link</Text>
+                <Text>{t('Send Reset Link') || 'Send Reset Link'}</Text>
               )}
             </Button>
           </View>
@@ -121,10 +123,10 @@ export default function ForgotPasswordScreen() {
           {/* Footer */}
           <View className="flex-row items-center justify-center gap-1">
             <Text className="text-sm text-muted-foreground">
-              Remember your password?
+              {t('Remember your password?') || 'Remember your password?'}
             </Text>
             <Link href="/auth/login" asChild>
-              <Text className="text-sm text-primary underline">Log in</Text>
+              <Text className="text-sm text-primary underline">{t('Log in') || 'Log in'}</Text>
             </Link>
           </View>
         </View>

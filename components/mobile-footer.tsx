@@ -4,19 +4,21 @@ import { View, Platform, Pressable } from 'react-native';
 import { Text } from '@showcase/components/ui/text';
 import { useColorScheme } from 'nativewind';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-
-const FOOTER_ITEMS = [
-  { name: 'Dashboard', path: '/dashboard', icon: LayoutGrid },
-  { name: 'Bibles', path: '/bibles', icon: BookOpen },
-  { name: 'Parallel', path: '/parallel-bibles', icon: BookCopy },
-  { name: 'Lessons', path: '/lessons', icon: PencilRuler },
-  { name: 'Notes', path: '/notes', icon: StickyNote },
-];
+import { useTranslation } from 'react-i18next';
 
 export function MobileFooter() {
   const pathname = usePathname();
   const { colorScheme } = useColorScheme();
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+
+  const FOOTER_ITEMS = [
+    { name: t('Dashboard') || 'Dashboard', path: '/dashboard', icon: LayoutGrid },
+    { name: t('Bibles') || 'Bibles', path: '/bibles', icon: BookOpen },
+    { name: t('Parallel') || 'Parallel', path: '/parallel-bibles', icon: BookCopy },
+    { name: t('Lessons') || 'Lessons', path: '/lessons', icon: PencilRuler },
+    { name: t('Notes') || 'Notes', path: '/notes', icon: StickyNote },
+  ];
 
   // Don't show footer on authentication pages, welcome, or index
   const hideFooter = pathname.includes('/auth/') || 
