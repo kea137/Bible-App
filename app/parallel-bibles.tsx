@@ -367,7 +367,7 @@ export default function ParallelBiblesScreen() {
                       </View>
                       <View className="flex-1 gap-2">
                         <Text className="text-base leading-7">{verse.text}</Text>
-                        <Text className="text-base leading-7 italic">{verse2.text}</Text>
+                        <Text className="text-base leading-7" style={{ fontFamily: 'Times New Roman' }}>{verse2.text}</Text>
                       </View>
                     </View>
                   </TouchableOpacity>
