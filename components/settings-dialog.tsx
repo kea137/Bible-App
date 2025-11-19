@@ -10,6 +10,7 @@ import {
 } from '@showcase/components/ui/dialog';
 import { Text } from '@showcase/components/ui/text';
 import { ThemeToggle } from '@showcase/components/theme-toggle';
+import { LanguageSelector } from '@showcase/components/language-selector';
 import { useAuth } from '@/lib/contexts/AuthContext';
 import { useRouter } from 'expo-router';
 import * as React from 'react';
@@ -18,6 +19,7 @@ import { LogOut } from 'lucide-react-native';
 import Toast from 'react-native-toast-message';
 import { getUserData } from '@showcase/src/lib/storage/auth-storage';
 import { Link } from 'expo-router';
+import { useTranslation } from 'react-i18next';
 
 interface SettingsDialogProps {
   open: boolean;
@@ -29,6 +31,7 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
   const router = useRouter();
   const [isLoggingOut, setIsLoggingOut] = React.useState(false);
   const [user, setUser] = React.useState<any>(null);
+  const { t } = useTranslation();
 
   React.useEffect(() => {
     getUserData().then((result) => {
@@ -62,18 +65,21 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]" portalHost="root">
         <DialogHeader>
-          <DialogTitle>Settings</DialogTitle>
+          <DialogTitle>{t('Settings') || 'Settings'}</DialogTitle>
           <DialogDescription>
-            Manage your app preferences and account settings
+            {t('Manage your app preferences and account settings') || 'Manage your app preferences and account settings'}
           </DialogDescription>
         </DialogHeader>
         <View className="gap-4 py-4">
+          {/* Language Section */}
+          <LanguageSelector />
+
           {/* Theme Section */}
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
-              <Text className="text-sm font-medium">Theme</Text>
+              <Text className="text-sm font-medium">{t('Theme') || 'Theme'}</Text>
               <Text className="text-muted-foreground text-xs">
-                Toggle between light and dark mode
+                {t('Toggle between light and dark mode') || 'Toggle between light and dark mode'}
               </Text>
             </View>
             <ThemeToggle />
@@ -81,12 +87,12 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
 
           <View className="flex-row items-center justify-between">
             <View className="flex-1">
-              <Text className="text-sm font-medium">Reading Plan</Text>
+              <Text className="text-sm font-medium">{t('Reading Plan') || 'Reading Plan'}</Text>
               <Link href="/reading-plan" onPress={()=>{
                 onOpenChange(false)
               }} asChild>
               <Button variant="outline" className="ml-4 mt-2">
-                <Text>Reading Plan</Text>
+                <Text>{t('Reading Plan') || 'Reading Plan'}</Text>
               </Button>
             </Link>
             </View>
@@ -95,10 +101,10 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
         {/* User Info Section */}
         {isAuthenticated && user && (
           <View className="border-border border-t pt-4">
-            <Text className="text-sm font-medium">Account</Text>
+            <Text className="text-sm font-medium">{t('Account') || 'Account'}</Text>
             <View className="mt-2 gap-1">
-              <Text className="text-muted-foreground text-xs">Name: {user.name}</Text>
-              <Text className="text-muted-foreground text-xs">Email: {user.email}</Text>
+              <Text className="text-muted-foreground text-xs">{t('Name') || 'Name'}: {user.name}</Text>
+              <Text className="text-muted-foreground text-xs">{t('Email') || 'Email'}: {user.email}</Text>
             </View>
           </View>
         )}
@@ -116,14 +122,14 @@ export function SettingsDialog({ open, onOpenChange }: SettingsDialogProps) {
               ) : (
                 <>
                   <LogOut size={16} className="text-white" />
-                  <Text className="text-white">Logout</Text>
+                  <Text className="text-white">{t('Logout') || 'Logout'}</Text>
                 </>
               )}
             </Button>
           )}
           <DialogClose asChild>
             <Button variant="outline">
-              <Text>Close</Text>
+              <Text>{t('Close') || 'Close'}</Text>
             </Button>
           </DialogClose>
         </DialogFooter>
