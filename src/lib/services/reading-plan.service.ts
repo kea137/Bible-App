@@ -8,7 +8,48 @@ import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
 
-// Type definitions
+// Type definitions matching web app API
+export interface Bible {
+  id: number;
+  name: string;
+  language: string;
+}
+
+export interface Lesson {
+  id: number;
+  title: string;
+  series_id?: number;
+  episode_number?: number;
+  series?: {
+    id: number;
+    title: string;
+  };
+}
+
+export interface CompletedLesson {
+  id: number;
+  completed: boolean;
+  completed_at: string;
+  lesson: Lesson;
+}
+
+export interface ReadingPlanData {
+  totalChapters: number;
+  completedChapters: number;
+  progressPercentage: number;
+  chaptersReadToday: number;
+  selectedBible: Bible;
+  allBibles: Bible[];
+  completedLessons?: CompletedLesson[];
+  lessonsReadToday?: number;
+}
+
+export interface ReadingPlanResponse {
+  success: boolean;
+  data: ReadingPlanData;
+}
+
+// Legacy types for backward compatibility
 export interface ReadingPlan {
   id: number;
   title: string;
@@ -81,12 +122,43 @@ const parseApiError = (error: unknown): ApiError => {
 };
 
 /**
- * Get reading plan for the current user
+ * Get reading plan statistics for the current user
  */
-export const getReadingPlan = async (): Promise<ReadingPlanWithProgress> => {
+export const getReadingPlan = async (bibleId?: number): Promise<ReadingPlanData> => {
   try {
-    const response = await apiClient.get<ReadingPlanWithProgress>(API_ENDPOINTS.readingPlan);
-    return response;
+    const url = bibleId 
+      ? `${API_ENDPOINTS.readingPlan}?bible_id=${bibleId}`
+      : API_ENDPOINTS.readingPlan;
+    const response = await apiClient.get<ReadingPlanResponse>(url);
+    return response.data;
+  } catch (error) {
+    throw parseApiError(error);
+  }
+};
+
+/**
+ * Legacy function for backward compatibility
+ * This converts the new API response to the old format with mock data
+ */
+export const getReadingPlanLegacy = async (): Promise<ReadingPlanWithProgress> => {
+  try {
+    const data = await getReadingPlan();
+    
+    // Convert new format to legacy format with mock daily readings
+    return {
+      plan: {
+        id: 1,
+        title: 'Bible Reading Progress',
+        description: `Track your progress through ${data.selectedBible.name}`,
+        duration_days: data.totalChapters,
+        current_day: data.completedChapters + 1,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      daily_readings: [],
+      progress: [],
+      completed_days: data.completedChapters,
+    };
   } catch (error) {
     throw parseApiError(error);
   }

@@ -3,13 +3,12 @@ import { Button } from '@showcase/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Progress } from '@showcase/components/ui/progress';
 import { Calendar, CheckCircle, BookOpen, TrendingUp, BookMarked, Target } from 'lucide-react-native';
-import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, ScrollView, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { getReadingPlan, markReadingProgress, ReadingPlanWithProgress } from '@/lib/services/reading-plan.service';
+import { getReadingPlan, type ReadingPlanData } from '@/lib/services/reading-plan.service';
 
 export default function ReadingPlanScreen() {
-  const [planData, setPlanData] = useState<ReadingPlanWithProgress | null>(null);
-  const [completedDays, setCompletedDays] = useState<number[]>([]);
+  const [planData, setPlanData] = useState<ReadingPlanData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -19,74 +18,32 @@ export default function ReadingPlanScreen() {
       try {
         setLoading(true);
         const data = await getReadingPlan();
-        setPlanData(Array.isArray(data) ? data : data);
-        setCompletedDays(data.progress.filter(p => p.completed).map(p => p.day));
+        setPlanData(data);
         setError(null);
       } catch (err: any) {
         console.error('Failed to fetch reading plan:', err);
         setError(err.message || 'Failed to load reading plan');
         // Use mock data as fallback
         setPlanData({
-          plan: {
+          totalChapters: 1189,
+          completedChapters: 150,
+          progressPercentage: 12.6,
+          chaptersReadToday: 3,
+          selectedBible: {
             id: 1,
-            title: 'Bible in One Year',
-            description: 'Read through the entire Bible in 365 days',
-            duration_days: 365,
-            current_day: 3,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
+            name: 'King James Version',
+            language: 'English',
           },
-          daily_readings: [
+          allBibles: [
             {
-              day: 1,
-              date: '2024-01-01',
-              readings: [
-                { book: 'Genesis', chapter: '1-3' },
-                { book: 'Matthew', chapter: '1' },
-              ],
-              completed: true,
-            },
-            {
-              day: 2,
-              date: '2024-01-02',
-              readings: [
-                { book: 'Genesis', chapter: '4-6' },
-                { book: 'Matthew', chapter: '2' },
-              ],
-              completed: true,
-            },
-            {
-              day: 3,
-              date: '2024-01-03',
-              readings: [
-                { book: 'Genesis', chapter: '7-9' },
-                { book: 'Matthew', chapter: '3' },
-              ],
-              completed: true,
-            },
-            {
-              day: 4,
-              date: '2024-01-04',
-              readings: [
-                { book: 'Genesis', chapter: '10-12' },
-                { book: 'Matthew', chapter: '4' },
-              ],
-              completed: false,
-            },
-            {
-              day: 5,
-              date: '2024-01-05',
-              readings: [
-                { book: 'Genesis', chapter: '13-15' },
-                { book: 'Matthew', chapter: '5' },
-              ],
-              completed: false,
+              id: 1,
+              name: 'King James Version',
+              language: 'English',
             },
           ],
-          progress: [],
-          completed_days: 3,
+          completedLessons: [],
+          lessonsReadToday: 0,
         });
-        setCompletedDays([1, 2, 3]);
       } finally {
         setLoading(false);
       }
@@ -95,53 +52,32 @@ export default function ReadingPlanScreen() {
     fetchReadingPlan();
   }, []);
 
-  const toggleDayComplete = async (day: number) => {
-    const wasCompleted = completedDays.includes(day);
-    const newCompleted = wasCompleted 
-      ? completedDays.filter(d => d !== day) 
-      : [...completedDays, day];
-    
-    setCompletedDays(newCompleted);
-
-    try {
-      await markReadingProgress({
-        reading_plan_id: planData?.plan.id || 1,
-        day: day,
-        completed: !wasCompleted,
-      });
-    } catch (err: any) {
-      console.error('Failed to mark reading progress:', err);
-      // Revert on error
-      setCompletedDays(completedDays);
-    }
-  };
-
   // Calculate reading plan suggestions
-  const remainingDays = planData ? planData.plan.duration_days - completedDays.length : 0;
+  const remainingChapters = planData ? planData.totalChapters - planData.completedChapters : 0;
   const readingPlans = planData ? [
     {
       name: 'Intensive Plan',
       chaptersPerDay: 10,
-      days: Math.ceil(remainingDays / 10),
-      description: 'Complete your plan in about 4 months',
+      days: Math.ceil(remainingChapters / 10),
+      description: 'Complete the Bible in about 4 months',
     },
     {
       name: 'Standard Plan',
       chaptersPerDay: 4,
-      days: Math.ceil(remainingDays / 4),
-      description: 'Complete your plan in about 10 months',
+      days: Math.ceil(remainingChapters / 4),
+      description: 'Complete the Bible in about 10 months',
     },
     {
       name: 'Leisurely Plan',
       chaptersPerDay: 2,
-      days: Math.ceil(remainingDays / 2),
-      description: 'Complete your plan in about 20 months',
+      days: Math.ceil(remainingChapters / 2),
+      description: 'Complete the Bible in about 20 months',
     },
     {
       name: 'Year Plan',
       chaptersPerDay: 3,
-      days: Math.ceil(remainingDays / 3),
-      description: 'Complete your plan in about one year',
+      days: Math.ceil(remainingChapters / 3),
+      description: 'Complete the Bible in about one year',
     },
   ] : [];
 
@@ -190,7 +126,7 @@ export default function ReadingPlanScreen() {
                   <View className="flex-1">
                     <CardTitle>Overall Progress</CardTitle>
                     <CardDescription>
-                      {completedDays.length} of {planData.plan.duration_days} days completed
+                      {planData.completedChapters} of {planData.totalChapters} chapters completed
                     </CardDescription>
                   </View>
                   <TrendingUp size={24} className="text-primary" />
@@ -198,11 +134,11 @@ export default function ReadingPlanScreen() {
               </CardHeader>
               <CardContent className="gap-3">
                 <Progress 
-                  value={(completedDays.length / planData.plan.duration_days) * 100} 
+                  value={planData.progressPercentage} 
                   className="h-3" 
                 />
                 <Text className="text-center text-2xl font-bold text-primary">
-                  {((completedDays.length / planData.plan.duration_days) * 100).toFixed(1)}%
+                  {planData.progressPercentage.toFixed(1)}%
                 </Text>
               </CardContent>
             </Card>
@@ -219,7 +155,7 @@ export default function ReadingPlanScreen() {
                 </CardHeader>
                 <CardContent>
                   <Text className="text-3xl font-bold">
-                    {planData.daily_readings.filter(r => r.completed && r.date === new Date().toISOString().split('T')[0]).length}
+                    {planData.chaptersReadToday}
                   </Text>
                   <Text className="text-xs text-muted-foreground mt-1">Chapters read</Text>
                 </CardContent>
@@ -234,8 +170,8 @@ export default function ReadingPlanScreen() {
                   </View>
                 </CardHeader>
                 <CardContent>
-                  <Text className="text-3xl font-bold">{completedDays.length}</Text>
-                  <Text className="text-xs text-muted-foreground mt-1">Days done</Text>
+                  <Text className="text-3xl font-bold">{planData.completedChapters}</Text>
+                  <Text className="text-xs text-muted-foreground mt-1">Chapters done</Text>
                 </CardContent>
               </Card>
 
@@ -249,9 +185,9 @@ export default function ReadingPlanScreen() {
                 </CardHeader>
                 <CardContent>
                   <Text className="text-3xl font-bold">
-                    {planData.plan.duration_days - completedDays.length}
+                    {remainingChapters}
                   </Text>
-                  <Text className="text-xs text-muted-foreground mt-1">Days left</Text>
+                  <Text className="text-xs text-muted-foreground mt-1">Chapters left</Text>
                 </CardContent>
               </Card>
 
@@ -264,8 +200,8 @@ export default function ReadingPlanScreen() {
                   </View>
                 </CardHeader>
                 <CardContent>
-                  <Text className="text-3xl font-bold">{planData.plan.duration_days}</Text>
-                  <Text className="text-xs text-muted-foreground mt-1">Total days</Text>
+                  <Text className="text-3xl font-bold">{planData.totalChapters}</Text>
+                  <Text className="text-xs text-muted-foreground mt-1">Total chapters</Text>
                 </CardContent>
               </Card>
             </View>
@@ -304,54 +240,114 @@ export default function ReadingPlanScreen() {
               </CardContent>
             </Card>
 
-            {/* Daily Readings */}
-            <View className="gap-3">
-              <Text className="text-lg font-semibold">Daily Readings</Text>
-              
-              {planData.daily_readings.map((reading) => (
-                <TouchableOpacity
-                  key={reading.day}
-                  activeOpacity={0.7}
-                  onPress={() => toggleDayComplete(reading.day)}
-                >
-                  <Card className={completedDays.includes(reading.day) ? 'border-primary' : ''}>
-                    <CardContent className="gap-3 py-4">
-                      <View className="flex-row items-center justify-between">
-                        <View className="flex-1 gap-1">
-                          <View className="flex-row items-center gap-2">
-                            <Text className="text-base font-semibold">Day {reading.day}</Text>
-                            {completedDays.includes(reading.day) && (
-                              <CheckCircle size={16} className="text-primary" />
-                            )}
-                          </View>
-                          <Text className="text-xs text-muted-foreground">{reading.date}</Text>
-                        </View>
-                      </View>
-
-                      <View className="gap-2">
-                        {reading.readings.map((r, index) => (
-                          <View key={index} className="flex-row items-center gap-2">
-                            <BookOpen size={14} className="text-muted-foreground" />
-                            <Text className="text-sm">
-                              {r.book} {r.chapter}
-                            </Text>
-                          </View>
-                        ))}
-                      </View>
-
-                      <Button
-                        variant={completedDays.includes(reading.day) ? "default" : "outline"}
-                        size="sm"
-                      >
-                        <Text>
-                          {completedDays.includes(reading.day) ? 'Completed' : 'Mark Complete'}
+            {/* Lesson Progress Section (if available) */}
+            {planData.completedLessons && planData.completedLessons.length > 0 && (
+              <Card>
+                <CardHeader>
+                  <View className="flex-row items-center gap-2">
+                    <BookOpen size={20} className="text-primary" />
+                    <CardTitle>Lesson Progress</CardTitle>
+                  </View>
+                  <CardDescription>Track your completed lessons and series</CardDescription>
+                </CardHeader>
+                <CardContent className="gap-4">
+                  {/* Stats */}
+                  <View className="flex-row gap-3">
+                    <Card className="flex-1">
+                      <CardContent className="py-3">
+                        <Text className="text-2xl font-bold">
+                          {planData.completedLessons.length}
                         </Text>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                </TouchableOpacity>
-              ))}
-            </View>
+                        <Text className="text-xs text-muted-foreground">
+                          Total Lessons Completed
+                        </Text>
+                      </CardContent>
+                    </Card>
+                    <Card className="flex-1">
+                      <CardContent className="py-3">
+                        <Text className="text-2xl font-bold">
+                          {planData.lessonsReadToday || 0}
+                        </Text>
+                        <Text className="text-xs text-muted-foreground">
+                          Lessons Completed Today
+                        </Text>
+                      </CardContent>
+                    </Card>
+                  </View>
+
+                  {/* Recently Completed Lessons */}
+                  <View className="gap-2">
+                    <Text className="text-sm font-semibold">Recently Completed</Text>
+                    {planData.completedLessons.slice(0, 5).map((progress) => (
+                      <View
+                        key={progress.id}
+                        className="flex-row items-center justify-between rounded-lg border border-border p-3"
+                      >
+                        <View className="flex-1">
+                          <Text className="text-sm font-medium">
+                            {progress.lesson.title}
+                          </Text>
+                          {progress.lesson.series && (
+                            <Text className="text-xs text-muted-foreground">
+                              {progress.lesson.series.title}
+                              {progress.lesson.episode_number && 
+                                ` - Episode ${progress.lesson.episode_number}`
+                              }
+                            </Text>
+                          )}
+                        </View>
+                        <CheckCircle size={16} className="text-green-600" />
+                      </View>
+                    ))}
+                  </View>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Reading Guidelines */}
+            <Card>
+              <CardHeader>
+                <CardTitle>How to Use Reading Progress Tracking</CardTitle>
+                <CardDescription>
+                  Simple steps to track your Bible reading journey
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="gap-4">
+                <View className="flex-row gap-3">
+                  <View className="h-8 w-8 items-center justify-center rounded-full bg-primary">
+                    <Text className="text-sm font-bold text-primary-foreground">1</Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className="font-medium">Open Any Bible Chapter</Text>
+                    <Text className="text-sm text-muted-foreground mt-1">
+                      Navigate to the Bible you want to read and select a book and chapter.
+                    </Text>
+                  </View>
+                </View>
+                <View className="flex-row gap-3">
+                  <View className="h-8 w-8 items-center justify-center rounded-full bg-primary">
+                    <Text className="text-sm font-bold text-primary-foreground">2</Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className="font-medium">Read Through the Chapter</Text>
+                    <Text className="text-sm text-muted-foreground mt-1">
+                      Take your time to read and meditate on God's Word.
+                    </Text>
+                  </View>
+                </View>
+                <View className="flex-row gap-3">
+                  <View className="h-8 w-8 items-center justify-center rounded-full bg-primary">
+                    <Text className="text-sm font-bold text-primary-foreground">3</Text>
+                  </View>
+                  <View className="flex-1">
+                    <Text className="font-medium">Mark as Complete</Text>
+                    <Text className="text-sm text-muted-foreground mt-1">
+                      When finished, mark the chapter as read to track your progress.
+                    </Text>
+                  </View>
+                </View>
+              </CardContent>
+            </Card>
           </>
         )}
       </View>
