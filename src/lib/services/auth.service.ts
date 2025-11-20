@@ -8,6 +8,7 @@ import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
 import { setAuthToken, setUserData, clearAuthStorage } from '../storage/auth-storage';
+import { logger } from '../utils/logger';
 
 // Type definitions
 export interface LoginCredentials {
@@ -135,11 +136,11 @@ export const register = async (credentials: RegisterCredentials): Promise<AuthRe
  * Logout user
  */
 export const logout = async (): Promise<void> => {
-  // console.log('[AUTH SERVICE] logout() called');
+  logger.debug('[AUTH SERVICE] logout() called');
   try {
     await apiClient.post(API_ENDPOINTS.logout);
   } catch (error) {
-    console.log('[AUTH SERVICE] logout() API failed:', error);
+    logger.warn('[AUTH SERVICE] logout() API failed');
   } finally {
     // Clear all auth data
     clearAuthStorage();

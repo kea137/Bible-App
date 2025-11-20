@@ -9,6 +9,7 @@ import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
 import * as BibleStorage from '../storage/bible-storage';
+import { logger } from '../utils/logger';
 
 // Type definitions
 export interface Bible {
@@ -151,7 +152,7 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
     
     const apiData = response.data.data || response.data;
 
-    console.log('[API data loaded for bible]:', apiData);
+    logger.debug('[BIBLES SERVICE] Bible detail loaded from API');
     
     const bibleDetail: BibleDetail = {
       bible: apiData.bible,

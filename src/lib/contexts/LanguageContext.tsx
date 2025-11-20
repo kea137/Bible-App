@@ -10,6 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { updateLocalePreference } from '../services/preferences.service';
 import { useAuth } from './AuthContext';
 import { getUserData } from '../storage/auth-storage';
+import { logger } from '../utils/logger';
 
 const LANGUAGE_STORAGE_KEY = 'app_language';
 
@@ -53,7 +54,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           setCurrentLanguage(savedLanguage);
         }
       } catch (error) {
-        console.error('Failed to load saved language:', error);
+        logger.error('[LANGUAGE] Failed to load saved language');
       }
     };
 
@@ -78,12 +79,12 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         try {
           await updateLocalePreference(languageCode);
         } catch (error) {
-          console.error('Failed to update locale preference on backend:', error);
+          logger.warn('[LANGUAGE] Failed to update locale preference on backend');
           // Don't throw - local change succeeded
         }
       }
     } catch (error) {
-      console.error('Failed to change language:', error);
+      logger.error('[LANGUAGE] Failed to change language');
       throw error;
     } finally {
       setIsChangingLanguage(false);

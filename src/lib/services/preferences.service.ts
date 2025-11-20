@@ -6,6 +6,7 @@
 
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
+import { logger } from '../utils/logger';
 
 /**
  * Update user theme preference
@@ -14,7 +15,7 @@ export const updateThemePreference = async (theme: 'light' | 'dark' | 'system'):
   try {
     await apiClient.post(API_ENDPOINTS.updateTheme, { theme });
   } catch (error) {
-    console.error('Failed to update theme preference:', error);
+    logger.error('[PREFERENCES] Failed to update theme preference');
     throw error;
   }
 };
@@ -26,7 +27,7 @@ export const updateLocalePreference = async (locale: string): Promise<void> => {
   try {
     await apiClient.post(API_ENDPOINTS.updateLocale, { locale });
   } catch (error) {
-    console.error('Failed to update locale preference:', error);
+    logger.error('[PREFERENCES] Failed to update locale preference');
     throw error;
   }
 };
@@ -38,7 +39,7 @@ export const updateTranslationsPreference = async (translations: number[]): Prom
   try {
     await apiClient.post(API_ENDPOINTS.updateTranslations, { translations });
   } catch (error) {
-    console.error('Failed to update translations preference:', error);
+    logger.error('[PREFERENCES] Failed to update translations preference');
     throw error;
   }
 };

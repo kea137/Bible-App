@@ -6,6 +6,7 @@
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { Bible, BibleDetail, ChapterData } from '../services/bibles.service';
+import { logger } from '../utils/logger';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -23,7 +24,7 @@ export const saveBiblesList = async (bibles: Bible[]): Promise<void> => {
     await AsyncStorage.setItem(STORAGE_KEYS.BIBLES_LIST, JSON.stringify(bibles));
     await AsyncStorage.setItem(`${STORAGE_KEYS.LAST_UPDATED}bibles_list`, Date.now().toString());
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to save bibles list:', error);
+    logger.error('[BIBLE STORAGE] Failed to save bibles list');
   }
 };
 
@@ -35,7 +36,7 @@ export const getBiblesList = async (): Promise<Bible[] | null> => {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.BIBLES_LIST);
     return data ? JSON.parse(data) : null;
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to get bibles list:', error);
+    logger.error('[BIBLE STORAGE] Failed to get bibles list');
     return null;
   }
 };
@@ -49,7 +50,7 @@ export const saveBibleDetail = async (bibleId: number, bibleDetail: BibleDetail)
     await AsyncStorage.setItem(key, JSON.stringify(bibleDetail));
     await AsyncStorage.setItem(`${STORAGE_KEYS.LAST_UPDATED}bible_${bibleId}`, Date.now().toString());
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to save bible detail:', error);
+    logger.error('[BIBLE STORAGE] Failed to save bible detail');
   }
 };
 
@@ -62,7 +63,7 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail | nul
     const data = await AsyncStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to get bible detail:', error);
+    logger.error('[BIBLE STORAGE] Failed to get bible detail');
     return null;
   }
 };
@@ -84,7 +85,7 @@ export const saveChapterData = async (
       Date.now().toString()
     );
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to save chapter data:', error);
+    logger.error('[BIBLE STORAGE] Failed to save chapter data');
   }
 };
 
@@ -101,7 +102,7 @@ export const getChapterData = async (
     const data = await AsyncStorage.getItem(key);
     return data ? JSON.parse(data) : null;
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to get chapter data:', error);
+    logger.error('[BIBLE STORAGE] Failed to get chapter data');
     return null;
   }
 };
@@ -114,7 +115,7 @@ export const getLastUpdated = async (resourceKey: string): Promise<number | null
     const timestamp = await AsyncStorage.getItem(`${STORAGE_KEYS.LAST_UPDATED}${resourceKey}`);
     return timestamp ? parseInt(timestamp, 10) : null;
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to get last updated:', error);
+    logger.error('[BIBLE STORAGE] Failed to get last updated');
     return null;
   }
 };
@@ -142,7 +143,7 @@ export const clearBibleChapters = async (bibleId: number): Promise<void> => {
     
     await AsyncStorage.multiRemove(chapterKeys);
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to clear bible chapters:', error);
+    logger.error('[BIBLE STORAGE] Failed to clear bible chapters');
   }
 };
 
@@ -153,7 +154,7 @@ export const clearAllBibleStorage = async (): Promise<void> => {
   try {
     await AsyncStorage.clear();
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to clear all storage:', error);
+    logger.error('[BIBLE STORAGE] Failed to clear all storage');
   }
 };
 
@@ -176,7 +177,7 @@ export const getStorageStats = async (): Promise<{
       chaptersCount,
     };
   } catch (error) {
-    console.error('[BIBLE STORAGE] Failed to get storage stats:', error);
+    logger.error('[BIBLE STORAGE] Failed to get storage stats');
     return { totalKeys: 0, biblesCount: 0, chaptersCount: 0 };
   }
 };

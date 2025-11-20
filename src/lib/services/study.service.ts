@@ -7,6 +7,7 @@
 import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
+import { logger } from '../utils/logger';
 
 
 
@@ -90,7 +91,7 @@ const parseApiError = (error: unknown): ApiError => {
 export const getVerseWithReferences = async (VerseId: number): Promise<VerseWithReferences> => {
   try {
     const response = await apiClient.get<{ data: VerseWithReferences }>(`${API_ENDPOINTS.VerseWithReferences}/${VerseId}`);
-    console.log(response);
+    logger.debug('[STUDY SERVICE] Fetched verse with references', VerseId);
     return response.data;
   } catch (error) {
     throw parseApiError(error);

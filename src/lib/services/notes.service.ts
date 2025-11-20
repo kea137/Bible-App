@@ -7,6 +7,7 @@
 import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
+import { logger } from '../utils/logger';
 
 // Type definitions
 export interface Note {
@@ -93,7 +94,7 @@ export const createNote = async (data: CreateNoteData): Promise<Note> => {
   try {
     const response = await apiClient.post<any>(API_ENDPOINTS.notes, data);
     const note = (response as any)?.data ?? response;
-    console.log(note);
+    logger.debug('[NOTES SERVICE] Note created');
     return note;
   } catch (error) {
     throw parseApiError(error);

@@ -7,6 +7,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { User, AuthResponse, LoginCredentials, RegisterCredentials, ForgotPasswordData } from '../services/auth.service';
 import * as authService from '../services/auth.service';
 import { getAuthToken, getUserData } from '../storage/auth-storage';
+import { logger } from '../utils/logger';
 
 interface AuthContextType {
   user: User | null;
@@ -52,7 +53,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           }
         }
       } catch (error) {
-        console.error('Auth initialization error:', error);
+        logger.error('[AUTH CONTEXT] Auth initialization error');
       } finally {
         setIsLoading(false);
       }
@@ -73,7 +74,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setUser(response.user);
 
     } catch (error) {
-      console.error('[AUTH CONTEXT] Login error:', error);
+      logger.error('[AUTH CONTEXT] Login error');
       throw error;
     } finally {
       setIsLoading(false);

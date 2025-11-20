@@ -7,6 +7,7 @@
 import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
+import { logger } from '../utils/logger';
 
 // Type definitions
 export interface VerseOfTheDay {
@@ -102,7 +103,7 @@ export const getDashboardData = async (): Promise<DashData> => {
     const response = await apiClient.get<DashData>(API_ENDPOINTS.dashboard);
     return { data: response.data };
   } catch (error) {
-    console.error('[DashboardService] Failed to fetch dashboard data:', error);
+    logger.error('[DashboardService] Failed to fetch dashboard data');
     throw parseApiError(error);
   }
 };
