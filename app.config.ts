@@ -57,7 +57,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     plugins: [
       'expo-router',
-      'expo-splash-screen',
       [
         'expo-font',
         {
