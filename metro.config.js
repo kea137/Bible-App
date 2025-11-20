@@ -23,4 +23,15 @@ config.resolver = {
   sourceExts: [...resolver.sourceExts, 'mjs', 'cjs'],
 };
 
+// Enable source maps in production for better debugging
+if (process.env.NODE_ENV === 'production') {
+  config.serializer = {
+    ...config.serializer,
+    createModuleIdFactory: () => {
+      // Use stable module IDs for better debugging
+      return (path) => path;
+    },
+  };
+}
+
 module.exports = withNativeWind(config, { input: './global.css', inlineRem: 16 });

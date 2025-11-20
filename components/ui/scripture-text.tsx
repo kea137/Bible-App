@@ -133,11 +133,6 @@ function groupSegments(segments: ParsedText[]): Array<{ type: 'text-block' | 'si
  */
 export function ScriptureText({ text, references, className }: ScriptureTextProps) {
   const segments = parseTextWithReferences(text);
-  // Debug logging to inspect how scripture references are parsed from raw text
-  try {
-    console.log('[SCRIPTURE_TEXT] raw text:', JSON.stringify(text));
-    console.log('[SCRIPTURE_TEXT] segments:', segments);
-  } catch {}
 
   const groups = groupSegments(segments);
   
