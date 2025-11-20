@@ -12,6 +12,7 @@ import { MobileFooter } from '@showcase/components/mobile-footer';
 import { SettingsDialog } from '@showcase/components/settings-dialog';
 import { PortalHost } from '@rn-primitives/portal';
 import '@/lib/i18n/config'; // Initialize i18n
+import { useTranslation } from 'react-i18next';
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -31,13 +32,14 @@ export default function RootLayout() {
   // Hide footer on auth pages (anything under /auth), welcome screen, and onboarding.
   const hideFooter = pathname.startsWith('/auth') || pathname === '/welcome' || pathname === '/onboarding';
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const { t } = useTranslation();
 
   return (
     <AuthProvider>
       <LanguageProvider>
         <Stack
           screenOptions={{
-            headerBackTitle: 'Back',
+            headerBackTitle: t('Back'),
             headerStyle: {
               backgroundColor: colors.card,
             },
