@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import { getReadingPlan, type ReadingPlanData } from '@/lib/services/reading-plan.service';
 import { useNavigation } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { useColorScheme } from 'nativewind';
 
 export default function ReadingPlanScreen() {
   const { t } = useTranslation();
@@ -14,6 +15,11 @@ export default function ReadingPlanScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation();
+  const { colorScheme } = useColorScheme();
+  
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
+
   // Fetch reading plan on mount
   useEffect(() => {
 
@@ -115,7 +121,7 @@ export default function ReadingPlanScreen() {
                       {planData.completedChapters} {t('of')} {planData.totalChapters} {t('chapters completed')}
                     </CardDescription>
                   </View>
-                  <TrendingUp size={24} className="text-primary" />
+                  <TrendingUp size={24} color={primaryIconColor} />
                 </View>
               </CardHeader>
               <CardContent className="gap-3">
@@ -136,7 +142,7 @@ export default function ReadingPlanScreen() {
                 <CardHeader>
                   <View className="flex-row items-center justify-between">
                     <CardTitle>{t('Today')}</CardTitle>
-                    <Calendar size={20} className="text-muted-foreground" />
+                    <Calendar size={20}  color={primaryIconColor} />
                   </View>
                 </CardHeader>
                 <CardContent>
@@ -152,7 +158,7 @@ export default function ReadingPlanScreen() {
                 <CardHeader>
                   <View className="flex-row items-center justify-between">
                     <CardTitle>{t('Completed')}</CardTitle>
-                    <CheckCircle size={20} className="text-muted-foreground" />
+                    <CheckCircle size={20}  color={primaryIconColor} />
                   </View>
                 </CardHeader>
                 <CardContent>
@@ -166,7 +172,7 @@ export default function ReadingPlanScreen() {
                 <CardHeader>
                   <View className="flex-row items-center justify-between">
                     <CardTitle>{t('Remaining')}</CardTitle>
-                    <BookMarked size={20} className="text-muted-foreground" />
+                    <BookMarked size={20}  color={primaryIconColor} />
                   </View>
                 </CardHeader>
                 <CardContent>
@@ -182,7 +188,7 @@ export default function ReadingPlanScreen() {
                 <CardHeader>
                   <View className="flex-row items-center justify-between">
                     <CardTitle>{t('Total')}</CardTitle>
-                    <BookOpen size={20} className="text-muted-foreground" />
+                    <BookOpen size={20}  color={primaryIconColor} />
                   </View>
                 </CardHeader>
                 <CardContent>
@@ -231,7 +237,7 @@ export default function ReadingPlanScreen() {
               <Card>
                 <CardHeader>
                   <View className="flex-row items-center gap-2">
-                    <BookOpen size={20} className="text-primary" />
+                    <BookOpen size={20} color={primaryIconColor} />
                     <CardTitle>{t('Lesson Progress')}</CardTitle>
                   </View>
                   <CardDescription>{t('Track your completed lessons and series')}</CardDescription>
@@ -282,7 +288,7 @@ export default function ReadingPlanScreen() {
                             </Text>
                           )}
                         </View>
-                        <CheckCircle size={16} className="text-green-600" />
+                        <CheckCircle size={16}  color={primaryIconColor} />
                       </View>
                     ))}
                   </View>

@@ -1,5 +1,5 @@
 import { Text } from '@showcase/components/ui/text';
-import { Button } from '@showcase/components/ui/button';
+import { useColorScheme } from 'nativewind';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Input } from '@showcase/components/ui/input';
 import { Link, useNavigation } from 'expo-router';
@@ -16,6 +16,10 @@ export default function BiblesScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation();
+  const colorScheme = useColorScheme();
+
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
 
   // Fetch bibles on mount
   useEffect(() => {
@@ -56,7 +60,7 @@ export default function BiblesScreen() {
             <View className="flex-row items-center justify-between">
               <View className="flex-1">
                 <CardTitle className="flex-row items-center gap-2">
-                  <BookOpen size={20} className="text-primary" />
+                  <BookOpen size={20} color={primaryIconColor} />
                   <Text>{t('Bibles') || 'Bibles'}</Text>
                 </CardTitle>
                 <CardDescription>{t('Available Bible translations') || 'Available Bible translations'}</CardDescription>
@@ -65,7 +69,7 @@ export default function BiblesScreen() {
           </CardHeader>
           <CardContent>
             <View className="flex-row items-center gap-2 rounded-lg border border-border bg-background px-3">
-              <Search size={20} className="text-muted-foreground" />
+              <Search size={20} color={primaryIconColor} />
               <Input
                 placeholder={t('Search bibles...') || 'Search bibles...'}
                 value={searchQuery}

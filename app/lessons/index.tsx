@@ -1,5 +1,5 @@
 import { Text } from '@showcase/components/ui/text';
-import { Button } from '@showcase/components/ui/button';
+import { useColorScheme } from 'nativewind';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@showcase/components/ui/card';
 import { Input } from '@showcase/components/ui/input';
 import { Link, useNavigation } from 'expo-router';
@@ -16,7 +16,11 @@ export default function LessonsScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigation = useNavigation();
-  
+  const { colorScheme } = useColorScheme();
+
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
+
   // Fetch lessons on mount
   useEffect(() => {
 
@@ -55,7 +59,7 @@ export default function LessonsScreen() {
             <View className="flex-row items-center justify-between">
               <View className="flex-1">
                 <CardTitle className="flex-row items-center gap-2">
-                  <Library size={20} className="text-primary" />
+                  <Library size={20} color={primaryIconColor} />
                   <Text>{t('Lessons') || 'Lessons'}</Text>
                 </CardTitle>
                 <CardDescription>{t('Available Lessons') || 'Available Lessons'}</CardDescription>
@@ -64,7 +68,7 @@ export default function LessonsScreen() {
           </CardHeader>
           <CardContent>
             <View className="flex-row items-center gap-2 rounded-lg border border-border bg-background px-3">
-              <Search size={20} className="text-muted-foreground" />
+              <Search size={20} color={primaryIconColor} />
               <Input
                 placeholder={t('Search lessons...') || 'Search lessons...'}
                 value={searchQuery}
@@ -108,7 +112,7 @@ export default function LessonsScreen() {
                         <CardContent className="gap-3 py-1">
                           <View className="flex-col items-start">
                             <View className="h-8 w-8 items-center justify-center">
-                              <LibraryBig size={28} className="text-primary" />
+                              <LibraryBig size={28} color={primaryIconColor} />
                             </View>
                             <View className="flex-1 gap-1">
                               <Text className="text-lg font-semibold leading-tight">

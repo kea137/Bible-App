@@ -21,6 +21,7 @@ import { getNotes, Note, updateNote } from '@/lib/services/notes.service';
 import { PortalHost } from '@rn-primitives/portal';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-controller';
 import { useTranslation } from 'react-i18next';
+import { useColorScheme } from 'nativewind';
 
 export function NoteDetailAlertDialog({ 
   note, 
@@ -157,6 +158,10 @@ export default function NotesScreen() {
   const [isDetailDialogOpen, setIsDetailDialogOpen] = useState(false);
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const colorScheme = useColorScheme;
+
+  // Theme-aware icon color
+  const primaryIconColor = colorScheme === 'dark' ? '#fafafa' : '#18181b';
   // Fetch notes on mount
   useEffect(() => {
 
@@ -216,7 +221,7 @@ export default function NotesScreen() {
 
         {/* Search Bar */}
         <View className="flex-row items-center gap-2 rounded-lg border border-border bg-card px-3">
-          <Search size={20} className="text-muted-foreground" />
+          <Search size={20} color={primaryIconColor} />
           <Input
             placeholder={t('Search notes...') || 'Search notes...'}
             value={searchQuery}
@@ -261,7 +266,7 @@ export default function NotesScreen() {
                     <View className="flex-row items-start justify-between">
                       <View className="flex-1 gap-1">
                         <CardTitle className="flex-row items-center gap-2">
-                          <NotebookPen size={18} className="text-primary" />
+                          <NotebookPen size={18} color={primaryIconColor}  />
                           <Text className="flex-1">{note.title || 'Untitled Note'}</Text>
                         </CardTitle>
                         <CardDescription>
@@ -281,7 +286,7 @@ export default function NotesScreen() {
           </View>
         ) : !loading ? (
           <View className="flex-1 items-center justify-center py-12">
-            <NotebookPen size={48} className="mb-4 text-muted-foreground" />
+            <NotebookPen size={48} className="mb-4" color={primaryIconColor} />
             <Text className="mb-2 text-lg font-semibold">{t('No notes found') || 'No notes found'}</Text>
             <Text className="text-center text-sm text-muted-foreground">
               {searchQuery
