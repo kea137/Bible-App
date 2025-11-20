@@ -48,7 +48,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#0A0A0A',
       },
-      package: 'com.bible-word.android',
+      package: 'com.bible_word.android',
       intentFilters: [
         {
           action: 'VIEW',
