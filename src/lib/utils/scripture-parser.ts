@@ -32,9 +32,6 @@ export function parseScriptureReference(ref: string): { book: string; chapter: s
   // Accept patterns like "Gen 1:1", "GEN 1:1", "1 John 2:15", with optional ranges/lists.
   const strict = raw.match(/^((?:\d{1,2}\s)?[A-Za-z]+(?:\s[A-Za-z]+)*\.?)[\s]+(\d+):(\d+(?:[-–]\d+)?(?:\s*,\s*\d+(?:[-–]\d+)?)*)$/i);
   if (strict) {
-    try {
-      console.log('[SCRIPTURE_PARSER] strict match for ref:', raw, '=>', strict);
-    } catch {}
     return {
       book: strict[1].replace(/\.$/, '').trim(),
       chapter: strict[2],
@@ -45,9 +42,6 @@ export function parseScriptureReference(ref: string): { book: string; chapter: s
   // Fallback: very permissive, e.g. "GEN 1:1" or abbreviations with extra suffix
   const generic = raw.match(/^([^:]+?)\s+(\d+):(\S.+)$/i);
   if (generic) {
-    try {
-      console.log('[SCRIPTURE_PARSER] generic match for ref:', raw, '=>', generic);
-    } catch {}
     return {
       book: generic[1].replace(/\.$/, '').trim(),
       chapter: generic[2],
@@ -74,9 +68,6 @@ export function extractReferences(text: string): ParsedReference[] {
     const parsed = parseScriptureReference(reference);
     
     if (parsed) {
-      try {
-        console.log('[SCRIPTURE_PARSER] triple reference parsed:', reference, '=>', parsed);
-      } catch {}
       references.push({
         type: 'triple',
         reference,
@@ -106,9 +97,6 @@ export function extractReferences(text: string): ParsedReference[] {
       const parsed = parseScriptureReference(reference);
       
       if (parsed) {
-        try {
-          console.log('[SCRIPTURE_PARSER] single reference parsed:', reference, '=>', parsed);
-        } catch {}
         references.push({
           type: 'single',
           reference,

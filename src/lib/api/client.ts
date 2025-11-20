@@ -9,6 +9,7 @@ import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'ax
 import { Platform } from 'react-native';
 import { API_BASE_URL, API_CONFIG, API_ENDPOINTS } from './config';
 import { getAuthToken, removeAuthToken } from '../storage/auth-storage';
+import { logger } from '../utils/logger';
 
 class ApiClient {
   private client: AxiosInstance;
@@ -37,15 +38,9 @@ class ApiClient {
         if (token && config.headers) {
           config.headers.Authorization = `Bearer ${token}`;
         }
-        // Debug: log outgoing request method and URL
-        try {
-          const method = (config.method || 'get').toUpperCase();
-          const url = `${config.baseURL || ''}${config.url || ''}`;
-          // Avoid logging large bodies
-          const hasBody = ['POST','PUT','PATCH'].includes(method);
-          // eslint-disable-next-line no-console
-          console.log(`[API] → ${method} ${url}${hasBody ? ' (body set)' : ''}`);
-        } catch {}
+        
+        // Log API requests in development
+        logger.debug(`[API] → ${(config.method || 'get').toUpperCase()} ${config.baseURL || ''}${config.url || ''}`);
         
         return config;
       },
@@ -57,33 +52,24 @@ class ApiClient {
     // Response interceptor to handle errors
     this.client.interceptors.response.use(
       (response) => {
-        try {
-          const method = (response.config?.method || 'get').toUpperCase();
-          const url = `${response.config?.baseURL || ''}${response.config?.url || ''}`;
-          // eslint-disable-next-line no-console
-          console.log(`[API] ← ${response.status} ${method} ${url}`);
-        } catch {}
+        logger.debug(`[API] ← ${response.status} ${(response.config?.method || 'get').toUpperCase()} ${response.config?.url || ''}`);
         return response;
       },
       async (error: AxiosError) => {
-        try {
-          const status = error.response?.status;
-          const method = (error.config?.method || 'get').toUpperCase();
-          const url = `${error.config?.baseURL || ''}${error.config?.url || ''}`;
-          const location = (error.response?.headers as any)?.location;
-          // eslint-disable-next-line no-console
-          console.log(`[API] ✖ ${status ?? 'ERR'} ${method} ${url}${location ? ` → ${location}` : ''}`);
-        } catch {}
+        const status = error.response?.status;
+        const method = (error.config?.method || 'get').toUpperCase();
+        const url = error.config?.url || '';
+        
+        logger.warn(`[API] Error ${status ?? 'NETWORK'} ${method} ${url}`);
+        
         // Only clear token for non-GET requests on 401/419
         if (error.response?.status === 401 || error.response?.status === 419) {
-          const method = (error.config?.method || 'get').toUpperCase();
           if (method === 'GET') {
-            // Keep token for GET requests to avoid unintended logout
-            try { console.log('[API] 401/419 on GET – keeping token to avoid unintended logout'); } catch {}
+            logger.debug('[API] 401/419 on GET – keeping token to avoid unintended logout');
           } else {
             await removeAuthToken();
             this.csrfTokenFetched = false;
-            try { console.log('[API] Auth cleared due to 401/419 on non-GET request'); } catch {}
+            logger.info('[API] Auth cleared due to 401/419 on non-GET request');
           }
         }
         return Promise.reject(error);
@@ -104,7 +90,7 @@ class ApiClient {
       await this.client.get(API_ENDPOINTS.csrf);
       this.csrfTokenFetched = true;
     } catch (error) {
-      console.error('Failed to fetch CSRF token:', error);
+      logger.error('[API] Failed to fetch CSRF token:', error);
       throw error;
     }
   }
@@ -139,8 +125,6 @@ class ApiClient {
     if (shouldFetchCsrf) {
       await this.fetchCsrfToken();
     }
-    // Debug: explicit log for POST helper
-    try { console.log(`[API] post() calling: ${url} (csrf: ${shouldFetchCsrf ? 'yes' : 'no'})`); } catch {}
     const response = await this.client.post<T>(url, data, config);
     return response.data;
   }

@@ -7,7 +7,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: NAME,
     slug: SLUG,
-    version: '0.0.1',
+    version: '1.0.0',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     userInterfaceStyle: 'automatic',
@@ -31,9 +31,15 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSAppTransportSecurity: {
-          NSAllowsArbitraryLoads: true,
+          NSAllowsArbitraryLoads: false,
           NSExceptionDomains: {
-            'localhost': { NSExceptionAllowsInsecureHTTPLoads: true, NSIncludesSubdomains: true },
+            // Only allow insecure loads for localhost in development
+            ...(process.env.ENV === 'development' && {
+              'localhost': { 
+                NSExceptionAllowsInsecureHTTPLoads: true, 
+                NSIncludesSubdomains: true 
+              },
+            }),
           },
         },
       },

@@ -5,6 +5,7 @@
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { logger } from '../utils/logger';
 
 // Storage keys
 const STORAGE_KEYS = {
@@ -17,11 +18,9 @@ const STORAGE_KEYS = {
  */
 export const setAuthToken = async (token: string): Promise<void> => {
   try {
-
     await AsyncStorage.setItem(STORAGE_KEYS.AUTH_TOKEN, token);
-
   } catch (err) {
-    console.error('[AUTH STORAGE] Failed to save token:', err);
+    logger.error('[AUTH STORAGE] Failed to save token');
     throw err;
   }
 };
@@ -32,10 +31,9 @@ export const setAuthToken = async (token: string): Promise<void> => {
 export const getAuthToken = async (): Promise<string | null> => {
   try {
     const token = await AsyncStorage.getItem(STORAGE_KEYS.AUTH_TOKEN);
-
     return token;
   } catch (error) {
-    console.error('[AUTH STORAGE] Failed to get token:', error);
+    logger.error('[AUTH STORAGE] Failed to get token');
     return null;
   }
 };
@@ -47,7 +45,7 @@ export const removeAuthToken = async (): Promise<void> => {
   try {
     await AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN);
   } catch (error) {
-    console.error('[AUTH STORAGE] Failed to remove token:', error);
+    logger.error('[AUTH STORAGE] Failed to remove token');
   }
 };
 
@@ -56,11 +54,9 @@ export const removeAuthToken = async (): Promise<void> => {
  */
 export const setUserData = async (userData: any): Promise<void> => {
   try {
-
     await AsyncStorage.setItem(STORAGE_KEYS.USER_DATA, JSON.stringify(userData));
-
   } catch (err) {
-    console.error('[AUTH STORAGE] Failed to save user data:', err);
+    logger.error('[AUTH STORAGE] Failed to save user data');
     throw err;
   }
 };
@@ -71,10 +67,9 @@ export const setUserData = async (userData: any): Promise<void> => {
 export const getUserData = async (): Promise<any | null> => {
   try {
     const data = await AsyncStorage.getItem(STORAGE_KEYS.USER_DATA);
-
     return data ? JSON.parse(data) : null;
   } catch (error) {
-    console.error('[AUTH STORAGE] Failed to get user data:', error);
+    logger.error('[AUTH STORAGE] Failed to get user data');
     return null;
   }
 };
@@ -86,7 +81,7 @@ export const removeUserData = async (): Promise<void> => {
   try {
     await AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA);
   } catch (error) {
-    console.error('[AUTH STORAGE] Failed to remove user data:', error);
+    logger.error('[AUTH STORAGE] Failed to remove user data');
   }
 };
 
@@ -94,13 +89,13 @@ export const removeUserData = async (): Promise<void> => {
  * Clear all auth storage
  */
 export const clearAuthStorage = async (): Promise<void> => {
-  console.log('[AUTH STORAGE] clearAuthStorage called');
+  logger.debug('[AUTH STORAGE] Clearing auth storage');
   try {
     await Promise.all([
       AsyncStorage.removeItem(STORAGE_KEYS.AUTH_TOKEN),
       AsyncStorage.removeItem(STORAGE_KEYS.USER_DATA),
     ]);
   } catch (error) {
-    console.error('[AUTH STORAGE] Failed to clear storage:', error);
+    logger.error('[AUTH STORAGE] Failed to clear storage');
   }
 };

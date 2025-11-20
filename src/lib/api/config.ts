@@ -5,10 +5,43 @@
  * In production, this should be set via environment variables.
  */
 import { Platform } from 'react-native';
+import Constants from 'expo-constants';
 
-// Default API URL - should be overridden by environment variable in production
-export const API_BASE_URL = Platform.OS === 'ios' ? process.env.EXPO_PUBLIC_API_URL_IOS
-  : process.env.EXPO_PUBLIC_API_URL || 'http://bible.test';
+// Get environment - check if we're in production
+const IS_PRODUCTION = Constants.expoConfig?.extra?.eas?.projectId && 
+                      !__DEV__;
+
+// Validate and get API URL
+function getApiBaseUrl(): string {
+  const iosUrl = process.env.EXPO_PUBLIC_API_URL_IOS;
+  const defaultUrl = process.env.EXPO_PUBLIC_API_URL;
+  
+  // In production, require HTTPS URLs
+  if (IS_PRODUCTION) {
+    const url = Platform.OS === 'ios' ? iosUrl : defaultUrl;
+    
+    if (!url) {
+      throw new Error(
+        'EXPO_PUBLIC_API_URL is required in production. Please set it in your environment variables.'
+      );
+    }
+    
+    if (!url.startsWith('https://')) {
+      throw new Error(
+        'API URL must use HTTPS in production. Insecure HTTP connections are not allowed.'
+      );
+    }
+    
+    return url;
+  }
+  
+  // Development: allow HTTP for localhost
+  return Platform.OS === 'ios' 
+    ? (iosUrl || 'http://localhost:8000')
+    : (defaultUrl || 'http://localhost:8000');
+}
+
+export const API_BASE_URL = getApiBaseUrl();
 
 
 // API endpoints

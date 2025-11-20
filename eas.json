@@ -15,10 +15,23 @@
     },
     "production": {
       "autoIncrement": true,
-      "channel": "prod-0.0.3"
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_API_URL": ""
+      }
     }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "ios": {
+        "appleId": "your-apple-id@example.com",
+        "ascAppId": "1234567890",
+        "appleTeamId": "ABCD123456"
+      },
+      "android": {
+        "serviceAccountKeyPath": "./path-to-service-account.json",
+        "track": "production"
+      }
+    }
   }
 }
