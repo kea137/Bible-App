@@ -150,8 +150,6 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
     const response = await apiClient.get<any>(`${API_ENDPOINTS.bibles}/${bibleId}`);
     
     const apiData = response.data.data || response.data;
-
-    console.log('[API data loaded for bible]:', apiData);
     
     const bibleDetail: BibleDetail = {
       bible: apiData.bible,
