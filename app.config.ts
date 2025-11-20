@@ -30,15 +30,6 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         ITSAppUsesNonExemptEncryption: false,
         NSAppTransportSecurity: {
           NSAllowsArbitraryLoads: false,
-          NSExceptionDomains: {
-            // Only allow insecure loads for localhost in development
-            ...(process.env.ENV === 'development' && {
-              'localhost': { 
-                NSExceptionAllowsInsecureHTTPLoads: true, 
-                NSIncludesSubdomains: true 
-              },
-            }),
-          },
         },
       },
     },
