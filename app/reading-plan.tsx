@@ -30,27 +30,6 @@ export default function ReadingPlanScreen() {
       } catch (err: any) {
         console.error('Failed to fetch reading plan:', err);
         setError(err.message || t('Failed to load reading plan') || 'Failed to load reading plan');
-        // Use mock data as fallback
-        setPlanData({
-          totalChapters: 1189,
-          completedChapters: 150,
-          progressPercentage: 12.6,
-          chaptersReadToday: 3,
-          selectedBible: {
-            id: 1,
-            name: 'King James Version',
-            language: 'English',
-          },
-          allBibles: [
-            {
-              id: 1,
-              name: 'King James Version',
-              language: 'English',
-            },
-          ],
-          completedLessons: [],
-          lessonsReadToday: 0,
-        });
       } finally {
         setLoading(false);
       }

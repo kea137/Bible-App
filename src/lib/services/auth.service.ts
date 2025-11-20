@@ -7,7 +7,7 @@
 import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
-import { setAuthToken, removeAuthToken, setUserData, removeUserData, clearAuthStorage, getAuthToken } from '../storage/auth-storage';
+import { setAuthToken, setUserData, clearAuthStorage } from '../storage/auth-storage';
 
 // Type definitions
 export interface LoginCredentials {
@@ -84,15 +84,11 @@ const parseApiError = (error: unknown): ApiError => {
 export const login = async (credentials: LoginCredentials): Promise<AuthResponse> => {
   try {
     const response = await apiClient.post<any>(API_ENDPOINTS.login, credentials);
-    // console.log('[AUTH SERVICE] Login raw response:', response);
 
     // Adjust to your actual shape
     const payload = response.data ?? response; // if apiClient.post returns the whole body
     const user = payload.data?.user ?? payload.user;
     const token = payload.data?.token ?? payload.token;
-
-    // console.log('[AUTH SERVICE] Parsed user:', user);
-    // console.log('[AUTH SERVICE] Parsed token:', token);
 
     if (token) {
       await setAuthToken(token);
@@ -122,7 +118,6 @@ export const register = async (credentials: RegisterCredentials): Promise<AuthRe
     // Store token if provided
     if (token) {
       await setAuthToken(token);
-      // console.log('[AUTH SERVICE] Confirm token persisted:', await getAuthToken());
     }
     
     // Store user data
@@ -144,10 +139,8 @@ export const logout = async (): Promise<void> => {
   try {
     await apiClient.post(API_ENDPOINTS.logout);
   } catch (error) {
-    // console.log('[AUTH SERVICE] logout() API failed:', error);
-    // Continue with local logout even if API call fails
+    console.log('[AUTH SERVICE] logout() API failed:', error);
   } finally {
-    //  console.log('[AUTH SERVICE] Clearing auth storage...');
     // Clear all auth data
     clearAuthStorage();
     apiClient.resetCsrfToken();

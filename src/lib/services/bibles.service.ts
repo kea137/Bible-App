@@ -9,7 +9,6 @@ import { AxiosError } from 'axios';
 import { apiClient } from '../api/client';
 import { API_ENDPOINTS } from '../api/config';
 import * as BibleStorage from '../storage/bible-storage';
-import { number } from 'zod';
 
 // Type definitions
 export interface Bible {
@@ -150,8 +149,6 @@ export const getBibleDetail = async (bibleId: number): Promise<BibleDetail> => {
   try {
     const response = await apiClient.get<any>(`${API_ENDPOINTS.bibles}/${bibleId}`);
     
-    // The response structure is { bible: {..., books: [...]}, initialChapter: {...} }
-    // We need to restructure it to match our BibleDetail interface
     const apiData = response.data.data || response.data;
 
     console.log('[API data loaded for bible]:', apiData);

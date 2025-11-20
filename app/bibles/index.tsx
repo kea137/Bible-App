@@ -33,33 +33,6 @@ export default function BiblesScreen() {
       } catch (err: any) {
         console.error('Failed to fetch bibles:', err);
         setError(err.message || t('Failed to load bibles') || 'Failed to load bibles');
-        // Use mock data as fallback
-        setBibles([
-          {
-            id: 1,
-            name: 'New International Version',
-            abbreviation: 'NIV',
-            description: 'A modern, easy-to-read translation',
-            language: 'English',
-            version: '2011',
-          },
-          {
-            id: 2,
-            name: 'King James Version',
-            abbreviation: 'KJV',
-            description: 'Classic translation with traditional language',
-            language: 'English',
-            version: '1611',
-          },
-          {
-            id: 3,
-            name: 'English Standard Version',
-            abbreviation: 'ESV',
-            description: 'Literal translation for study',
-            language: 'English',
-            version: '2001',
-          },
-        ]);
       } finally {
         setLoading(false);
       }

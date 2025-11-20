@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 import { BookOpen, CheckCircle, Share2 } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'expo-router';
+import { useRouter } from 'expo-router';
 import { Gesture, GestureDetector, GestureHandlerRootView, Directions } from 'react-native-gesture-handler';
 import { useColorScheme } from 'nativewind';
 import * as React from 'react';
@@ -122,7 +122,7 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
         </View>
         <AlertDialogFooter>
           <AlertDialogCancel>
-            <Text>Cancel</Text>
+            <Text>{t('Cancel')}</Text>
           </AlertDialogCancel>
           <AlertDialogAction onPress={handleSaveNote} disabled={saving}>
             <Text>{saving ? t('Saving...') : t('Save Note')}</Text>
@@ -136,16 +136,16 @@ export function NotesAlertDialog({text, verseRef, isOpen, onOpenChange, verseId,
 
 export function VerseDropdownMenu({text, verse, verseId, verseRef, highlight, highlightId, onHighlightChange}: {text: string, verse: string, verseId: number, verseRef: string, highlight?: string, highlightId?: number, onHighlightChange?: () => void}) {
   const router = useRouter();
-  const pathname = usePathname();
-  const [isNotesOpen, setIsNotesOpen] = React.useState(false);
-  const [showSuccessAlert, setShowSuccessAlert] = React.useState(false);
-  const [currentHighlight, setCurrentHighlight] = React.useState(highlight);
+  const [isNotesOpen, setIsNotesOpen] = useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [currentHighlight, setCurrentHighlight] = useState(highlight);
   const bgClass = currentHighlight === 'yellow' ? 'bg-yellow-200/20' : 'bg-green-300/25';
   const bgColor = currentHighlight === 'yellow' ? '#FEF08A1F' : '#86EFAC1F'; 
   const { colorScheme } = useColorScheme();
   const { t } = useTranslation();
+
   // Update current highlight when prop changes
-  React.useEffect(() => {
+  useEffect(() => {
     setCurrentHighlight(highlight);
   }, [highlight]);
 
@@ -401,33 +401,6 @@ export default function BibleDetailScreen() {
       } catch (err: any) {
         console.error('Failed to fetch bible detail:', err);
         setError(err.message || 'Failed to load bible');
-        // Use mock data as fallback
-        const mockBible: BibleDetail = {
-          bible: {
-            id: Number(id),
-            name: 'New International Version',
-            abbreviation: 'NIV',
-            description: 'A modern, easy-to-read translation',
-            language: 'English',
-            version: '2011',
-          },
-          books: [
-            { id: 1, bible_id: Number(id), title: 'Genesis', book_number: 1, chapters_count: 50, chapters: [] },
-            { id: 2, bible_id: Number(id), title: 'Exodus', book_number: 2, chapters_count: 40, chapters: [] },
-            { id: 3, bible_id: Number(id), title: 'Psalms', book_number: 19, chapters_count: 150, chapters: [] },
-          ],
-          chapters: [
-            {id: 1, book_id: 1, chapter_number: 1, verses: []},
-            {id: 2, book_id: 1, chapter_number: 2, verses: []},
-            {id: 3, book_id: 1, chapter_number: 3, verses: []},
-          ],
-          verses: [
-            {id: 1, book_id: 1, chapter_number: 1, verse_number: 1, text: 'In the beginning God created the heavens and the earth.', highlight: { id: 0, color: 'yellow' }},
-            {id: 2, book_id: 1, chapter_number: 1, verse_number: 2, text: 'Now the earth was formless and empty, darkness was over the surface of the deep, and the Spirit of God was hovering over the waters.', highlight: { id: 0, color: 'yellow' }},
-          ],
-        };
-        setBibleData(mockBible);
-        setSelectedBook(mockBible.books[0]);
       } finally {
         setLoading(false);
       }
@@ -479,21 +452,6 @@ export default function BibleDetailScreen() {
         setCompleted(data.is_read || false);
       } catch (err: any) {
         console.error('Failed to fetch chapter data:', err);
-        // Use mock verses as fallback
-        const mockChapter: ChapterData = {
-          bible: bibleData.bible,
-          book: selectedBook,
-          chapter_number: selectedChapter,
-          verses: Array.from({ length: 31 }, (_, i) => ({
-            id: i + 1,
-            book_id: selectedBook.id,
-            chapter_number: selectedChapter,
-            verse_number: i + 1,
-            text: `This is verse ${i + 1} from ${selectedBook.title} chapter ${selectedChapter}. The content would be the actual verse text from the Bible.`,
-            highlight: { id: 0, color: 'yellow' }
-          })),
-        };
-        setChapterData(mockChapter);
       } finally {
         setLoadingChapter(false);
       }

@@ -176,56 +176,6 @@ export default function NotesScreen() {
     } catch (err: any) {
       console.error('Failed to fetch notes:', err);
       setError(err.message || 'Failed to load notes');
-      // Use mock data as fallback
-      setNotes([
-        {
-          id: 1,
-          user_id: 1,
-          verse_id: 1,
-          title: 'Reflections on John 3:16',
-          content: 'For God so loved the world that he gave his one and only Son...',
-          verse: {
-            id: 1,
-            text: 'For God so loved the world...',
-            reference: 'John 3:16',
-            chapter_number: 3,
-            verse_number: 16,
-          },
-          created_at: '2024-11-10',
-          updated_at: '2024-11-10',
-        },
-        {
-          id: 2,
-          user_id: 1,
-          verse_id: 2,
-          title: 'Prayer Points from Psalms',
-          content: 'The Lord is my shepherd, I lack nothing...',
-          verse: {
-            id: 2,
-            text: 'The Lord is my shepherd...',
-            reference: 'Psalm 23:1-6',
-            chapter_number: 23,
-            verse_number: 1,
-          },
-          created_at: '2024-11-09',
-          updated_at: '2024-11-09',
-        },
-        {
-          id: 3,
-          user_id: 1,
-          title: 'Faith and Works',
-          content: 'Faith without works is dead...',
-          verse: {
-            id: 3,
-            text: 'Faith without works is dead...',
-            reference: 'James 2:14-26',
-            chapter_number: 2,
-            verse_number: 14,
-          },
-          created_at: '2024-11-08',
-          updated_at: '2024-11-08',
-        },
-      ]);
     } finally {
       setLoading(false);
     }

@@ -18,7 +18,6 @@ import { getShareVerseData, ShareData } from '@/lib/services/share.service';
 import { useColorScheme } from 'nativewind';
 import ViewShot from 'react-native-view-shot';
 import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
 import { PortalHost } from '@rn-primitives/portal';
 import { Label } from '@showcase/components/ui/label';
 import { Switch } from '@showcase/components/ui/switch';
@@ -32,13 +31,10 @@ export default function ShareScreen() {
   const { colorScheme } = useColorScheme();
   const viewShotRef = useRef<ViewShot>(null);
   const { t } = useTranslation();
-  // Loading and error states
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [shareData, setShareData] = useState<ShareData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
-  
-  // Customization states
   const [selectedFont, setSelectedFont] = useState('Georgia');
   const [selectedFontSize, setSelectedFontSize] = useState(48);
   const [isBoldText, setIsBoldText] = useState(false);

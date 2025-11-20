@@ -44,7 +44,6 @@ export function NotesAlertDialog({
   const [notes, setNotes] = React.useState('');
   const [title, settitle] = React.useState(''); 
   const { colorScheme } = useColorScheme();
-  const [saving, setSaving] = React.useState(false);
   const { t } = useTranslation();
 
   // Theme-aware icon color
@@ -53,7 +52,6 @@ export function NotesAlertDialog({
   const handleSave = async () => {
     // Here you would save the note, then call onSaveSuccess
     try {
-      setSaving(true);
       const noteData: CreateNoteData = {
         title: title || undefined,
         content: notes,
@@ -194,66 +192,6 @@ export default function VerseStudyScreen() {
       } catch (error: any) {
         console.error('Failed to fetch highlights:', error);
         setError(error.message || 'Failed to load highlights');
-        // Simulate API response structure
-        const mockResponse = {
-            verse: {
-                id: 1,
-                text: 'Kwa maana jinsi hii Mungu aliuumba ulimwengu',
-                chapter_id: 2,
-                book_id: 3,
-                chapter_number: 4,
-                verse_number: 7,
-                bible: {
-                    id: 1,
-                    name: 'Amplified Bible',
-                    version: 'AMP',
-                },
-                book: {
-                    id: 2,
-                    title: 'AMP'
-                },
-                chapter: {
-                    id: 1,
-                    chapter_number: 2,
-                },
-            },
-            references: [
-                {
-                    id: 2,
-                    parsed: {
-                        book: 'EXO',
-                        chapter: '2',
-                        verse: '7',
-                    },
-                    reference: 'EXO 2:7',
-                    verse: {
-                        id: 7,
-                        text: "And the daughter of Pharaoh came down to wash herself at the river; and her maidens walked along by the river's side; and when she saw the ark among the flags, she sent her maid to fetch it.",
-                    }
-                }
-            ],
-            other_translations: [
-                {
-                    bible: {
-                        id: 2,
-                        name: 'King James Version',
-                    },
-                    id: 'kjv-1',
-                    text: 'For in the beginning God created the heaven and the earth.'
-                },
-                {
-                    bible: {
-                        id: 3,
-                        name: 'New International Version',
-                    },
-                    id: 'niv-1',
-                    text: 'In the beginning God created the heavens and the earth.'
-                }
-            ],
-        };
-
-        setVerseData(mockResponse);
-        setReferences(mockResponse.references);
       } finally {
         setLoading(false);
       }

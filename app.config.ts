@@ -7,7 +7,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     ...config,
     name: NAME,
     slug: SLUG,
-    version: '0.0.3',
+    version: '0.0.1',
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     userInterfaceStyle: 'automatic',
@@ -20,14 +20,14 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     splash: {
       image: './assets/images/splash.png',
       resizeMode: 'contain',
-      backgroundColor: '#0A0A0A',
+      backgroundColor: '#ffffff',
     },
     assetBundlePatterns: ['**/*'],
     ios: {
       scheme: SLUG,
       supportsTablet: true,
-      bundleIdentifier: 'com.reactnativereusables.app',
-      associatedDomains: ['applinks:reactnativereusables.com'],
+      bundleIdentifier: 'com.bible-word.app',
+      associatedDomains: ['applinks:bible-word.help'],
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSAppTransportSecurity: {
@@ -45,7 +45,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#0A0A0A',
       },
-      package: 'com.reactnativereusables.android',
+      package: 'com.bible-word.android',
       intentFilters: [
         {
           action: 'VIEW',
@@ -53,8 +53,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           data: [
             {
               scheme: 'https',
-              host: 'reactnativereusables.com',
-              pathPrefix: '/showcase/links',
+              host: 'bible-word.help',
             },
           ],
           category: ['BROWSABLE', 'DEFAULT'],
@@ -102,8 +101,8 @@ export default ({ config }: ConfigContext): ExpoConfig => {
 function getConfig() {
   const IS_DEV = process.env.ENV === 'development';
 
-  const NAME = IS_DEV ? 'Dev React Native Reusables' : 'React Native Reusables';
-  const SLUG = IS_DEV ? 'devreactnativereusablesshowcase' : 'reactnativereusablesshowcase';
+  const NAME = IS_DEV ? 'Dev Bible Word' : 'Bible Word';
+  const SLUG = IS_DEV ? 'devbibleword' : 'bibleword';
 
   return { NAME, SLUG };
 }

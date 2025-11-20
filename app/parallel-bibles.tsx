@@ -8,10 +8,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@showcase/components/ui/select';
-import { SplitSquareHorizontal, BookOpen, CheckCircle } from 'lucide-react-native';
+import { SplitSquareHorizontal } from 'lucide-react-native';
 import { View, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useState, useEffect } from 'react';
-import { useLocalSearchParams, useNavigation } from 'expo-router';
+import { useNavigation } from 'expo-router';
 import { getBibles, getBibleDetail, getChapterData, Bible, ChapterData, BibleDetail } from '@/lib/services/bibles.service';
 import { useColorScheme } from 'nativewind';
 import { PortalHost } from '@rn-primitives/portal';
@@ -19,9 +19,7 @@ import { useTranslation } from 'react-i18next';
 
 export default function ParallelBiblesScreen() {
   const { t } = useTranslation();
-  const { id } = useLocalSearchParams();
   const { colorScheme } = useColorScheme();
-  const [completed, setCompleted] = useState(false);
   const [bibles, setBibles] = useState<Bible[]>([]);
   const [selectedBible1, setSelectedBible1] = useState<Bible | null>(null);
   const [selectedBible2, setSelectedBible2] = useState<Bible | null>(null);

@@ -33,49 +33,6 @@ export default function LessonsScreen() {
       } catch (err: any) {
         console.error('Failed to fetch lessons:', err);
         setError(err.message || t('Failed to load lessons') || 'Failed to load lessons');
-        // Use mock data as fallback
-        setLessons([
-          {
-            id: 1,
-            title: 'Introduction to the Gospel',
-            description: 'Learn about the good news of Jesus Christ and salvation',
-            language: 'English',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: 2,
-            title: 'The Ten Commandments',
-            description: 'Study God\'s law and moral guidance for humanity',
-            language: 'English',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: 3,
-            title: 'Prayer and Faith',
-            description: 'Understanding how to communicate with God through prayer',
-            language: 'English',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: 4,
-            title: 'The Beatitudes',
-            description: 'Jesus\' teachings on the mountain about blessed living',
-            language: 'English',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-          {
-            id: 5,
-            title: 'Fruits of the Spirit',
-            description: 'Exploring the character traits of a Spirit-filled life',
-            language: 'English',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          },
-        ]);
       } finally {
         setLoading(false);
       }
