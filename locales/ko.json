@@ -880,5 +880,16 @@
     "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
     "Saving...": "Saving...",
     "Save Preferences": "Save Preferences",
-    "No translations available for your language": "No translations available for your language"
+    "No translations available for your language": "No translations available for your language",
+    "Plan": "계획",
+    "System Default": "시스템 기본값",
+    "Sans Serif": "산세리프",
+    "Serif": "세리프",
+    "Monospace": "고정폭",
+    "Extra Small": "매우 작게",
+    "Small": "작게",
+    "Medium": "보통",
+    "Large": "크게",
+    "Extra Large": "매우 크게",
+    "Font Preferences": "글꼴 설정"
 }

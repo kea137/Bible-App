@@ -4,14 +4,16 @@ import * as React from 'react';
 import { Platform } from 'react-native';
 import { Stack, usePathname } from 'expo-router';
 import { useColorScheme } from 'nativewind';
+import { View } from 'react-native';
 import { NAV_THEME } from '@showcase/lib/theme';
 import { HeaderRightView } from '@showcase/components/header-right-view';
 import { AuthProvider } from '@/lib/contexts/AuthContext';
-import { LanguageProvider } from '@/lib/contexts/LanguageContext';
+// import { LanguageProvider } from '@/lib/contexts/LanguageContext'; // Temporarily disabled for boolean error bisect
 import { MobileFooter } from '@showcase/components/mobile-footer';
 import { SettingsDialog } from '@showcase/components/settings-dialog';
-import { PortalHost } from '@rn-primitives/portal';
+// PortalHost removed temporarily to resolve module error; re-add when library build resolves.
 import '@/lib/i18n/config'; // Initialize i18n
+
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -31,10 +33,11 @@ export default function RootLayout() {
   // Hide footer on auth pages (anything under /auth), welcome screen, and onboarding.
   const hideFooter = pathname.startsWith('/auth') || pathname === '/welcome' || pathname === '/onboarding';
   const [settingsOpen, setSettingsOpen] = React.useState(false);
+  // Removed manual splash control since plugin not applied; rely on Expo defaults
 
   return (
-    <AuthProvider>
-      <LanguageProvider>
+    <View style={{ flex: 1 }}>
+      <AuthProvider>
         <Stack
           screenOptions={{
             headerBackTitle: 'Back',
@@ -73,10 +76,9 @@ export default function RootLayout() {
             }}
           />
         </Stack>
-        {!hideFooter && <MobileFooter />}
-        <PortalHost name="root" />
-        <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
-      </LanguageProvider>
-    </AuthProvider>
+          {!hideFooter && <MobileFooter />}
+          <SettingsDialog open={settingsOpen} onOpenChange={setSettingsOpen} />
+      </AuthProvider>
+    </View>
   );
 }

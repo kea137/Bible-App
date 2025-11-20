@@ -33,7 +33,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const loadSavedLanguage = async () => {
       try {
         // If authenticated, try to get user's language preference from backend
-        if (isAuthenticated) {
+        // Explicitly convert to boolean to avoid native bridge type issues
+        if (Boolean(isAuthenticated) === true) {
           const userData = await getUserData();
           if (userData?.data?.user?.language) {
             const userLanguage = userData.data.user.language;
@@ -59,7 +60,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     };
 
     loadSavedLanguage();
-  }, [isAuthenticated]);
+  }, [Boolean(isAuthenticated)]);
 
   const changeLanguage = async (languageCode: string) => {
     try {
@@ -75,7 +76,8 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setCurrentLanguage(languageCode);
       
       // If user is authenticated, update preference on backend
-      if (isAuthenticated) {
+      // Explicitly convert to boolean to avoid native bridge type issues
+      if (Boolean(isAuthenticated) === true) {
         try {
           await updateLocalePreference(languageCode);
         } catch (error) {

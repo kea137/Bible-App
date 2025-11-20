@@ -11,9 +11,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     userInterfaceStyle: 'automatic',
-    runtimeVersion: {
-      policy: 'appVersion',
-    },
+    runtimeVersion: '1.0.0',
     updates: {
       url: 'https://u.expo.dev/ceb86f7d-1fed-4feb-98cb-2f2ba6223741',
     },
@@ -46,25 +44,11 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     android: {
       scheme: `${SLUG}android`,
-      edgeToEdgeEnabled: true,
       adaptiveIcon: {
         foregroundImage: './assets/images/adaptive-icon.png',
         backgroundColor: '#0A0A0A',
       },
       package: 'com.bible-word.android',
-      intentFilters: [
-        {
-          action: 'VIEW',
-          autoVerify: true,
-          data: [
-            {
-              scheme: 'https',
-              host: 'bible-word.help',
-            },
-          ],
-          category: ['BROWSABLE', 'DEFAULT'],
-        },
-      ],
     },
     web: {
       bundler: 'metro',
@@ -73,26 +57,24 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     },
     plugins: [
       'expo-router',
+      'expo-splash-screen',
       [
         'expo-font',
         {
           fonts: [
-            '../../node_modules/@expo-google-fonts/geist/900Black/Geist_900Black.ttf',
-            '../../node_modules/@expo-google-fonts/geist/800ExtraBold/Geist_800ExtraBold.ttf',
-            '../../node_modules/@expo-google-fonts/geist/700Bold/Geist_700Bold.ttf',
-            '../../node_modules/@expo-google-fonts/geist/600SemiBold/Geist_600SemiBold.ttf',
-            '../../node_modules/@expo-google-fonts/geist/500Medium/Geist_500Medium.ttf',
-            '../../node_modules/@expo-google-fonts/geist/400Regular/Geist_400Regular.ttf',
-            '../../node_modules/@expo-google-fonts/geist/300Light/Geist_300Light.ttf',
-            '../../node_modules/@expo-google-fonts/geist/200ExtraLight/Geist_200ExtraLight.ttf',
-            '../../node_modules/@expo-google-fonts/geist/100Thin/Geist_100Thin.ttf',
+            './node_modules/@expo-google-fonts/geist/900Black/Geist_900Black.ttf',
+            './node_modules/@expo-google-fonts/geist/800ExtraBold/Geist_800ExtraBold.ttf',
+            './node_modules/@expo-google-fonts/geist/700Bold/Geist_700Bold.ttf',
+            './node_modules/@expo-google-fonts/geist/600SemiBold/Geist_600SemiBold.ttf',
+            './node_modules/@expo-google-fonts/geist/500Medium/Geist_500Medium.ttf',
+            './node_modules/@expo-google-fonts/geist/400Regular/Geist_400Regular.ttf',
+            './node_modules/@expo-google-fonts/geist/300Light/Geist_300Light.ttf',
+            './node_modules/@expo-google-fonts/geist/200ExtraLight/Geist_200ExtraLight.ttf',
+            './node_modules/@expo-google-fonts/geist/100Thin/Geist_100Thin.ttf',
           ],
         },
       ],
     ],
-    experiments: {
-      typedRoutes: true,
-    },
     extra: {
       router: {
         origin: false,

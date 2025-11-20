@@ -898,5 +898,16 @@
     "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
     "Saving...": "Saving...",
     "Save Preferences": "Save Preferences",
-    "No translations available for your language": "No translations available for your language"
+    "No translations available for your language": "No translations available for your language",
+    "Plan": "计划",
+    "System Default": "系统默认",
+    "Sans Serif": "无衬线",
+    "Serif": "衬线",
+    "Monospace": "等宽",
+    "Extra Small": "特小",
+    "Small": "小",
+    "Medium": "中",
+    "Large": "大",
+    "Extra Large": "特大",
+    "Font Preferences": "字体偏好"
 }

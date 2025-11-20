@@ -735,5 +735,16 @@
     "Select Bible translations for parallel reading and study": "Select Bible translations for parallel reading and study",
     "Saving...": "Saving...",
     "Save Preferences": "Save Preferences",
-    "No translations available for your language": "No translations available for your language"
+    "No translations available for your language": "No translations available for your language",
+    "Plan": "Plan",
+    "System Default": "Par défaut du système",
+    "Sans Serif": "Sans Serif",
+    "Serif": "Serif",
+    "Monospace": "Monospace",
+    "Extra Small": "Très petit",
+    "Small": "Petit",
+    "Medium": "Moyen",
+    "Large": "Grand",
+    "Extra Large": "Très grand",
+    "Font Preferences": "Préférences de police"
 }

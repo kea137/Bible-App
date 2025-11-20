@@ -2,7 +2,7 @@ module.exports = function (api) {
   api.cache(true);
 
   const plugins = [
-    'react-native-worklets/plugin',
+    // 'react-native-worklets/plugin', // Temporarily disabled to test boolean error
     [
       'module-resolver',
       {
