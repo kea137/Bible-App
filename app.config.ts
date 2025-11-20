@@ -11,7 +11,9 @@ export default ({ config }: ConfigContext): ExpoConfig => {
     orientation: 'portrait',
     icon: './assets/images/icon.png',
     userInterfaceStyle: 'automatic',
-    runtimeVersion: '1.0.0',
+    runtimeVersion: {
+      policy: 'appVersion',
+    },
     updates: {
       url: 'https://u.expo.dev/ceb86f7d-1fed-4feb-98cb-2f2ba6223741',
     },
