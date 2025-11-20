@@ -31,9 +31,12 @@ export default ({ config }: ConfigContext): ExpoConfig => {
       infoPlist: {
         ITSAppUsesNonExemptEncryption: false,
         NSAppTransportSecurity: {
-          NSAllowsArbitraryLoads: true,
+          NSAllowsArbitraryLoads: false,
           NSExceptionDomains: {
-            'localhost': { NSExceptionAllowsInsecureHTTPLoads: true, NSIncludesSubdomains: true },
+            'localhost': { 
+              NSExceptionAllowsInsecureHTTPLoads: true, 
+              NSIncludesSubdomains: true 
+            },
           },
         },
       },
@@ -83,6 +86,7 @@ export default ({ config }: ConfigContext): ExpoConfig => {
           ],
         },
       ],
+      './plugins/androidNetworkSecurityPlugin.js',
     ],
     experiments: {
       typedRoutes: true,

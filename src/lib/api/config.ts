@@ -4,11 +4,10 @@
  * Configure the base URL for the Laravel backend API.
  * In production, this should be set via environment variables.
  */
-import { Platform } from 'react-native';
+import { getEnvConfig } from '../env';
 
-// Default API URL - should be overridden by environment variable in production
-export const API_BASE_URL = Platform.OS === 'ios' ? process.env.EXPO_PUBLIC_API_URL_IOS
-  : process.env.EXPO_PUBLIC_API_URL || 'http://bible.test';
+// Get validated API URL from environment
+export const API_BASE_URL = getEnvConfig().apiUrl;
 
 
 // API endpoints
