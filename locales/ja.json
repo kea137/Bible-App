@@ -1,4 +1,7 @@
-{
+{ 
+    "Settings":"設定",
+    "Theme":"テーマ",
+    "Dashboard":"ダッシュボード",
     "Back":"戻る",
     "Search lessons...":"レッスンを検索...",
     "Select your preferred language":"希望する言語を選択してください",
